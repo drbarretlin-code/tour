@@ -411,7 +411,7 @@ export default function App() {
                 </button>
               </div>
               
-              <div className="relative rounded-lg overflow-hidden border-2 border-slate-200 bg-slate-100 flex items-center justify-center min-h-[300px] w-full">
+              <div className="relative rounded-lg overflow-hidden border-2 border-slate-200 bg-slate-100 flex items-center justify-center min-h-[300px] w-full p-2">
                 {isGeneratingImage ? (
                   <div className="flex flex-col items-center justify-center text-indigo-600 py-12 px-4 text-center">
                     <Sparkles className="w-10 h-10 animate-pulse mb-3" />
@@ -421,12 +421,162 @@ export default function App() {
                     </p>
                   </div>
                 ) : (
-                  <img 
-                    src={infographicUrl} 
-                    alt="行程資訊圖表" 
-                    onError={handleImageError}
-                    className="w-full max-h-[500px] object-contain bg-white" 
-                  />
+                  <div className="relative w-full max-w-[500px] aspect-square overflow-hidden rounded-md shadow-inner bg-white">
+                    <img 
+                      src={infographicUrl} 
+                      alt="行程資訊圖表" 
+                      onError={handleImageError}
+                      className="w-full h-full object-cover" 
+                    />
+                    
+                    {/* 互動點擊區域 */}
+                    {!generateError && (
+                      <>
+                        {/* 景點：Terminal 21 */}
+                        <a 
+                          href="https://www.google.com/maps/place/Terminal+21+Asok"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
+                          style={{ left: '8%', top: '10%', width: '25%', height: '18%' }}
+                        >
+                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
+                            <MapPin className="w-3 h-3 text-teal-400" /> Terminal 21 ➔
+                          </span>
+                        </a>
+
+                        {/* 景點：ICONSIAM */}
+                        <a 
+                          href="https://www.google.com/maps/place/ICONSIAM"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
+                          style={{ left: '34%', top: '15%', width: '20%', height: '18%' }}
+                        >
+                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
+                            <MapPin className="w-3 h-3 text-teal-400" /> ICONSIAM ➔
+                          </span>
+                        </a>
+
+                        {/* 景點：丹能莎朵水上市場 */}
+                        <a 
+                          href="https://www.google.com/maps/place/Damnoen+Saduak+Floating+Market"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
+                          style={{ left: '5%', top: '28%', width: '25%', height: '18%' }}
+                        >
+                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
+                            <MapPin className="w-3 h-3 text-teal-400" /> 丹能莎朵水上市場 ➔
+                          </span>
+                        </a>
+
+                        {/* 景點：美功鐵道市場 */}
+                        <a 
+                          href="https://www.google.com/maps/place/Maeklong+Railway+Market"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
+                          style={{ left: '5%', top: '48%', width: '25%', height: '18%' }}
+                        >
+                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
+                            <MapPin className="w-3 h-3 text-teal-400" /> 美功鐵道市場 ➔
+                          </span>
+                        </a>
+
+                        {/* 景點：Cross Pattaya */}
+                        <a 
+                          href="https://www.google.com/maps/place/Cross+Pattaya+Oceanphere"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
+                          style={{ left: '42%', top: '38%', width: '18%', height: '18%' }}
+                        >
+                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
+                            <MapPin className="w-3 h-3 text-teal-400" /> Cross Pattaya ➔
+                          </span>
+                        </a>
+
+                        {/* 景點：Kliff 懸崖餐廳 */}
+                        <a 
+                          href="https://www.google.com/maps/place/Kliff+Beach+Club+Pattaya"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
+                          style={{ left: '60%', top: '45%', width: '15%', height: '16%' }}
+                        >
+                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
+                            <MapPin className="w-3 h-3 text-teal-400" /> Kliff 懸崖餐廳 ➔
+                          </span>
+                        </a>
+
+                        {/* 景點：素芭他水果園 */}
+                        <a 
+                          href="https://www.google.com/maps/place/Suphattra+Land"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
+                          style={{ left: '54%', top: '70%', width: '20%', height: '16%' }}
+                        >
+                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
+                            <MapPin className="w-3 h-3 text-teal-400" /> 素芭他水果園 ➔
+                          </span>
+                        </a>
+
+                        {/* 景點：Pa Dee 網美咖啡館 */}
+                        <a 
+                          href="https://www.google.com/maps/place/Pa+Dee+Rayong"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
+                          style={{ left: '77%', top: '76%', width: '18%', height: '16%' }}
+                        >
+                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
+                            <MapPin className="w-3 h-3 text-teal-400" /> Pa Dee 咖啡館 ➔
+                          </span>
+                        </a>
+
+                        {/* 路線：Day 1-2 曼谷市區路線 */}
+                        <a 
+                          href="https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/One+Bangkok/The+Platinum+Fashion+Mall/ICONSIAM"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute group border-2 border-transparent hover:border-amber-400 hover:bg-amber-500/10 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-300 rounded-full cursor-pointer"
+                          style={{ left: '20%', top: '23%', width: '12%', height: '10%' }}
+                        >
+                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-amber-955/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-amber-500/50 backdrop-blur-sm">
+                            <Navigation className="w-3 h-3 text-amber-400" /> Day 1-2 曼谷路線 ➔
+                          </span>
+                        </a>
+
+                        {/* 路線：Day 3-4 往返羅勇/芭達雅路線 */}
+                        <a 
+                          href="https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/Suphattra+Land/Pa+Dee+Rayong/Cross+Pattaya+Oceanphere"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute group border-2 border-transparent hover:border-amber-400 hover:bg-amber-500/10 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-300 rounded-full cursor-pointer"
+                          style={{ left: '30%', top: '42%', width: '10%', height: '22%' }}
+                        >
+                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-amber-955/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-amber-500/50 backdrop-blur-sm">
+                            <Navigation className="w-3 h-3 text-amber-400" /> Day 3-4 往返羅勇路線 ➔
+                          </span>
+                        </a>
+
+                        {/* 路線：Day 5-7 返程及近郊路線 */}
+                        <a 
+                          href="https://www.google.com/maps/dir/Cross+Pattaya+Oceanphere/Safari+World+Bangkok/Centre+Point+Hotel+Terminal+21/FO+SHO+BRO+Bangkok"
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="absolute group border-2 border-transparent hover:border-amber-400 hover:bg-amber-500/10 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-300 rounded-full cursor-pointer"
+                          style={{ left: '48%', top: '56%', width: '8%', height: '15%' }}
+                        >
+                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-amber-955/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-amber-500/50 backdrop-blur-sm">
+                            <Navigation className="w-3 h-3 text-amber-400" /> Day 5-7 返程路線 ➔
+                          </span>
+                        </a>
+                      </>
+                    )}
+                  </div>
                 )}
               </div>
               {generateError && <p className="text-sm text-red-500 mt-2">{generateError}</p>}
