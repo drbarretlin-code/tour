@@ -833,7 +833,7 @@ export default function App() {
       ]
     };
 
-    setTripSchedule(prev => {
+    updateTripSchedule(prev => {
       const updatedDays = prev.days.map(day => {
         if (day.day === dayToImport) {
           const list = [...day.activities, newActivity];
@@ -855,6 +855,64 @@ export default function App() {
   
   // 狀態管理：行程資料
   const [tripSchedule, setTripSchedule] = useState(initialTripData);
+  const [syncStatus, setSyncStatus] = useState('loading');
+  const [dbSource, setDbSource] = useState('local_file');
+
+  // 從雲端載入行程資料
+  const fetchTripFromCloud = async () => {
+    setSyncStatus('loading');
+    try {
+      const response = await fetch('/api/trip');
+      if (!response.ok) throw new Error('連線失敗');
+      const result = await response.json();
+      setDbSource(result.source);
+      
+      if (result.data && result.data.days && result.data.days.length > 0) {
+        setTripSchedule(result.data);
+        setSyncStatus('synced');
+      } else {
+        // 雲端無資料，自動將本地預設資料同步上傳
+        setSyncStatus('syncing');
+        await saveTripToCloud(initialTripData);
+        setTripSchedule(initialTripData);
+        setSyncStatus('synced');
+      }
+    } catch (err) {
+      console.error('載入雲端資料失敗，使用本地暫存:', err);
+      setSyncStatus('error');
+    }
+  };
+
+  // 保存資料至雲端
+  const saveTripToCloud = async (newSchedule) => {
+    setSyncStatus('syncing');
+    try {
+      const response = await fetch('/api/trip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tripSchedule: newSchedule })
+      });
+      if (!response.ok) throw new Error('存檔失敗');
+      const result = await response.json();
+      setDbSource(result.source);
+      setSyncStatus('synced');
+    } catch (err) {
+      console.error('儲存雲端失敗:', err);
+      setSyncStatus('error');
+    }
+  };
+
+  const updateTripSchedule = (newScheduleOrFn) => {
+    setTripSchedule(prev => {
+      const next = typeof newScheduleOrFn === 'function' ? newScheduleOrFn(prev) : newScheduleOrFn;
+      saveTripToCloud(next);
+      return next;
+    });
+  };
+
+  React.useEffect(() => {
+    fetchTripFromCloud();
+  }, []);
 
   // 編輯/新增行程的 Modal 狀態
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -878,6 +936,29 @@ export default function App() {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [infographicUrl, setInfographicUrl] = useState('image_1cf223.png'); // 預設使用上傳的圖片
   const [generateError, setGenerateError] = useState(null);
+
+  // 15 秒背景輪詢，同步其他使用者的變更
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      if (!isEditModalOpen && syncStatus === 'synced') {
+        fetch('/api/trip')
+          .then(res => res.json())
+          .then(result => {
+            if (result.data && result.data.days && result.data.days.length > 0) {
+              const localStr = JSON.stringify(tripSchedule);
+              const remoteStr = JSON.stringify(result.data);
+              if (localStr !== remoteStr) {
+                setTripSchedule(result.data);
+                setDbSource(result.source);
+              }
+            }
+          })
+          .catch(err => console.warn('背景輪詢失敗:', err));
+      }
+    }, 15000);
+
+    return () => clearInterval(timer);
+  }, [isEditModalOpen, syncStatus, tripSchedule]);
 
   // 收集行程中所有的景點標題（做關鍵字比對用，自動清理無效熱區）
   const allActivityTitles = tripSchedule.days.flatMap(d => d.activities.map(a => a.title.toLowerCase()));
@@ -1033,7 +1114,7 @@ export default function App() {
   const handleDeleteActivity = () => {
     if (!editingActivity) return;
     
-    setTripSchedule(prevSchedule => {
+    updateTripSchedule(prevSchedule => {
       const newDays = prevSchedule.days.map(day => {
         if (day.day === sourceDayId) {
           return {
@@ -1087,7 +1168,7 @@ export default function App() {
       })()
     };
 
-    setTripSchedule(prevSchedule => {
+    updateTripSchedule(prevSchedule => {
       const newDays = prevSchedule.days.map(day => {
         // 處理目標天（新增或更新）
         if (day.day === targetDayId) {
@@ -1136,9 +1217,33 @@ export default function App() {
       <header className="bg-white shadow-sm sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center gap-2">
-              <MapPin className="text-teal-600 w-6 h-6" />
-              <span className="font-bold text-xl text-teal-800">B&B泰國家庭旅遊</span>
+            <div className="flex items-center gap-1.5 sm:gap-2.5">
+              <MapPin className="text-teal-600 w-5 h-5 sm:w-6 h-6" />
+              <span className="font-bold text-base sm:text-xl text-teal-800">B&B泰國家庭旅遊</span>
+              
+              {/* 雲端同步狀態指示器 */}
+              <div className="flex items-center gap-1 sm:gap-1.5 ml-1 sm:ml-2 px-1.5 sm:px-2.5 py-0.5 sm:py-1 bg-slate-50 border border-slate-100 rounded-full text-[10px] font-semibold">
+                <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${
+                  syncStatus === 'synced' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
+                  syncStatus === 'syncing' ? 'bg-amber-500 animate-pulse' :
+                  syncStatus === 'loading' ? 'bg-indigo-500 animate-pulse' :
+                  'bg-red-500 animate-ping'
+                }`} />
+                <span className="text-[9px] sm:text-[10px] text-slate-500 font-bold whitespace-nowrap">
+                  {syncStatus === 'synced' ? (dbSource === 'kv' ? '☁️ 雲端' : '💾 本地') :
+                   syncStatus === 'syncing' ? '同步中' :
+                   syncStatus === 'loading' ? '載入中' :
+                   '連線失敗'}
+                </span>
+                <button 
+                  onClick={fetchTripFromCloud}
+                  title="從雲端重新載入資料"
+                  className="p-0.5 ml-0.5 text-slate-400 hover:text-teal-600 hover:bg-slate-100 rounded transition"
+                  disabled={syncStatus === 'loading' || syncStatus === 'syncing'}
+                >
+                  <RefreshCw className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${syncStatus === 'loading' ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
             </div>
             
             {/* 收合選單 (Dropdown 面板) */}
