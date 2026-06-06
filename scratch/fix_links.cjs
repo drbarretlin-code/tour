@@ -5,28 +5,28 @@ const targetPath = path.join(__dirname, '../src/App.jsx');
 let content = fs.readFileSync(targetPath, 'utf8');
 
 const replacements = [
-  // 1. Kliff Beach Club (Facebook -> Official Website)
+  // 1. Kliff Beach Club (Website -> Viviyu Blog)
   {
-    from: 'https://www.facebook.com/kliffbeachclub/',
-    to: 'https://www.kliffbeachclub.com/'
+    from: 'https://www.kliffbeachclub.com/',
+    to: 'https://www.viviyu.com/archives/35904/'
   },
 
-  // 2. Suphattra Land (Facebook -> TripAdvisor)
+  // 2. Suphattra Land (TripAdvisor -> Viviyu Blog)
   {
-    from: 'https://www.facebook.com/suphattraland/',
-    to: 'https://www.tripadvisor.com.tw/Attraction_Review-g2237829-d2001550-Reviews-Supatra_Land_Orchard-Ban_Khai_Rayong_Province.html'
+    from: 'https://www.tripadvisor.com.tw/Attraction_Review-g2237829-d2001550-Reviews-Supatra_Land_Orchard-Ban_Khai_Rayong_Province.html',
+    to: 'https://www.viviyu.com/archives/33941/'
   },
 
-  // 3. Pa Dee Rayong (Facebook -> TripAdvisor)
+  // 3. Pa Dee Rayong (TripAdvisor -> Viviyu Blog)
   {
-    from: 'https://www.facebook.com/Padeecafecoffeeshop/',
-    to: 'https://www.tripadvisor.com.tw/Restaurant_Review-g2237827-d13801267-Reviews-Pa_Dee-Rayong_Rayong_Province.html'
+    from: 'https://www.tripadvisor.com.tw/Restaurant_Review-g2237827-d13801267-Reviews-Pa_Dee-Rayong_Rayong_Province.html',
+    to: 'https://www.viviyu.com/archives/33945/'
   },
 
-  // 4. FO SHO BRO (Facebook -> TripAdvisor)
+  // 4. FO SHO BRO (TripAdvisor -> Wendy\'s Journey Blog)
   {
-    from: 'https://www.facebook.com/foshobro.bkk/',
-    to: 'https://www.tripadvisor.com.tw/Restaurant_Review-g293916-d25101037-Reviews-Fo_Sho_Bro-Bangkok.html'
+    from: 'https://www.tripadvisor.com.tw/Restaurant_Review-g293916-d25101037-Reviews-Fo_Sho_Bro-Bangkok.html',
+    to: 'https://www.wendyjourney.com/fo-sho-bro/'
   }
 ];
 

@@ -188,7 +188,7 @@ const initialTripData = {
           desc: "🚗 交通：車程約 2.5 小時，今日皆為專車點對點接送，確保舒適度。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Suphattra+Land", icon: MapPin },
-            { text: "景點介紹", url: "https://www.tripadvisor.com.tw/Attraction_Review-g2237829-d2001550-Reviews-Supatra_Land_Orchard-Ban_Khai_Rayong_Province.html", icon: Info },
+            { text: "景點介紹", url: "https://www.viviyu.com/archives/33941/", icon: Info },
             { text: "曼谷至羅勇路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/Suphattra+Land/", icon: Navigation }
           ]
         },
@@ -201,7 +201,7 @@ const initialTripData = {
           desc: "水果大餐吃到飽，現摘榴槤與山竹，非常適合家庭遊客！",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Suphattra+Land", icon: MapPin },
-            { text: "景點介紹", url: "https://www.tripadvisor.com.tw/Attraction_Review-g2237829-d2001550-Reviews-Supatra_Land_Orchard-Ban_Khai_Rayong_Province.html", icon: Info }
+            { text: "景點介紹", url: "https://www.viviyu.com/archives/33941/", icon: Info }
           ]
         },
         {
@@ -214,7 +214,7 @@ const initialTripData = {
           desc: "絕美歐式鄉村風花園咖啡館，坐在花園裡享受悠閒的英式下午茶。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Pa+Dee+Rayong", icon: MapPin },
-            { text: "景點介紹", url: "https://www.tripadvisor.com.tw/Restaurant_Review-g2237827-d13801267-Reviews-Pa_Dee-Rayong_Rayong_Province.html", icon: Info },
+            { text: "景點介紹", url: "https://www.viviyu.com/archives/33945/", icon: Info },
             { text: "水果園至咖啡館路線", url: "https://www.google.com/maps/dir/Suphattra+Land/Pa+Dee+Rayong/", icon: Navigation }
           ]
         },
@@ -278,7 +278,7 @@ const initialTripData = {
           desc: "指定朝聖景點！芭達雅人氣懸崖海景餐廳，遠眺海景與夕陽，享用精緻料理。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Kliff+Beach+Club+Pattaya", icon: MapPin },
-            { text: "景點介紹", url: "https://www.kliffbeachclub.com/", icon: Info },
+            { text: "景點介紹", url: "https://www.viviyu.com/archives/35904/", icon: Info },
             { text: "樂園至餐廳路線", url: "https://www.google.com/maps/dir/Columbia+Pictures+Aquaverse/Kliff+Beach+Club+Pattaya/", icon: Navigation }
           ]
         }
@@ -427,7 +427,7 @@ const initialTripData = {
           desc: "🚇 交通：搭乘 BTS 淺綠線 (Sukhumvit Line) 至 Udom Suk 站 (E12)，出站轉乘計程車/Grab 約 5-8 分鐘。人氣咖啡廳拍美照。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=FO+SHO+BRO+Bangkok", icon: MapPin },
-            { text: "景點介紹", url: "https://www.tripadvisor.com.tw/Restaurant_Review-g293916-d25101037-Reviews-Fo_Sho_Bro-Bangkok.html", icon: Info },
+            { text: "景點介紹", url: "https://www.wendyjourney.com/fo-sho-bro/", icon: Info },
             { text: "飯店至咖啡廳路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/FO+SHO+BRO+Bangkok/", icon: Navigation }
           ]
         },
@@ -514,7 +514,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Kliff 懸崖餐廳',
     style: { left: '60%', top: '45%', width: '15%', height: '16%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Kliff+Beach+Club+Pattaya',
-    infoUrl: 'https://www.kliffbeachclub.com/'
+    infoUrl: 'https://www.viviyu.com/archives/35904/'
   },
   {
     key: 'suphattra',
@@ -522,7 +522,7 @@ const HOTSPOT_CONFIGS = [
     name: '素芭他水果園',
     style: { left: '54%', top: '70%', width: '20%', height: '16%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Suphattra+Land',
-    infoUrl: 'https://www.tripadvisor.com.tw/Attraction_Review-g2237829-d2001550-Reviews-Supatra_Land_Orchard-Ban_Khai_Rayong_Province.html'
+    infoUrl: 'https://www.viviyu.com/archives/33941/'
   },
   {
     key: 'padee',
@@ -530,7 +530,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Pa Dee 咖啡館',
     style: { left: '77%', top: '76%', width: '18%', height: '16%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Pa+Dee+Rayong',
-    infoUrl: 'https://www.tripadvisor.com.tw/Restaurant_Review-g2237827-d13801267-Reviews-Pa_Dee-Rayong_Rayong_Province.html'
+    infoUrl: 'https://www.viviyu.com/archives/33945/'
   },
   {
     key: 'one_bangkok',
@@ -570,7 +570,7 @@ const HOTSPOT_CONFIGS = [
     name: 'FO SHO BRO 咖啡館',
     style: { left: '38%', top: '28%', width: '12%', height: '8%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=FO+SHO+BRO+Bangkok',
-    infoUrl: 'https://www.tripadvisor.com.tw/Restaurant_Review-g293916-d25101037-Reviews-Fo_Sho_Bro-Bangkok.html'
+    infoUrl: 'https://www.wendyjourney.com/fo-sho-bro/'
   }
 ];
 
@@ -673,7 +673,7 @@ const localMockAnalysis = (urlsText) => {
       suggestion = "推薦排在 Day 3 (羅勇日)，因為當天本來就安排了羅勇素芭他水果園，兩地包車距離僅 25 分鐘。";
       suggestedDay = 3;
       suggestedTime = "15:00";
-      mapUrl = "https://www.tripadvisor.com.tw/Restaurant_Review-g2237827-d13801267-Reviews-Pa_Dee-Rayong_Rayong_Province.html";
+      mapUrl = "https://www.viviyu.com/archives/33945/";
     } else if (lineLower.includes('safari') || lineLower.includes('zoo') || lineLower.includes('animal')) {
       title = "Safari World 賽福瑞野生動物園";
       category = "camera";
@@ -714,7 +714,7 @@ const localMockAnalysis = (urlsText) => {
       suggestion = "建議排在 Day 4 傍晚 17:30，欣賞絕美日落。";
       suggestedDay = 4;
       suggestedTime = "17:30";
-      mapUrl = "https://www.kliffbeachclub.com/";
+      mapUrl = "https://www.viviyu.com/archives/35904/";
     } else {
       title = line.replace(/https?:\/\/(www\.)?/, '').split('/')[0] || "新增網美景點";
       if (title.length > 20) title = title.substring(0, 20) + "...";
@@ -1378,7 +1378,7 @@ export default function App() {
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">請貼入新增行程網址或名稱 (每行一筆)：</label>
                   <textarea
                     rows={6}
-                    placeholder="https://www.tripadvisor.com.tw/Attraction_Review-g2237829-d2001550-Reviews-Supatra_Land_Orchard-Ban_Khai_Rayong_Province.html&#10;Savoey Terminal21&#10;https://www.kliffbeachclub.com/"
+                    placeholder="https://www.viviyu.com/archives/33941/&#10;Savoey Terminal21&#10;https://www.viviyu.com/archives/35904/"
                     className="w-full border border-slate-200 rounded-lg p-3 text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none resize-none font-mono"
                     value={aiInputUrls}
                     onChange={(e) => setAiInputUrls(e.target.value)}
@@ -1388,7 +1388,7 @@ export default function App() {
                 <div className="flex flex-wrap gap-3 items-center justify-between">
                   <div className="flex gap-2">
                     <button 
-                      onClick={() => setAiInputUrls("https://www.google.com/maps/place/Savoey+Terminal21\nhttps://www.tripadvisor.com.tw/Attraction_Review-g2237829-d2001550-Reviews-Supatra_Land_Orchard-Ban_Khai_Rayong_Province.html\nhttps://www.google.com/maps/place/FO+SHO+BRO+Bangkok/")}
+                      onClick={() => setAiInputUrls("https://www.google.com/maps/place/Savoey+Terminal21\nhttps://www.viviyu.com/archives/33941/\nhttps://www.google.com/maps/place/FO+SHO+BRO+Bangkok/")}
                       className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-lg transition"
                     >
                       載入範例資料
