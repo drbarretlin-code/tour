@@ -490,7 +490,7 @@ const HOTSPOT_CONFIGS = [
     name: '丹能莎朵水上市場',
     style: { left: '5%', top: '28%', width: '25%', height: '18%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Damnoen+Saduak+Floating+Market',
-    infoUrl: 'https://www.klook.com/zh-TW/blog/damnoen-saduak-floating-market-bangkok/'
+    infoUrl: 'https://www.klook.com/zh-TW/blog/bangkok-floating-markets/'
   },
   {
     key: 'railway_market',
