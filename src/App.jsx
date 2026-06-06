@@ -175,6 +175,42 @@ const getIcon = (type) => {
 // ==========================================
 export default function App() {
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // 收集行程中所有的景點標題（做關鍵字比對用，自動清理無效熱區）
+  const allActivityTitles = tripSchedule.days.flatMap(d => d.activities.map(a => a.title.toLowerCase()));
+
+  const isKeywordInItinerary = (keywords) => {
+    return keywords.some(kw => 
+      allActivityTitles.some(title => title.includes(kw.toLowerCase()))
+    );
+  };
+
+  const ROUTE_CONFIGS = [
+    {
+      key: 'bangkok-route',
+      name: 'Day 1-2 曼谷路線',
+      style: { left: '20%', top: '23%', width: '12%', height: '10%' },
+      navUrl: 'https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/One+Bangkok/The+Platinum+Fashion+Mall/ICONSIAM',
+      infoUrl: 'https://itravelblog.net/one-bangkok/',
+      show: tripSchedule.days.some(d => d.region === '曼谷' && d.activities.length > 0)
+    },
+    {
+      key: 'rayong-route',
+      name: 'Day 3-4 羅勇路線',
+      style: { left: '30%', top: '42%', width: '10%', height: '22%' },
+      navUrl: 'https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/Suphattra+Land/Pa+Dee+Rayong/Cross+Pattaya+Oceanphere',
+      infoUrl: 'https://www.crosshotelsandresorts.com/cross-pattaya-oceanphere',
+      show: tripSchedule.days.some(d => (d.region === '羅勇' || d.region === '芭達雅') && d.activities.length > 0)
+    },
+    {
+      key: 'return-route',
+      name: 'Day 5-7 返程路線',
+      style: { left: '48%', top: '56%', width: '8%', height: '15%' },
+      navUrl: 'https://www.google.com/maps/dir/Cross+Pattaya+Oceanphere/Safari+World+Bangkok/Centre+Point+Hotel+Terminal+21/FO+SHO+BRO+Bangkok',
+      infoUrl: 'https://itravelblog.net/safari-world/',
+      show: tripSchedule.days.some(d => [5, 6, 7].includes(d.day) && d.activities.length > 0)
+    }
+  ];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [customNotes, setCustomNotes] = useState({});
   const [isCopied, setIsCopied] = useState(false); 
@@ -195,8 +231,8 @@ export default function App() {
   const [formDesc, setFormDesc] = useState('');
   const [formRegion, setFormRegion] = useState('曼谷');
   const [formType, setFormType] = useState('camera');
-  const [formLinkText, setFormLinkText] = useState('');
-  const [formLinkUrl, setFormLinkUrl] = useState('');
+  const [formMapUrl, setFormMapUrl] = useState('');
+  const [formInfoUrl, setFormInfoUrl] = useState('');
   
   const [aiWarning, setAiWarning] = useState(null);
 
@@ -293,8 +329,10 @@ export default function App() {
     setFormDesc(activity.desc);
     setFormRegion(activity.region);
     setFormType(activity.type);
-    setFormLinkText(activity.links && activity.links.length > 0 ? activity.links[0].text : '');
-    setFormLinkUrl(activity.links && activity.links.length > 0 ? activity.links[0].url : '');
+    const mapLink = activity.links?.find(l => l.text.includes("地圖") || l.text.includes("導航") || l.text.includes("位置"));
+    const infoLink = activity.links?.find(l => l.text.includes("介紹") || l.text.includes("攻略") || l.text.includes("遊玩") || l.text.includes("環境") || l.text.includes("食記") || l.text.includes("體驗") || l.text.includes("官網"));
+    setFormMapUrl(mapLink ? mapLink.url : '');
+    setFormInfoUrl(infoLink ? infoLink.url : '');
     setAiWarning(null);
     setIsEditModalOpen(true);
   };
@@ -311,8 +349,8 @@ export default function App() {
     const targetDayObj = tripSchedule.days.find(d => d.day === dayId);
     setFormRegion(targetDayObj ? targetDayObj.region : '曼谷');
     setFormType('camera');
-    setFormLinkText('');
-    setFormLinkUrl('');
+    setFormMapUrl('');
+    setFormInfoUrl('');
     setAiWarning(null);
     setIsEditModalOpen(true);
   };
@@ -363,7 +401,16 @@ export default function App() {
       desc: formDesc,
       region: formRegion,
       type: formType,
-      links: formLinkText && formLinkUrl ? [{ text: formLinkText, url: formLinkUrl, icon: ExternalLink }] : []
+      links: (() => {
+        const linksArr = [];
+        if (formMapUrl.trim()) {
+          linksArr.push({ text: "景點地圖", url: formMapUrl, icon: MapPin });
+        }
+        if (formInfoUrl.trim()) {
+          linksArr.push({ text: "景點介紹", url: formInfoUrl, icon: Info });
+        }
+        return linksArr;
+      })()
     };
 
     setTripSchedule(prevSchedule => {
@@ -531,148 +578,67 @@ export default function App() {
                     {/* 互動點擊區域 */}
                     {!generateError && (
                       <>
-                        {/* 景點：Terminal 21 */}
-                        <a 
-                          href="https://www.google.com/maps/place/Terminal+21+Asok"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
-                          style={{ left: '8%', top: '10%', width: '25%', height: '18%' }}
-                        >
-                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
-                            <MapPin className="w-3 h-3 text-teal-400" /> Terminal 21 ➔
-                          </span>
-                        </a>
+                        {/* 動態渲染行程中包含的景點熱區 */}
+                        {HOTSPOT_CONFIGS.filter(cfg => isKeywordInItinerary(cfg.keywords)).map(cfg => (
+                          <div 
+                            key={cfg.key}
+                            className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl"
+                            style={cfg.style}
+                          >
+                            <div className="absolute hidden group-hover:flex flex-col gap-1.5 bg-teal-950/95 text-white p-2.5 rounded-lg shadow-xl -top-20 left-1/2 transform -translate-x-1/2 z-30 font-semibold border border-teal-500/50 backdrop-blur-sm min-w-[140px]">
+                              <span className="text-xs border-b border-teal-800 pb-1 text-center font-bold">{cfg.name}</span>
+                              <div className="flex gap-1.5 justify-center">
+                                <a 
+                                  href={cfg.mapUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="bg-teal-600 hover:bg-teal-500 text-[10px] px-2 py-1 rounded flex items-center gap-0.5 whitespace-nowrap transition"
+                                >
+                                  🗺️ 地圖
+                                </a>
+                                <a 
+                                  href={cfg.infoUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="bg-indigo-600 hover:bg-indigo-500 text-[10px] px-2 py-1 rounded flex items-center gap-0.5 whitespace-nowrap transition"
+                                >
+                                  ℹ️ 介紹
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
 
-                        {/* 景點：ICONSIAM */}
-                        <a 
-                          href="https://www.google.com/maps/place/ICONSIAM"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
-                          style={{ left: '34%', top: '15%', width: '20%', height: '18%' }}
-                        >
-                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
-                            <MapPin className="w-3 h-3 text-teal-400" /> ICONSIAM ➔
-                          </span>
-                        </a>
-
-                        {/* 景點：丹能莎朵水上市場 */}
-                        <a 
-                          href="https://www.google.com/maps/place/Damnoen+Saduak+Floating+Market"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
-                          style={{ left: '5%', top: '28%', width: '25%', height: '18%' }}
-                        >
-                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
-                            <MapPin className="w-3 h-3 text-teal-400" /> 丹能莎朵水上市場 ➔
-                          </span>
-                        </a>
-
-                        {/* 景點：美功鐵道市場 */}
-                        <a 
-                          href="https://www.google.com/maps/place/Maeklong+Railway+Market"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
-                          style={{ left: '5%', top: '48%', width: '25%', height: '18%' }}
-                        >
-                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
-                            <MapPin className="w-3 h-3 text-teal-400" /> 美功鐵道市場 ➔
-                          </span>
-                        </a>
-
-                        {/* 景點：Cross Pattaya */}
-                        <a 
-                          href="https://www.google.com/maps/place/Cross+Pattaya+Oceanphere"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
-                          style={{ left: '42%', top: '38%', width: '18%', height: '18%' }}
-                        >
-                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
-                            <MapPin className="w-3 h-3 text-teal-400" /> Cross Pattaya ➔
-                          </span>
-                        </a>
-
-                        {/* 景點：Kliff 懸崖餐廳 */}
-                        <a 
-                          href="https://www.google.com/maps/place/Kliff+Beach+Club+Pattaya"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
-                          style={{ left: '60%', top: '45%', width: '15%', height: '16%' }}
-                        >
-                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
-                            <MapPin className="w-3 h-3 text-teal-400" /> Kliff 懸崖餐廳 ➔
-                          </span>
-                        </a>
-
-                        {/* 景點：素芭他水果園 */}
-                        <a 
-                          href="https://www.google.com/maps/place/Suphattra+Land"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
-                          style={{ left: '54%', top: '70%', width: '20%', height: '16%' }}
-                        >
-                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
-                            <MapPin className="w-3 h-3 text-teal-400" /> 素芭他水果園 ➔
-                          </span>
-                        </a>
-
-                        {/* 景點：Pa Dee 網美咖啡館 */}
-                        <a 
-                          href="https://www.google.com/maps/place/Pa+Dee+Rayong"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer"
-                          style={{ left: '77%', top: '76%', width: '18%', height: '16%' }}
-                        >
-                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-teal-900/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-teal-500/50 backdrop-blur-sm">
-                            <MapPin className="w-3 h-3 text-teal-400" /> Pa Dee 咖啡館 ➔
-                          </span>
-                        </a>
-
-                        {/* 路線：Day 1-2 曼谷市區路線 */}
-                        <a 
-                          href="https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/One+Bangkok/The+Platinum+Fashion+Mall/ICONSIAM"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="absolute group border-2 border-transparent hover:border-amber-400 hover:bg-amber-500/10 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-300 rounded-full cursor-pointer"
-                          style={{ left: '20%', top: '23%', width: '12%', height: '10%' }}
-                        >
-                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-amber-955/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-amber-500/50 backdrop-blur-sm">
-                            <Navigation className="w-3 h-3 text-amber-400" /> Day 1-2 曼谷路線 ➔
-                          </span>
-                        </a>
-
-                        {/* 路線：Day 3-4 往返羅勇/芭達雅路線 */}
-                        <a 
-                          href="https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/Suphattra+Land/Pa+Dee+Rayong/Cross+Pattaya+Oceanphere"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="absolute group border-2 border-transparent hover:border-amber-400 hover:bg-amber-500/10 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-300 rounded-full cursor-pointer"
-                          style={{ left: '30%', top: '42%', width: '10%', height: '22%' }}
-                        >
-                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-amber-955/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-amber-500/50 backdrop-blur-sm">
-                            <Navigation className="w-3 h-3 text-amber-400" /> Day 3-4 往返羅勇路線 ➔
-                          </span>
-                        </a>
-
-                        {/* 路線：Day 5-7 返程及近郊路線 */}
-                        <a 
-                          href="https://www.google.com/maps/dir/Cross+Pattaya+Oceanphere/Safari+World+Bangkok/Centre+Point+Hotel+Terminal+21/FO+SHO+BRO+Bangkok"
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="absolute group border-2 border-transparent hover:border-amber-400 hover:bg-amber-500/10 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-300 rounded-full cursor-pointer"
-                          style={{ left: '48%', top: '56%', width: '8%', height: '15%' }}
-                        >
-                          <span className="absolute hidden group-hover:flex items-center gap-1 bg-amber-955/95 text-white text-xs px-2 py-1 rounded-md shadow-lg -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-30 font-semibold border border-amber-500/50 backdrop-blur-sm">
-                            <Navigation className="w-3 h-3 text-amber-400" /> Day 5-7 返程路線 ➔
-                          </span>
-                        </a>
+                        {/* 動態渲染路線熱區 */}
+                        {ROUTE_CONFIGS.filter(r => r.show).map(r => (
+                          <div 
+                            key={r.key}
+                            className="absolute group border-2 border-transparent hover:border-amber-400 hover:bg-amber-500/10 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-300 rounded-full"
+                            style={r.style}
+                          >
+                            <div className="absolute hidden group-hover:flex flex-col gap-1.5 bg-amber-955/95 text-white p-2.5 rounded-lg shadow-xl -top-20 left-1/2 transform -translate-x-1/2 z-30 font-semibold border border-amber-500/50 backdrop-blur-sm min-w-[140px]">
+                              <span className="text-xs border-b border-amber-800 pb-1 text-center font-bold">{r.name}</span>
+                              <div className="flex gap-1.5 justify-center">
+                                <a 
+                                  href={r.navUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="bg-amber-600 hover:bg-amber-500 text-[10px] px-2 py-1 rounded flex items-center gap-0.5 whitespace-nowrap transition"
+                                >
+                                  🧭 導航
+                                </a>
+                                <a 
+                                  href={r.infoUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="bg-indigo-600 hover:bg-indigo-500 text-[10px] px-2 py-1 rounded flex items-center gap-0.5 whitespace-nowrap transition"
+                                >
+                                  ℹ️ 介紹
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </>
                     )}
                   </div>
@@ -813,13 +779,23 @@ export default function App() {
                         {act.links && act.links.length > 0 && (
                           <div className="flex flex-wrap gap-2 mb-4">
                             {act.links.map((link, idx) => {
-                              const Icon = link.icon || ExternalLink;
+                              const isMap = link.text.includes("地圖") || link.text.includes("位置");
+                              const isInfo = link.text.includes("介紹") || link.text.includes("攻略") || link.text.includes("食記") || link.text.includes("遊玩");
+                              const isRoute = link.text.includes("路線") || link.text.includes("導航");
+                              
+                              let btnClass = "bg-slate-50 text-slate-700 hover:bg-slate-100";
+                              if (isMap) btnClass = "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100";
+                              else if (isInfo) btnClass = "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-100";
+                              else if (isRoute) btnClass = "bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-100";
+                              
+                              const Icon = isMap ? MapPin : (isRoute ? Navigation : Info);
+
                               return (
                                 <a 
                                   key={idx} href={link.url} target="_blank" rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 text-sm font-medium rounded-lg hover:bg-teal-100 transition"
+                                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition ${btnClass}`}
                                 >
-                                  <Icon className="w-4 h-4" /> {link.text}
+                                  <Icon className="w-3.5 h-3.5" /> {link.text}
                                 </a>
                               );
                             })}
@@ -1018,22 +994,28 @@ export default function App() {
 
               {/* 參考連結 */}
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
-                <span className="block text-xs font-bold text-slate-500 uppercase tracking-wider">參考網址 / 預訂連結</span>
-                <div className="grid grid-cols-2 gap-3">
-                  <input 
-                    type="text" 
-                    placeholder="連結標題 (如：看食記)" 
-                    className="border border-slate-200 bg-white rounded-lg p-2 text-xs text-slate-800 outline-none focus:ring-1 focus:ring-teal-500"
-                    value={formLinkText}
-                    onChange={(e) => setFormLinkText(e.target.value)}
-                  />
-                  <input 
-                    type="text" 
-                    placeholder="URL 網址 (https://...)" 
-                    className="border border-slate-200 bg-white rounded-lg p-2 text-xs text-slate-800 outline-none focus:ring-1 focus:ring-teal-500"
-                    value={formLinkUrl}
-                    onChange={(e) => setFormLinkUrl(e.target.value)}
-                  />
+                <span className="block text-xs font-bold text-slate-500 uppercase tracking-wider">參考網址 (地圖 & 介紹雙連結)</span>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500 w-16">🗺️ 地圖連結:</span>
+                    <input 
+                      type="text" 
+                      placeholder="Google 地圖網址 (https://maps.google.com/...)" 
+                      className="border border-slate-200 bg-white rounded-lg p-2 text-xs text-slate-800 outline-none focus:ring-1 focus:ring-teal-500 flex-1"
+                      value={formMapUrl}
+                      onChange={(e) => setFormMapUrl(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500 w-16">ℹ️ 介紹連結:</span>
+                    <input 
+                      type="text" 
+                      placeholder="部落格或景點介紹網址 (https://...)" 
+                      className="border border-slate-200 bg-white rounded-lg p-2 text-xs text-slate-800 outline-none focus:ring-1 focus:ring-teal-500 flex-1"
+                      value={formInfoUrl}
+                      onChange={(e) => setFormInfoUrl(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
 
