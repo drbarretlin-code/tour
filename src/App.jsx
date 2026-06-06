@@ -214,7 +214,7 @@ const initialTripData = {
           desc: "絕美歐式鄉村風花園咖啡館，坐在花園裡享受悠閒的英式下午茶。",
           links: [
             { text: "景點地圖", url: "https://maps.app.goo.gl/PaDeeRayongMap", icon: MapPin },
-            { text: "景點介紹", url: "https://tw.trip.com/travel-guide/attraction/rayong/pa-dee-55694248/", icon: Info },
+            { text: "景點介紹", url: "https://www.google.com/maps/place/Pa+Dee+Rayong", icon: Info },
             { text: "水果園至咖啡館路線", url: "https://www.google.com/maps/dir/Suphattra+Land/Pa+Dee+Rayong/", icon: Navigation }
           ]
         },
@@ -427,7 +427,7 @@ const initialTripData = {
           desc: "🚇 交通：搭乘 BTS 淺綠線 (Sukhumvit Line) 至 Udom Suk 站 (E12)，出站轉乘計程車/Grab 約 5-8 分鐘。人氣咖啡廳拍美照。",
           links: [
             { text: "景點地圖", url: "https://maps.app.goo.gl/FoShoBroMap", icon: MapPin },
-            { text: "景點介紹", url: "https://mimihan.tw/fo-sho-bro/", icon: Info },
+            { text: "景點介紹", url: "https://www.wendyjourney.com/fo-sho-bro/", icon: Info },
             { text: "飯店至咖啡廳路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/FO+SHO+BRO+Bangkok/", icon: Navigation }
           ]
         },
@@ -530,7 +530,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Pa Dee 咖啡館',
     style: { left: '77%', top: '76%', width: '18%', height: '16%' },
     mapUrl: 'https://maps.app.goo.gl/PaDeeRayongMap',
-    infoUrl: 'https://tw.trip.com/travel-guide/attraction/rayong/pa-dee-55694248/'
+    infoUrl: 'https://www.google.com/maps/place/Pa+Dee+Rayong'
   },
   {
     key: 'one_bangkok',
@@ -570,7 +570,7 @@ const HOTSPOT_CONFIGS = [
     name: 'FO SHO BRO 咖啡館',
     style: { left: '38%', top: '28%', width: '12%', height: '8%' },
     mapUrl: 'https://maps.app.goo.gl/FoShoBroMap',
-    infoUrl: 'https://mimihan.tw/fo-sho-bro/'
+    infoUrl: 'https://www.wendyjourney.com/fo-sho-bro/'
   }
 ];
 
