@@ -1687,7 +1687,7 @@ export default function App() {
                     </p>
                   </div>
                 ) : (
-                  <div className="relative w-full aspect-square rounded-md shadow-inner bg-white">
+                  <div className="relative w-full aspect-[2/1] rounded-md shadow-inner bg-white">
                     <img 
                       src={infographicUrl} 
                       alt="行程資訊圖表" 
@@ -1876,34 +1876,66 @@ export default function App() {
 
               {/* 每日行程所有地點路線資訊圖表 */}
               {(() => {
-                // 收集當日所有行程點
-                const stops = day.activities.map((act, idx) => ({
-                  order: idx + 1,
-                  title: act.title,
-                  time: act.time,
-                  type: act.type,
-                }));
+                // 收集當日行程項目所匹配的熱區 (Hotspots)
+                const stops = [];
+                
+                day.activities.forEach((act) => {
+                  const matchedConfig = HOTSPOT_CONFIGS.find(cfg => 
+                    cfg.keywords.some(kw => 
+                      act.title.toLowerCase().includes(kw.toLowerCase()) || 
+                      act.desc?.toLowerCase().includes(kw.toLowerCase())
+                    )
+                  );
+                  
+                  if (matchedConfig) {
+                    stops.push({
+                      title: act.title,
+                      time: act.time,
+                      type: act.type,
+                      config: matchedConfig,
+                      x: parseFloat(matchedConfig.style.left),
+                      y: parseFloat(matchedConfig.style.top),
+                      w: parseFloat(matchedConfig.style.width || 0),
+                      h: parseFloat(matchedConfig.style.height || 0)
+                    });
+                  }
+                });
 
                 // 若非最後一天且有飯店名稱，則加入回飯店作為終點
                 if (day.day !== 7 && day.hotelName) {
-                  stops.push({
-                    order: stops.length + 1,
-                    title: `返回住宿：${day.hotelName}`,
-                    time: "晚上",
-                    type: "hotel",
-                  });
+                  const matchedHotel = HOTSPOT_CONFIGS.find(cfg =>
+                    cfg.keywords.some(kw => day.hotelName.toLowerCase().includes(kw.toLowerCase()))
+                  );
+                  if (matchedHotel) {
+                    stops.push({
+                      title: `返回住宿：${day.hotelName}`,
+                      time: "晚上",
+                      type: "hotel",
+                      config: matchedHotel,
+                      x: parseFloat(matchedHotel.style.left),
+                      y: parseFloat(matchedHotel.style.top),
+                      w: parseFloat(matchedHotel.style.width || 0),
+                      h: parseFloat(matchedHotel.style.height || 0)
+                    });
+                  }
                 }
+
+                // 為每一個繪製在圖表上的節點加上順序
+                const positionedStops = stops.map((stop, idx) => ({
+                  ...stop,
+                  order: idx + 1
+                }));
 
                 const isRefreshing = refreshingInfographics[day.day];
 
                 return (
-                  <div className="mb-8 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-xl shadow-lg border border-slate-800 p-6 overflow-hidden relative">
+                  <div className="mb-8 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-xl shadow-lg border border-slate-800 p-6 overflow-hidden relative animate-fade-in">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                       <div>
                         <h3 className="text-lg font-bold text-white flex items-center gap-2">
                           🗺️ Day {day.day} 行程路線與時程資訊圖表
                         </h3>
-                        <p className="text-xs text-slate-400 mt-1">當日路線時序軌跡圖，即時反應行程異動</p>
+                        <p className="text-xs text-slate-400 mt-1">互動式 3D 立體路線軌跡圖，即時反應行程異動</p>
                       </div>
                       <button
                         onClick={() => handleUpdateDayInfographic(day.day)}
@@ -1916,67 +1948,137 @@ export default function App() {
                     </div>
 
                     {isRefreshing ? (
-                      <div className="flex flex-col items-center justify-center py-10 text-teal-400">
-                        <Loader2 className="w-8 h-8 animate-spin mb-2" />
-                        <span className="text-xs font-semibold tracking-wider animate-pulse">正在重新分析路線順序與時程圖表...</span>
+                      <div className="flex flex-col items-center justify-center py-20 text-teal-400">
+                        <Loader2 className="w-10 h-10 animate-spin mb-3" />
+                        <span className="text-sm font-semibold tracking-wider animate-pulse">正在重新分析今日行程並重構 3D 地圖與路線中...</span>
                       </div>
-                    ) : stops.length === 0 ? (
-                      <div className="text-center py-8 text-slate-500 text-sm">
-                        當前暫無行程項目。
+                    ) : positionedStops.length === 0 ? (
+                      <div className="text-center py-12 text-slate-500 text-sm">
+                        此天的行程景點尚未登錄於概觀地圖上。
                       </div>
                     ) : (
-                      <div className="flex flex-nowrap items-center gap-4 overflow-x-auto pb-4 pt-2 custom-scrollbar">
-                        {stops.map((stop, index) => {
-                          let typeLabel = "景點";
-                          let typeColor = "bg-teal-500/10 text-teal-300 border-teal-500/20";
-                          if (stop.type === 'food') {
-                            typeLabel = "餐飲";
-                            typeColor = "bg-amber-500/10 text-amber-300 border-amber-500/20";
-                          } else if (stop.type === 'hotel') {
-                            typeLabel = "住宿";
-                            typeColor = "bg-indigo-500/10 text-indigo-300 border-indigo-500/20";
-                          } else if (stop.type === 'car') {
-                            typeLabel = "交通";
-                            typeColor = "bg-sky-500/10 text-sky-300 border-sky-500/20";
-                          }
+                      <div className="space-y-6">
+                        {/* 3D 地圖背景與軌跡繪製區 */}
+                        <div className="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shadow-inner">
+                          <img 
+                            src={infographicUrl} 
+                            alt="當日行程路線圖" 
+                            onError={handleImageError}
+                            className="w-full h-full object-cover opacity-85" 
+                          />
+                          
+                          {/* SVG 連接路徑線 */}
+                          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full pointer-events-none z-10">
+                            <defs>
+                              <linearGradient id={`routeGrad-${day.day}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#14b8a6" />
+                                <stop offset="100%" stopColor="#6366f1" />
+                              </linearGradient>
+                            </defs>
+                            {positionedStops.length > 1 && (
+                              <path
+                                d={positionedStops.map((stop, idx) => {
+                                  const cx = stop.x + stop.w / 2;
+                                  const cy = stop.y + stop.h / 2;
+                                  return `${idx === 0 ? 'M' : 'L'} ${cx} ${cy}`;
+                                }).join(' ')}
+                                fill="none"
+                                stroke={`url(#routeGrad-${day.day})`}
+                                strokeWidth="0.8"
+                                strokeDasharray="3 2"
+                                className="animate-map-dash"
+                              />
+                            )}
+                          </svg>
 
-                          return (
-                            <React.Fragment key={index}>
-                              {/* 節點卡片 */}
-                              <div className="flex-shrink-0 w-60 bg-slate-800/80 border border-slate-700 rounded-xl p-4 hover:border-teal-500/50 hover:shadow-[0_0_15px_rgba(20,184,166,0.15)] transition-all duration-300 relative group">
-                                {/* 序號 */}
-                                <div className="absolute -top-2.5 -left-2.5 w-6 h-6 rounded-full bg-gradient-to-br from-teal-400 to-indigo-500 flex items-center justify-center text-[10px] font-black text-white shadow-md border border-slate-900">
+                          {/* 互動點擊熱區 */}
+                          {positionedStops.map((stop, index) => {
+                            const cx = stop.x + stop.w / 2;
+                            const cy = stop.y + stop.h / 2;
+
+                            return (
+                              <div 
+                                key={index}
+                                className="absolute group z-20 cursor-pointer flex items-center justify-center transform -translate-x-1/2 -translate-y-1/2"
+                                style={{ left: `${cx}%`, top: `${cy}%` }}
+                                onClick={() => window.open(stop.config.infoUrl, '_blank', 'noopener,noreferrer')}
+                              >
+                                {/* 點擊與引導擴散圈 */}
+                                <span className="absolute w-7 h-7 rounded-full bg-teal-400/30 animate-ping opacity-75 group-hover:scale-150 transition-all duration-300" />
+                                
+                                {/* 帶有順序的圓點針腳 */}
+                                <div className="w-5.5 h-5.5 rounded-full bg-gradient-to-r from-teal-400 to-indigo-500 border border-white flex items-center justify-center text-[9px] font-black text-white shadow-lg group-hover:scale-125 group-hover:shadow-[0_0_10px_rgba(20,184,166,0.8)] transition-all duration-300">
                                   {stop.order}
                                 </div>
 
-                                <div className="flex items-center justify-between mb-2">
-                                  <div className="flex items-center gap-1 text-[11px] font-bold text-teal-400">
-                                    <Clock className="w-3 h-3" />
-                                    <span>{stop.time}</span>
-                                  </div>
-                                  <span className={`text-[9px] border px-1.5 py-0.5 rounded font-bold ${typeColor}`}>
-                                    {typeLabel}
-                                  </span>
+                                {/* 懸浮卡片 Tooltip */}
+                                <div className="absolute hidden group-hover:flex flex-col bg-slate-950/95 text-white p-2.5 rounded-lg shadow-xl -top-24 left-1/2 transform -translate-x-1/2 z-30 font-semibold border border-teal-500/50 backdrop-blur-sm min-w-[150px] pointer-events-none">
+                                  <span className="text-[10px] font-bold text-teal-400 mb-0.5">{stop.time} (第 {stop.order} 站)</span>
+                                  <span className="text-xs border-b border-teal-900 pb-1 font-bold truncate">{stop.title}</span>
+                                  <span className="text-[9px] text-slate-400 mt-1 text-center">點擊開啟介紹與訂房</span>
                                 </div>
-
-                                <h4 className="text-xs font-bold text-slate-100 group-hover:text-teal-300 transition duration-200 line-clamp-2 min-h-[32px] flex items-center">
-                                  {stop.title}
-                                </h4>
                               </div>
+                            );
+                          })}
+                        </div>
 
-                              {/* 連接線箭頭 */}
-                              {index < stops.length - 1 && (
-                                <div className="flex-shrink-0 flex items-center justify-center">
-                                  <div className="w-6 flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-indigo-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                                    </svg>
+                        {/* 下方景點順序的文字列表 */}
+                        <div className="flex flex-nowrap items-center gap-4 overflow-x-auto pb-2 pt-2 custom-scrollbar">
+                          {positionedStops.map((stop, index) => {
+                            let typeLabel = "景點";
+                            let typeColor = "bg-teal-500/10 text-teal-300 border-teal-500/20";
+                            if (stop.type === 'food') {
+                              typeLabel = "餐飲";
+                              typeColor = "bg-amber-500/10 text-amber-300 border-amber-500/20";
+                            } else if (stop.type === 'hotel') {
+                              typeLabel = "住宿";
+                              typeColor = "bg-indigo-500/10 text-indigo-300 border-indigo-500/20";
+                            } else if (stop.type === 'car') {
+                              typeLabel = "交通";
+                              typeColor = "bg-sky-500/10 text-sky-300 border-sky-500/20";
+                            }
+
+                            return (
+                              <React.Fragment key={index}>
+                                {/* 節點卡片 */}
+                                <div 
+                                  onClick={() => window.open(stop.config.infoUrl, '_blank', 'noopener,noreferrer')}
+                                  className="flex-shrink-0 w-56 bg-slate-800/80 border border-slate-700 rounded-xl p-4 hover:border-teal-500/50 hover:shadow-[0_0_15px_rgba(20,184,166,0.15)] transition-all duration-300 relative group cursor-pointer"
+                                >
+                                  {/* 序號 */}
+                                  <div className="absolute -top-2.5 -left-2.5 w-6 h-6 rounded-full bg-gradient-to-br from-teal-400 to-indigo-500 flex items-center justify-center text-[10px] font-black text-white shadow-md border border-slate-900">
+                                    {stop.order}
                                   </div>
+
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-1 text-[11px] font-bold text-teal-400">
+                                      <Clock className="w-3 h-3" />
+                                      <span>{stop.time}</span>
+                                    </div>
+                                    <span className={`text-[9px] border px-1.5 py-0.5 rounded font-bold ${typeColor}`}>
+                                      {typeLabel}
+                                    </span>
+                                  </div>
+
+                                  <h4 className="text-xs font-bold text-slate-100 group-hover:text-teal-300 transition duration-200 line-clamp-2 min-h-[32px] flex items-center">
+                                    {stop.title}
+                                  </h4>
                                 </div>
-                              )}
-                            </React.Fragment>
-                          );
-                        })}
+
+                                {/* 連接線箭頭 */}
+                                {index < positionedStops.length - 1 && (
+                                  <div className="flex-shrink-0 flex items-center justify-center">
+                                    <div className="w-6 flex items-center justify-center">
+                                      <svg className="w-5 h-5 text-indigo-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                )}
+                              </React.Fragment>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>

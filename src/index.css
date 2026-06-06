@@ -16,3 +16,13 @@
   background: rgba(20, 184, 166, 0.7);
 }
 
+@keyframes mapDash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+.animate-map-dash {
+  animation: mapDash 12s linear infinite;
+}
+
+
