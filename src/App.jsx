@@ -873,6 +873,39 @@ export default function App() {
     const dayToImport = resultDaySelections[idx] || item.suggestedDay;
     const timeToImport = resultTimeSelections[idx] || item.suggestedTime;
 
+    // 計算出發點與路線名稱
+    const targetDay = tripSchedule.days.find(d => d.day === dayToImport);
+    let routeOrigin = "";
+    let routeText = "交通路線";
+
+    if (targetDay) {
+      if (targetDay.activities && targetDay.activities.length > 0) {
+        // 尋找在排定時間之前最接近的行程，或最後一個行程
+        const sortedActs = [...targetDay.activities].sort((a, b) => a.time.localeCompare(b.time));
+        let prevAct = null;
+        for (let i = sortedActs.length - 1; i >= 0; i--) {
+          if (sortedActs[i].time <= timeToImport) {
+            prevAct = sortedActs[i];
+            break;
+          }
+        }
+        if (prevAct) {
+          routeOrigin = prevAct.title;
+          routeText = `${prevAct.title} 至 ${item.title} 路線`;
+        } else {
+          routeOrigin = targetDay.hotelName || "";
+          routeText = `${targetDay.hotelName ? '飯店' : '出發地'}至${item.title}路線`;
+        }
+      } else {
+        routeOrigin = targetDay.hotelName || "";
+        routeText = `${targetDay.hotelName ? '飯店' : '出發地'}至${item.title}路線`;
+      }
+    }
+
+    const directionUrl = routeOrigin 
+      ? `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(routeOrigin)}&destination=${encodeURIComponent(item.title)}`
+      : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(item.title)}`;
+
     const newActivity = {
       id: `ai-imported-${Date.now()}-${idx}`,
       time: timeToImport,
@@ -882,7 +915,8 @@ export default function App() {
       desc: `【AI推薦排程】${item.suggestion}。請注意：${item.experienceWarning !== '無' ? item.experienceWarning : '無體驗衝突'}。`,
       links: [
         { text: "景點地圖", url: item.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}`, icon: MapPin },
-        { text: "景點介紹", url: item.url || item.infoUrl || "https://www.klook.com/zh-TW/", icon: Info }
+        { text: "景點介紹", url: item.url || item.infoUrl || "https://www.klook.com/zh-TW/", icon: Info },
+        { text: routeText, url: directionUrl, icon: Navigation }
       ]
     };
 
@@ -997,6 +1031,7 @@ export default function App() {
   const [formType, setFormType] = useState('camera');
   const [formMapUrl, setFormMapUrl] = useState('');
   const [formInfoUrl, setFormInfoUrl] = useState('');
+  const [formRouteUrl, setFormRouteUrl] = useState('');
   
   const [aiWarning, setAiWarning] = useState(null);
 
@@ -1162,10 +1197,12 @@ export default function App() {
     setFormDesc(activity.desc);
     setFormRegion(activity.region);
     setFormType(activity.type);
-    const mapLink = activity.links?.find(l => l.text.includes("地圖") || l.text.includes("導航") || l.text.includes("位置"));
-    const infoLink = activity.links?.find(l => l.text.includes("介紹") || l.text.includes("攻略") || l.text.includes("遊玩") || l.text.includes("環境") || l.text.includes("食記") || l.text.includes("體驗") || l.text.includes("官網"));
+    const mapLink = activity.links?.find(l => l.text.includes("地圖") || l.text.includes("位置"));
+    const infoLink = activity.links?.find(l => l.text.includes("介紹") || l.text.includes("攻略") || l.text.includes("遊玩") || l.text.includes("環境") || l.text.includes("食記") || l.text.includes("體驗") || l.text.includes("官網") || l.text.includes("訂房"));
+    const routeLink = activity.links?.find(l => l.text.includes("路線") || l.text.includes("導航"));
     setFormMapUrl(mapLink ? mapLink.url : '');
     setFormInfoUrl(infoLink ? infoLink.url : '');
+    setFormRouteUrl(routeLink ? routeLink.url : '');
     setAiWarning(null);
     setIsEditModalOpen(true);
   };
@@ -1184,6 +1221,7 @@ export default function App() {
     setFormType('camera');
     setFormMapUrl('');
     setFormInfoUrl('');
+    setFormRouteUrl('');
     setAiWarning(null);
     setIsEditModalOpen(true);
   };
@@ -1241,6 +1279,9 @@ export default function App() {
         }
         if (formInfoUrl.trim()) {
           linksArr.push({ text: "景點介紹", url: formInfoUrl, icon: Info });
+        }
+        if (formRouteUrl.trim()) {
+          linksArr.push({ text: "交通路線", url: formRouteUrl, icon: Navigation });
         }
         return linksArr;
       })()
@@ -2203,7 +2244,7 @@ export default function App() {
 
               {/* 參考連結 */}
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
-                <span className="block text-xs font-bold text-slate-500 uppercase tracking-wider">參考網址 (地圖 & 介紹雙連結)</span>
+                <span className="block text-xs font-bold text-slate-500 uppercase tracking-wider">參考網址 (地圖、介紹與交通路線連結)</span>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-slate-500 w-16">🗺️ 地圖連結:</span>
@@ -2223,6 +2264,16 @@ export default function App() {
                       className="border border-slate-200 bg-white rounded-lg p-2 text-xs text-slate-800 outline-none focus:ring-1 focus:ring-teal-500 flex-1"
                       value={formInfoUrl}
                       onChange={(e) => setFormInfoUrl(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500 w-16">🧭 交通路線:</span>
+                    <input 
+                      type="text" 
+                      placeholder="交通導航或路徑網址 (https://www.google.com/maps/dir/...)" 
+                      className="border border-slate-200 bg-white rounded-lg p-2 text-xs text-slate-800 outline-none focus:ring-1 focus:ring-teal-500 flex-1"
+                      value={formRouteUrl}
+                      onChange={(e) => setFormRouteUrl(e.target.value)}
                     />
                   </div>
                 </div>
