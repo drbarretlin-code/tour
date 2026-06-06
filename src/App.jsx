@@ -869,7 +869,7 @@ export default function App() {
   };
 
   // 匯入景點到行程中
-  const handleImportToItinerary = (item, idx) => {
+  const handleImportToItinerary = async (item, idx) => {
     const dayToImport = resultDaySelections[idx] || item.suggestedDay;
     const timeToImport = resultTimeSelections[idx] || item.suggestedTime;
 
@@ -920,19 +920,22 @@ export default function App() {
       ]
     };
 
-    updateTripSchedule(prev => {
-      const updatedDays = prev.days.map(day => {
-        if (day.day === dayToImport) {
-          const list = [...day.activities, newActivity];
-          list.sort((a, b) => a.time.localeCompare(b.time));
-          return { ...day, activities: list };
-        }
-        return day;
+    try {
+      await updateTripSchedule(prev => {
+        const updatedDays = prev.days.map(day => {
+          if (day.day === dayToImport) {
+            const list = [...day.activities, newActivity];
+            list.sort((a, b) => a.time.localeCompare(b.time));
+            return { ...day, activities: list };
+          }
+          return day;
+        });
+        return { ...prev, days: updatedDays };
       });
-      return { ...prev, days: updatedDays };
-    });
-
-    setImportedItems(prev => ({ ...prev, [item.title + '-' + idx]: true }));
+      setImportedItems(prev => ({ ...prev, [item.title + '-' + idx]: true }));
+    } catch (err) {
+      alert("匯入失敗：無法連線至雲端資料庫，請檢查您的網路連線或稍後再試。");
+    }
   };
   
 
@@ -986,15 +989,17 @@ export default function App() {
     } catch (err) {
       console.error('儲存雲端失敗:', err);
       setSyncStatus('error');
+      throw err;
     }
   };
 
   const updateTripSchedule = (newScheduleOrFn) => {
+    let next;
     setTripSchedule(prev => {
-      const next = typeof newScheduleOrFn === 'function' ? newScheduleOrFn(prev) : newScheduleOrFn;
-      saveTripToCloud(next);
+      next = typeof newScheduleOrFn === 'function' ? newScheduleOrFn(prev) : newScheduleOrFn;
       return next;
     });
+    return saveTripToCloud(next);
   };
 
   const handleResetToDefault = async () => {
