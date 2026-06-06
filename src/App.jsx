@@ -1019,11 +1019,8 @@ export default function App() {
   };
 
   const updateTripSchedule = (newScheduleOrFn) => {
-    let next;
-    setTripSchedule(prev => {
-      next = typeof newScheduleOrFn === 'function' ? newScheduleOrFn(prev) : newScheduleOrFn;
-      return next;
-    });
+    const next = typeof newScheduleOrFn === 'function' ? newScheduleOrFn(tripSchedule) : newScheduleOrFn;
+    setTripSchedule(next);
     return saveTripToCloud(next);
   };
 
