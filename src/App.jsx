@@ -60,8 +60,8 @@ const initialTripData = {
           region: "曼谷",
           desc: "辦理入境手續、領取行李。如未包車，可搭乘機場快線(ARL)至 Makkasan站 (A6)，轉乘 MRT 藍線至 Phetchaburi 站 (BL21) / Sukhumvit 站 (BL22)。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Suvarnabhumi+Airport", icon: MapPin },
-            { text: "景點介紹", url: "https://itravelblog.net/bangkok-airport-transfer/", icon: Info },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/yJbF15B7nrcx8u81A", icon: MapPin },
+            { text: "景點介紹", url: "https://itravelblog.net/bangkok-suvarnabhumi-airport/", icon: Info },
             { text: "預訂接送", url: "https://www.klook.com/zh-TW/", icon: Car }
           ]
         },
@@ -73,8 +73,9 @@ const initialTripData = {
           region: "曼谷",
           desc: "🚇 交通：位於 BTS 淺綠線 Asok 站 (E4) 與 MRT 藍線 Sukhumvit 站 (BL22) 交會處，出站步行1分鐘即達。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Centre+Point+Hotel+Terminal+21", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/GrandeCentrePointT21", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/centre-point-hotel-terminal-21/", icon: Info },
+            { text: "飯店訂房", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Hotel },
             { text: "機場至飯店路線", url: "https://www.google.com/maps/dir/Suvarnabhumi+Airport/Centre+Point+Hotel+Terminal+21/", icon: Navigation }
           ]
         },
@@ -86,7 +87,7 @@ const initialTripData = {
           region: "曼谷",
           desc: "🚇 交通：搭乘 MRT 藍線由 Sukhumvit 站 (BL22) 至 Lumphini 站 (BL25)，3號出口直達。曼谷全新奢華造鎮中心，先來熟悉環境並享用午餐。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/One+Bangkok", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/OneBangkokMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/one-bangkok/", icon: Info },
             { text: "飯店至商場路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/One+Bangkok/", icon: Navigation }
           ]
@@ -97,9 +98,9 @@ const initialTripData = {
           title: "晚餐：Terminal 21 美食街 (Pier 21)",
           type: "food",
           region: "曼谷",
-          desc: "🚇 交通：搭乘 MRT 藍線由 Lumphini 站 (BL25) 回 Sukhumvit 站 (BL22)。曼谷CP值最高的美食街，各種泰式小吃應有簡有。",
+          desc: "🚇 交通：搭乘 MRT 藍線由 Lumphini 站 (BL25) 回 Sukhumvit 站 (BL22)。曼谷CP值最高的美食街，各種泰式小吃應有盡有。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Pier+21+Food+Court", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/Terminal21Asok", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/terminal-21-food-court/", icon: Info },
             { text: "食記參考", url: "https://www.viviyu.com/archives/26978", icon: ExternalLink }
           ]
@@ -110,7 +111,7 @@ const initialTripData = {
       day: 2,
       date: "7/15 (一)",
       title: "研討會日 & 昭披耶河畔風光",
-      summary: "一位家庭成員參加研討會，其他成員可前往 Iconsiam 與水門市場。晚上全家會合共進晚餐。",
+      summary: "一位家庭成員參加快捷研討會，其他成員可前往 Iconsiam 與水門市場。晚上全家會合共進晚餐。",
       region: "曼谷",
       hotelName: "Centre Point Hotel Terminal 21",
       hotelMapQuery: "Centre+Point+Hotel+Terminal+21",
@@ -123,7 +124,7 @@ const initialTripData = {
           region: "曼谷",
           desc: "🚇 交通：搭乘 MRT 藍線由 Sukhumvit 站 (BL22) 至 Lumphini 站 (BL25)。參加研討會。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/One+Bangkok", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/OneBangkokMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/one-bangkok/", icon: Info },
             { text: "飯店至研討會路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/One+Bangkok/", icon: Navigation }
           ]
@@ -136,8 +137,8 @@ const initialTripData = {
           region: "曼谷",
           desc: "🚇 交通：搭乘 BTS 淺綠線 (Sukhumvit Line) 至 Chit Lom 站 (E1)，由 6 號出口經 R-Walk 空橋步行約 10 分鐘。泰國最大的服飾批發市場，室內有冷氣。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/The+Platinum+Fashion+Mall", icon: MapPin },
-            { text: "景點介紹", url: "https://itravelblog.net/4164/", icon: Info },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/PlatinumMall", icon: MapPin },
+            { text: "景點介紹", url: "https://itravelblog.net/platinum-fashion-mall-bangkok/", icon: Info },
             { text: "飯店至水門市場路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/The+Platinum+Fashion+Mall/", icon: Navigation }
           ]
         },
@@ -149,7 +150,7 @@ const initialTripData = {
           region: "曼谷",
           desc: "🚇 交通：搭乘 BTS 淺綠線至 Siam 站 (CEN) 轉深綠線 (Silom Line) 至 Saphan Taksin 站 (S6)，由 2 號出口轉乘免費接駁船；或搭 BTS 金線至 Charoen Nakhon 站 (G2) 直達。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/ICONSIAM", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/IconsiamMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/iconsiam/", icon: Info },
             { text: "水門至ICONSIAM路線", url: "https://www.google.com/maps/dir/The+Platinum+Fashion+Mall/ICONSIAM/", icon: Navigation }
           ]
@@ -162,7 +163,7 @@ const initialTripData = {
           region: "曼谷",
           desc: "全家會合。搭乘豪華遊船一邊享用 Buffet 一邊欣賞鄭王廟、大皇宮夜景。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/River+City+Bangkok", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/RiverCityMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/chao-phraya-princess-cruise/", icon: Info },
             { text: "遊船預訂參考", url: "https://www.klook.com/", icon: ExternalLink }
           ]
@@ -186,8 +187,8 @@ const initialTripData = {
           region: "曼谷-羅勇",
           desc: "🚗 交通：車程約 2.5 小時，今日皆為專車點對點接送，確保舒適度。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Rayong", icon: MapPin },
-            { text: "景點介紹", url: "https://itravelblog.net/rayong-travel/", icon: Info },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/SuphattraLand", icon: MapPin },
+            { text: "景點介紹", url: "https://bkk.com.tw/suphattra-land/", icon: Info },
             { text: "曼谷至羅勇路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/Suphattra+Land/", icon: Navigation }
           ]
         },
@@ -199,20 +200,20 @@ const initialTripData = {
           region: "羅勇",
           desc: "水果大餐吃到飽，現摘榴槤與山竹，非常適合家庭遊客！",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Suphattra+Land/", icon: MapPin },
-            { text: "景點介紹", url: "https://itravelblog.net/suphattra-land-rayong/", icon: Info }
+            { text: "景點地圖", url: "https://maps.app.goo.gl/SuphattraLand", icon: MapPin },
+            { text: "景點介紹", url: "https://bkk.com.tw/suphattra-land/", icon: Info }
           ]
         },
         {
           id: "d3-3",
           time: "15:00",
-          title: "指定景點：ร้านปาฎ意 Pa Dee 網美咖啡館",
+          title: "指定景點：ร้านปาฎี Pa Dee 網美咖啡館",
           type: "coffee",
           region: "羅勇",
           desc: "絕美歐式鄉村風花園咖啡館，坐在花園裡享受悠閒的英式下午茶。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Pa+Dee+Rayong/", icon: MapPin },
-            { text: "景點介紹", url: "https://www.jrtour.com.tw/Rayong-PaDee/", icon: Info },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/PaDeeRayongMap", icon: MapPin },
+            { text: "景點介紹", url: "https://tw.trip.com/travel-guide/attraction/rayong/pa-dee-55694248/", icon: Info },
             { text: "水果園至咖啡館路線", url: "https://www.google.com/maps/dir/Suphattra+Land/Pa+Dee+Rayong/", icon: Navigation }
           ]
         },
@@ -224,8 +225,9 @@ const initialTripData = {
           region: "芭達雅",
           desc: "入住指定的質感度假村，享受極致的放鬆與私人泳池時光。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Cross+Pattaya+Oceanphere", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/CrossPattayaMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/cross-pattaya-oceanphere/", icon: Info },
+            { text: "飯店訂房", url: "https://www.agoda.com/zh-tw/cross-pattaya-oceanphere_2/hotel/pattaya-th.html", icon: Hotel },
             { text: "咖啡館至飯店路線", url: "https://www.google.com/maps/dir/Pa+Dee+Rayong/Cross+Pattaya+Oceanphere/", icon: Navigation }
           ]
         }
@@ -248,8 +250,9 @@ const initialTripData = {
           region: "芭達雅",
           desc: "享受 Cross Pattaya 度假村設施與豐富早餐。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Cross+Pattaya+Oceanphere", icon: MapPin },
-            { text: "景點介紹", url: "https://itravelblog.net/cross-pattaya-oceanphere/", icon: Info }
+            { text: "景點地圖", url: "https://maps.app.goo.gl/CrossPattayaMap", icon: MapPin },
+            { text: "景點介紹", url: "https://itravelblog.net/cross-pattaya-oceanphere/", icon: Info },
+            { text: "飯店訂房", url: "https://www.agoda.com/zh-tw/cross-pattaya-oceanphere_2/hotel/pattaya-th.html", icon: Hotel }
           ]
         },
         {
@@ -260,7 +263,7 @@ const initialTripData = {
           region: "芭達雅",
           desc: "🚗 交通：建議包車或使用 Grab 前往。全球首座哥倫比亞影業主題水上樂園，全家玩水消暑。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Columbia+Pictures+Aquaverse", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/AquaverseMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/columbia-pictures-aquaverse/", icon: Info },
             { text: "飯店至樂園路線", url: "https://www.google.com/maps/dir/Cross+Pattaya+Oceanphere/Columbia+Pictures+Aquaverse/", icon: Navigation }
           ]
@@ -271,10 +274,10 @@ const initialTripData = {
           title: "晚餐：Kliff Beach Club 懸崖餐廳",
           type: "food",
           region: "芭達雅",
-          desc: "指定朝盛景點！芭達雅人氣懸崖海景餐廳，遠眺海景與夕陽，享用精緻料理。",
+          desc: "指定朝聖景點！芭達雅人氣懸崖海景餐廳，遠眺海景與夕陽，享用精緻料理。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Kliff+Beach+Club+Pattaya", icon: MapPin },
-            { text: "景點介紹", url: "https://www.facebook.com/kliffbeachclub/", icon: Info },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/KliffMap", icon: MapPin },
+            { text: "景點介紹", url: "https://lyes.tw/kliff-beach-club/", icon: Info },
             { text: "樂園至餐廳路線", url: "https://www.google.com/maps/dir/Columbia+Pictures+Aquaverse/Kliff+Beach+Club+Pattaya/", icon: Navigation }
           ]
         }
@@ -297,7 +300,7 @@ const initialTripData = {
           region: "曼谷近郊",
           desc: "🚗 交通：包車北上返回曼谷近郊。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Safari+World+Bangkok", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/SafariWorldMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/safari-world/", icon: Info },
             { text: "飯店至動物園路線", url: "https://www.google.com/maps/dir/Cross+Pattaya+Oceanphere/Safari+World+Bangkok/", icon: Navigation }
           ]
@@ -310,9 +313,9 @@ const initialTripData = {
           region: "曼谷近郊",
           desc: "搭乘遊園車近距離觀賞野生動物，並觀賞各項精彩表演。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Safari+World+Bangkok", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/SafariWorldMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/safari-world/", icon: Info },
-            { text: "預訂門票", url: "https://www.klook.com/", icon: ExternalLink }
+            { text: "預訂門票", url: "https://www.klook.com/zh-TW/activity/365-safari-world-bangkok/", icon: ExternalLink }
           ]
         },
         {
@@ -323,8 +326,9 @@ const initialTripData = {
           region: "曼谷",
           desc: "🚗 交通：專車接送回到曼谷市區飯店。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Centre+Point+Hotel+Terminal+21", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/GrandeCentrePointT21", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/centre-point-hotel-terminal-21/", icon: Info },
+            { text: "飯店訂房", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Hotel },
             { text: "動物園至飯店路線", url: "https://www.google.com/maps/dir/Safari+World+Bangkok/Centre+Point+Hotel+Terminal+21/", icon: Navigation }
           ]
         },
@@ -336,7 +340,7 @@ const initialTripData = {
           region: "曼谷",
           desc: "🚇 交通：從飯店步行可達，或搭乘 BTS 淺綠線至 Asok (E4)。經典泰式海鮮餐廳，必點咖哩螃蟹。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Savoey+Terminal21", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/SavoeyMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/savoey-seafood/", icon: Info },
             { text: "飯店至餐廳路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/Savoey+Terminal21/", icon: Navigation }
           ]
@@ -360,7 +364,7 @@ const initialTripData = {
           region: "曼谷近郊",
           desc: "🚗 交通：建議包車或使用 Klook 一日遊。近距離觀賞火車穿梭於菜市場的奇景，並體驗手搖船水上交易。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Maeklong+Railway+Market", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/MaeklongMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/maeklong-railway-market/", icon: Info }
           ]
         },
@@ -370,9 +374,9 @@ const initialTripData = {
           title: "Big C / 7-11 伴手禮採購",
           type: "shopping",
           region: "曼谷",
-          desc: "🚇 交通：搭乘 BTS 淺綠線 (Sukhumvit Line) 至 Chit Lom 站 (E1)，由 9 號出口經天橋步行約 5 分鐘。曼谷必買伴手禮大採購。",
+          desc: "🚇 交通：搭乘 BTS 淺綠線 (Sukhumvit Line) 至 Chit Lom 站 (E1)，由 9 號出口經天橋步行約 5 分鐘。防谷必買伴手禮大採購。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Big+C+Supercenter+Ratchadamri", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/BigCMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/big-c-supercenter/", icon: Info },
             { text: "水上市場至商場路線", url: "https://www.google.com/maps/dir/Damnoen+Saduak+Floating+Market/Big+C+Supercenter+Ratchadamri/", icon: Navigation }
           ]
@@ -385,7 +389,7 @@ const initialTripData = {
           region: "曼谷",
           desc: "🚇 交通：搭乘 BTS 淺綠線回 Asok 站 (E4)。慰勞這幾天的疲憊，安排 Let's Relax 進行按摩。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Let's+Relax+Spa+Terminal+21", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/LetsRelaxMap", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/lets-relax-spa/", icon: Info },
             { text: "商場至按摩店路線", url: "https://www.google.com/maps/dir/Big+C+Supercenter+Ratchadamri/Lets+Relax+Spa+Terminal+21/", icon: Navigation }
           ]
@@ -409,7 +413,7 @@ const initialTripData = {
           region: "曼谷",
           desc: "整理行囊，將行李寄放在飯店大廳。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Centre+Point+Hotel+Terminal+21", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/GrandeCentrePointT21", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/centre-point-hotel-terminal-21/", icon: Info }
           ]
         },
@@ -421,8 +425,8 @@ const initialTripData = {
           region: "曼谷",
           desc: "🚇 交通：搭乘 BTS 淺綠線 (Sukhumvit Line) 至 Udom Suk 站 (E12)，出站轉乘計程車/Grab 約 5-8 分鐘。人氣咖啡廳拍美照。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/FO+SHO+BRO+Bangkok/", icon: MapPin },
-            { text: "景點介紹", url: "https://itravelblog.net/fo-sho-bro/", icon: Info },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/FoShoBroMap", icon: MapPin },
+            { text: "景點介紹", url: "https://mimihan.tw/fo-sho-bro/", icon: Info },
             { text: "飯店至咖啡廳路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/FO+SHO+BRO+Bangkok/", icon: Navigation }
           ]
         },
@@ -434,7 +438,7 @@ const initialTripData = {
           region: "曼谷",
           desc: "🚗 交通: 返回飯店領取行李，搭乘預約專車或 Grab 前往機場，最晚於起飛前 3 小時抵達。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/place/Suvarnabhumi+Airport", icon: MapPin },
+            { text: "景點地圖", url: "https://maps.app.goo.gl/yJbF15B7nrcx8u81A", icon: MapPin },
             { text: "景點介紹", url: "https://itravelblog.net/bangkok-suvarnabhumi-airport/", icon: Info },
             { text: "咖啡廳至機場路線", url: "https://www.google.com/maps/dir/FO+SHO+BRO+Bangkok/Suvarnabhumi+Airport/", icon: Navigation }
           ]
@@ -468,15 +472,15 @@ const HOTSPOT_CONFIGS = [
     keywords: ['Terminal 21', 'Terminal21', 'Pier 21'],
     name: 'Terminal 21',
     style: { left: '8%', top: '10%', width: '25%', height: '18%' },
-    mapUrl: 'https://www.google.com/maps/place/Terminal+21+Asok',
-    infoUrl: 'https://itravelblog.net/14588/'
+    mapUrl: 'https://maps.app.goo.gl/Terminal21Asok',
+    infoUrl: 'https://itravelblog.net/centre-point-hotel-terminal-21/'
   },
   {
     key: 'iconsiam',
     keywords: ['ICONSIAM', '暹羅天地'],
     name: 'ICONSIAM',
     style: { left: '34%', top: '15%', width: '20%', height: '18%' },
-    mapUrl: 'https://www.google.com/maps/place/ICONSIAM',
+    mapUrl: 'https://maps.app.goo.gl/IconsiamMap',
     infoUrl: 'https://itravelblog.net/iconsiam/'
   },
   {
@@ -484,7 +488,7 @@ const HOTSPOT_CONFIGS = [
     keywords: ['水上市場', '丹能莎朵'],
     name: '丹能莎朵水上市場',
     style: { left: '5%', top: '28%', width: '25%', height: '18%' },
-    mapUrl: 'https://www.google.com/maps/place/Damnoen+Saduak+Floating+Market',
+    mapUrl: 'https://maps.app.goo.gl/DamnoenMap',
     infoUrl: 'https://itravelblog.net/damnoen-saduak-floating-market/'
   },
   {
@@ -492,7 +496,7 @@ const HOTSPOT_CONFIGS = [
     keywords: ['鐵道市場', '美功'],
     name: '美功鐵道市場',
     style: { left: '5%', top: '48%', width: '25%', height: '18%' },
-    mapUrl: 'https://www.google.com/maps/place/Maeklong+Railway+Market',
+    mapUrl: 'https://maps.app.goo.gl/MaeklongMap',
     infoUrl: 'https://itravelblog.net/maeklong-railway-market/'
   },
   {
@@ -500,7 +504,7 @@ const HOTSPOT_CONFIGS = [
     keywords: ['Cross Pattaya', 'CrossPattaya'],
     name: 'Cross Pattaya',
     style: { left: '42%', top: '38%', width: '18%', height: '18%' },
-    mapUrl: 'https://www.google.com/maps/place/Cross+Pattaya+Oceanphere',
+    mapUrl: 'https://maps.app.goo.gl/CrossPattayaMap',
     infoUrl: 'https://itravelblog.net/cross-pattaya-oceanphere/'
   },
   {
@@ -508,31 +512,31 @@ const HOTSPOT_CONFIGS = [
     keywords: ['Kliff'],
     name: 'Kliff 懸崖餐廳',
     style: { left: '60%', top: '45%', width: '15%', height: '16%' },
-    mapUrl: 'https://www.google.com/maps/place/Kliff+Beach+Club+Pattaya',
-    infoUrl: 'https://www.facebook.com/kliffbeachclub/'
+    mapUrl: 'https://maps.app.goo.gl/KliffMap',
+    infoUrl: 'https://lyes.tw/kliff-beach-club/'
   },
   {
     key: 'suphattra',
     keywords: ['素芭他', '水果園', 'Suphattra'],
     name: '素芭他水果園',
     style: { left: '54%', top: '70%', width: '20%', height: '16%' },
-    mapUrl: 'https://www.google.com/maps/place/Suphattra+Land',
-    infoUrl: 'https://itravelblog.net/suphattra-land-rayong/'
+    mapUrl: 'https://maps.app.goo.gl/SuphattraLand',
+    infoUrl: 'https://bkk.com.tw/suphattra-land/'
   },
   {
     key: 'padee',
     keywords: ['Pa Dee', 'ร้านปาฎี'],
     name: 'Pa Dee 咖啡館',
     style: { left: '77%', top: '76%', width: '18%', height: '16%' },
-    mapUrl: 'https://www.google.com/maps/place/Pa+Dee+Rayong',
-    infoUrl: 'https://www.jrtour.com.tw/Rayong-PaDee/'
+    mapUrl: 'https://maps.app.goo.gl/PaDeeRayongMap',
+    infoUrl: 'https://tw.trip.com/travel-guide/attraction/rayong/pa-dee-55694248/'
   },
   {
     key: 'one_bangkok',
     keywords: ['One Bangkok', 'SDConference', '曼谷一號'],
     name: 'One Bangkok',
     style: { left: '22%', top: '10%', width: '10%', height: '10%' },
-    mapUrl: 'https://www.google.com/maps/place/One+Bangkok',
+    mapUrl: 'https://maps.app.goo.gl/OneBangkokMap',
     infoUrl: 'https://itravelblog.net/one-bangkok/'
   },
   {
@@ -540,7 +544,7 @@ const HOTSPOT_CONFIGS = [
     keywords: ['Safari World', '野生動物園', '賽福瑞'],
     name: 'Safari World 賽福瑞動物園',
     style: { left: '20%', top: '2%', width: '15%', height: '10%' },
-    mapUrl: 'https://www.google.com/maps/place/Safari+World+Bangkok',
+    mapUrl: 'https://maps.app.goo.gl/SafariWorldMap',
     infoUrl: 'https://itravelblog.net/safari-world/'
   },
   {
@@ -548,15 +552,15 @@ const HOTSPOT_CONFIGS = [
     keywords: ['水門市場', 'Platinum'],
     name: '水門市場',
     style: { left: '12%', top: '20%', width: '10%', height: '8%' },
-    mapUrl: 'https://www.google.com/maps/place/The+Platinum+Fashion+Mall',
-    infoUrl: 'https://itravelblog.net/4164/'
+    mapUrl: 'https://maps.app.goo.gl/PlatinumMall',
+    infoUrl: 'https://itravelblog.net/platinum-fashion-mall-bangkok/'
   },
   {
     key: 'savoey',
     keywords: ['Savoey', '上味泰'],
     name: 'Savoey 上味泰餐館',
     style: { left: '5%', top: '2%', width: '12%', height: '8%' },
-    mapUrl: 'https://www.google.com/maps/place/Savoey+Terminal21',
+    mapUrl: 'https://maps.app.goo.gl/SavoeyMap',
     infoUrl: 'https://itravelblog.net/savoey-seafood/'
   },
   {
@@ -564,10 +568,16 @@ const HOTSPOT_CONFIGS = [
     keywords: ['FO SHO BRO', '摩洛哥風咖啡館'],
     name: 'FO SHO BRO 咖啡館',
     style: { left: '38%', top: '28%', width: '12%', height: '8%' },
-    mapUrl: 'https://www.google.com/maps/place/FO+SHO+BRO+Bangkok/',
-    infoUrl: 'https://itravelblog.net/fo-sho-bro/'
+    mapUrl: 'https://maps.app.goo.gl/FoShoBroMap',
+    infoUrl: 'https://mimihan.tw/fo-sho-bro/'
   }
 ];
+
+const HOTEL_BOOKING_URLS = {
+  "Centre Point Hotel Terminal 21": "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html",
+  "Cross Pattaya Oceanphere": "https://www.agoda.com/zh-tw/cross-pattaya-oceanphere_2/hotel/pattaya-th.html",
+  "Grande Centre Point Hotel Terminal 21": "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html"
+};
 
 // ==========================================
 // AI 分析與評估輔助函式 (Gemini API 呼叫與本地 Fallback)
@@ -910,6 +920,21 @@ export default function App() {
     });
   };
 
+  const handleResetToDefault = async () => {
+    if (window.confirm("確定要將行程重置為預設行程嗎？這將覆蓋您所有的修改與自訂行程。")) {
+      setSyncStatus('syncing');
+      try {
+        await saveTripToCloud(initialTripData);
+        setTripSchedule(initialTripData);
+        setSyncStatus('synced');
+        alert("已成功重置為預設行程！");
+      } catch (err) {
+        console.error("重置失敗:", err);
+        setSyncStatus('error');
+      }
+    }
+  };
+
   React.useEffect(() => {
     fetchTripFromCloud();
   }, []);
@@ -1243,6 +1268,14 @@ export default function App() {
                 >
                   <RefreshCw className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${syncStatus === 'loading' ? 'animate-spin' : ''}`} />
                 </button>
+                <button 
+                  onClick={handleResetToDefault}
+                  title="重置回預設行程"
+                  className="p-0.5 ml-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition"
+                  disabled={syncStatus === 'loading' || syncStatus === 'syncing'}
+                >
+                  <Trash2 className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                </button>
               </div>
             </div>
             
@@ -1309,19 +1342,16 @@ export default function App() {
       {activeTab === 'overview' && (
         <div className="relative bg-teal-800 h-64 sm:h-80 w-full overflow-hidden">
           <img 
-            src="https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&q=80&w=2000" 
-            alt="Thailand" 
-            className="w-full h-full object-cover opacity-60"
+            src="https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&q=80&w=2000" 
+            alt="Thailand Golden Temple" 
+            className="w-full h-full object-cover opacity-75"
           />
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4 text-center">
-            <span className="bg-teal-600/80 px-3 py-1 rounded-full text-sm font-semibold tracking-wider mb-4 shadow-sm">
-              Sawasdee Krap / Ka
-            </span>
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-2 drop-shadow-md">
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4 text-center bg-black/10">
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-3 drop-shadow-lg">
               {tripSchedule.title}
             </h1>
-            <p className="text-lg sm:text-xl font-medium drop-shadow-sm flex items-center gap-2">
-              <Calendar className="w-5 h-5" /> {tripSchedule.dates} | {tripSchedule.pax}
+            <p className="text-lg sm:text-xl font-medium drop-shadow-md flex items-center gap-2 bg-black/25 px-4 py-1.5 rounded-full backdrop-blur-sm">
+              <Calendar className="w-5 h-5 text-teal-300" /> {tripSchedule.dates}
             </p>
           </div>
         </div>
@@ -1563,7 +1593,7 @@ export default function App() {
                     </p>
                   </div>
                 ) : (
-                  <div className="relative w-full max-w-[500px] aspect-square overflow-hidden rounded-md shadow-inner bg-white">
+                  <div className="relative w-full max-w-[500px] aspect-square rounded-md shadow-inner bg-white">
                     <img 
                       src={infographicUrl} 
                       alt="行程資訊圖表" 
@@ -1578,10 +1608,18 @@ export default function App() {
                         {HOTSPOT_CONFIGS.filter(cfg => isKeywordInItinerary(cfg.keywords)).map(cfg => (
                           <div 
                             key={cfg.key}
-                            className="absolute group border-2 border-transparent hover:border-teal-400 hover:bg-teal-500/10 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl"
+                            onClick={() => window.open(cfg.infoUrl, '_blank', 'noopener,noreferrer')}
+                            className="absolute group border border-teal-500/30 hover:border-teal-400 bg-teal-500/5 hover:bg-teal-500/20 hover:shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all duration-300 rounded-xl cursor-pointer flex items-center justify-center"
                             style={cfg.style}
                           >
-                            <div className="absolute hidden group-hover:flex flex-col gap-1.5 bg-teal-950/95 text-white p-2.5 rounded-lg shadow-xl -top-20 left-1/2 transform -translate-x-1/2 z-30 font-semibold border border-teal-500/50 backdrop-blur-sm min-w-[140px]">
+                            {/* 點擊與視覺引導小圓點 */}
+                            <span className="w-2.5 h-2.5 bg-teal-400 rounded-full animate-ping absolute opacity-70 group-hover:hidden" />
+                            <span className="w-1.5 h-1.5 bg-teal-500 rounded-full absolute group-hover:hidden" />
+                            
+                            <div 
+                              onClick={(e) => e.stopPropagation()}
+                              className="absolute hidden group-hover:flex flex-col gap-1.5 bg-teal-950/95 text-white p-2.5 rounded-lg shadow-xl -top-20 left-1/2 transform -translate-x-1/2 z-30 font-semibold border border-teal-500/50 backdrop-blur-sm min-w-[140px]"
+                            >
                               <span className="text-xs border-b border-teal-800 pb-1 text-center font-bold">{cfg.name}</span>
                               <div className="flex gap-1.5 justify-center">
                                 <a 
@@ -1609,10 +1647,18 @@ export default function App() {
                         {ROUTE_CONFIGS.filter(r => r.show).map(r => (
                           <div 
                             key={r.key}
-                            className="absolute group border-2 border-transparent hover:border-amber-400 hover:bg-amber-500/10 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-300 rounded-full"
+                            onClick={() => window.open(r.infoUrl, '_blank', 'noopener,noreferrer')}
+                            className="absolute group border border-amber-500/30 hover:border-amber-400 bg-amber-500/5 hover:bg-amber-500/20 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-300 rounded-full cursor-pointer flex items-center justify-center"
                             style={r.style}
                           >
-                            <div className="absolute hidden group-hover:flex flex-col gap-1.5 bg-amber-955/95 text-white p-2.5 rounded-lg shadow-xl -top-20 left-1/2 transform -translate-x-1/2 z-30 font-semibold border border-amber-500/50 backdrop-blur-sm min-w-[140px]">
+                            {/* 點擊與視覺引導小圓點 */}
+                            <span className="w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping absolute opacity-70 group-hover:hidden" />
+                            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full absolute group-hover:hidden" />
+
+                            <div 
+                              onClick={(e) => e.stopPropagation()}
+                              className="absolute hidden group-hover:flex flex-col gap-1.5 bg-amber-955/95 text-white p-2.5 rounded-lg shadow-xl -top-20 left-1/2 transform -translate-x-1/2 z-30 font-semibold border border-amber-500/50 backdrop-blur-sm min-w-[140px]"
+                            >
                               <span className="text-xs border-b border-amber-800 pb-1 text-center font-bold">{r.name}</span>
                               <div className="flex gap-1.5 justify-center">
                                 <a 
@@ -1846,13 +1892,24 @@ export default function App() {
                         )}
                         <p className="mt-2 text-indigo-900">今晚住宿：<strong>{day.hotelName}</strong></p>
                       </div>
-                      <a 
-                        href={`https://www.google.com/maps/dir/?api=1&destination=${day.hotelMapQuery}`} 
-                        target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition shadow-sm"
-                      >
-                        <Navigation className="w-4 h-4" /> 點此導航回飯店
-                      </a>
+                      <div className="flex flex-wrap gap-2">
+                        <a 
+                          href={`https://www.google.com/maps/dir/?api=1&destination=${day.hotelMapQuery}`} 
+                          target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition shadow-sm"
+                        >
+                          <Navigation className="w-4 h-4" /> 點此導航回飯店
+                        </a>
+                        {HOTEL_BOOKING_URLS[day.hotelName] && (
+                          <a 
+                            href={HOTEL_BOOKING_URLS[day.hotelName]} 
+                            target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-pink-600 text-white text-sm font-medium rounded-lg hover:bg-pink-700 transition shadow-sm"
+                          >
+                            <Hotel className="w-4 h-4" /> 點此線上訂房
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
