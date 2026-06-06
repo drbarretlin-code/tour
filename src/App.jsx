@@ -24,7 +24,9 @@ import {
   Image as ImageIcon,
   RefreshCw,
   Loader2,
-  Sparkles
+  Sparkles,
+  Plus,
+  Trash2
 } from 'lucide-react';
 
 // ==========================================
@@ -180,10 +182,22 @@ export default function App() {
   // 狀態管理：行程資料
   const [tripSchedule, setTripSchedule] = useState(initialTripData);
 
-  // 移動行程的 Modal 狀態
-  const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
-  const [movingActivity, setMovingActivity] = useState(null);
+  // 編輯/新增行程的 Modal 狀態
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddMode, setIsAddMode] = useState(false);
+  const [editingActivity, setEditingActivity] = useState(null);
+  const [sourceDayId, setSourceDayId] = useState(1);
   const [targetDayId, setTargetDayId] = useState(1);
+  
+  // 編輯表單欄位
+  const [formTime, setFormTime] = useState('');
+  const [formTitle, setFormTitle] = useState('');
+  const [formDesc, setFormDesc] = useState('');
+  const [formRegion, setFormRegion] = useState('曼谷');
+  const [formType, setFormType] = useState('camera');
+  const [formLinkText, setFormLinkText] = useState('');
+  const [formLinkUrl, setFormLinkUrl] = useState('');
+  
   const [aiWarning, setAiWarning] = useState(null);
 
   // 圖像生成狀態
@@ -268,45 +282,130 @@ export default function App() {
     e.target.src = 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1000'; // 備用精美地圖意境圖
   };
 
-  // 開啟移動行程的對話框
-  const openMoveModal = (activity, sourceDayId) => {
-    setMovingActivity({ activity, sourceDayId });
-    setTargetDayId(sourceDayId); 
-    setAiWarning(null); 
-    setIsMoveModalOpen(true);
+  // 開啟編輯 Modal
+  const openEditModal = (activity, dayId) => {
+    setIsAddMode(false);
+    setEditingActivity(activity);
+    setSourceDayId(dayId);
+    setTargetDayId(dayId);
+    setFormTime(activity.time);
+    setFormTitle(activity.title);
+    setFormDesc(activity.desc);
+    setFormRegion(activity.region);
+    setFormType(activity.type);
+    setFormLinkText(activity.links && activity.links.length > 0 ? activity.links[0].text : '');
+    setFormLinkUrl(activity.links && activity.links.length > 0 ? activity.links[0].url : '');
+    setAiWarning(null);
+    setIsEditModalOpen(true);
   };
 
-  // 執行移動行程邏輯 (包含 AI 防呆判斷)
-  const executeMoveActivity = () => {
-    if (!movingActivity) return;
+  // 開啟新增 Modal
+  const openAddModal = (dayId) => {
+    setIsAddMode(true);
+    setEditingActivity(null);
+    setSourceDayId(dayId);
+    setTargetDayId(dayId);
+    setFormTime('10:00');
+    setFormTitle('');
+    setFormDesc('');
+    const targetDayObj = tripSchedule.days.find(d => d.day === dayId);
+    setFormRegion(targetDayObj ? targetDayObj.region : '曼谷');
+    setFormType('camera');
+    setFormLinkText('');
+    setFormLinkUrl('');
+    setAiWarning(null);
+    setIsEditModalOpen(true);
+  };
 
-    const sourceDay = tripSchedule.days.find(d => d.day === movingActivity.sourceDayId);
-    const targetDay = tripSchedule.days.find(d => d.day === targetDayId);
+  // 刪除行程項目
+  const handleDeleteActivity = () => {
+    if (!editingActivity) return;
     
-    // AI 防呆判斷
-    if (movingActivity.activity.region !== targetDay.region && !aiWarning && movingActivity.sourceDayId !== targetDayId) {
-      setAiWarning(
-        `您正準備將位於【${movingActivity.activity.region}】的「${movingActivity.activity.title}」移至 Day ${targetDay.day}。
-        但 Day ${targetDay.day} 的主要行程都在【${targetDay.region}】！兩地距離遙遠，可能會產生嚴重的交通與時間衝突。`
-      );
-      return; 
-    }
-
     setTripSchedule(prevSchedule => {
       const newDays = prevSchedule.days.map(day => {
-        if (day.day === movingActivity.sourceDayId) {
-          return { ...day, activities: day.activities.filter(a => a.id !== movingActivity.activity.id) };
-        }
-        if (day.day === targetDayId) {
-          return { ...day, activities: [...day.activities, movingActivity.activity] };
+        if (day.day === sourceDayId) {
+          return {
+            ...day,
+            activities: day.activities.filter(a => a.id !== editingActivity.id)
+          };
         }
         return day;
       });
       return { ...prevSchedule, days: newDays };
     });
+    
+    setIsEditModalOpen(false);
+    setEditingActivity(null);
+  };
 
-    setIsMoveModalOpen(false);
-    setMovingActivity(null);
+  // 儲存（新增或修改）行程項目
+  const handleSaveActivity = () => {
+    if (!formTitle.trim()) {
+      alert('請輸入行程名稱！');
+      return;
+    }
+
+    const targetDay = tripSchedule.days.find(d => d.day === targetDayId);
+    
+    // AI 防呆判斷
+    if (formRegion !== targetDay.region && !aiWarning && (isAddMode || sourceDayId !== targetDayId)) {
+      setAiWarning(
+        `您正準備在 Day ${targetDay.day} 新增/移入位於【${formRegion}】的項目。
+        但 Day ${targetDay.day} 的主要行程都在【${targetDay.region}】！兩地距離遙遠，可能會產生嚴重的交通與時間衝突。`
+      );
+      return;
+    }
+
+    const activityObj = {
+      id: isAddMode ? `custom-${Date.now()}` : editingActivity.id,
+      time: formTime,
+      title: formTitle,
+      desc: formDesc,
+      region: formRegion,
+      type: formType,
+      links: formLinkText && formLinkUrl ? [{ text: formLinkText, url: formLinkUrl, icon: ExternalLink }] : []
+    };
+
+    setTripSchedule(prevSchedule => {
+      const newDays = prevSchedule.days.map(day => {
+        // 處理目標天（新增或更新）
+        if (day.day === targetDayId) {
+          let updatedActivities = [...day.activities];
+          
+          if (isAddMode) {
+            updatedActivities.push(activityObj);
+          } else {
+            if (sourceDayId === targetDayId) {
+              // 同一天：更新該項目
+              updatedActivities = updatedActivities.map(a => a.id === editingActivity.id ? activityObj : a);
+            } else {
+              // 跨天移動：直接加入目標天
+              updatedActivities.push(activityObj);
+            }
+          }
+          
+          // 自動依時間排序
+          updatedActivities.sort((a, b) => a.time.localeCompare(b.time));
+          return { ...day, activities: updatedActivities };
+        }
+        
+        // 如果是跨天移動，需要將項目從原本的源天數移除
+        if (!isAddMode && sourceDayId !== targetDayId && day.day === sourceDayId) {
+          return {
+            ...day,
+            activities: day.activities.filter(a => a.id !== editingActivity.id)
+          };
+        }
+        
+        return day;
+      });
+      
+      return { ...prevSchedule, days: newDays };
+    });
+
+    setIsEditModalOpen(false);
+    setEditingActivity(null);
+    setAiWarning(null);
   };
 
   return (
@@ -665,10 +764,18 @@ export default function App() {
           
           return (
             <div key={day.day} className="animation-fade-in">
-              <div className="mb-8 relative">
-                <h2 className="text-3xl font-extrabold text-slate-800 mb-2">Day {day.day} - {day.date}</h2>
-                <h3 className="text-xl text-teal-600 font-medium mb-3">{day.title} <span className="text-sm bg-teal-100 text-teal-800 px-2 py-1 rounded ml-2">主要區域：{day.region}</span></h3>
-                <p className="text-slate-600 bg-white p-4 rounded-lg shadow-sm border border-slate-100">{day.summary}</p>
+              <div className="mb-8 relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <div className="flex-1">
+                  <h2 className="text-3xl font-extrabold text-slate-800 mb-2">Day {day.day} - {day.date}</h2>
+                  <h3 className="text-xl text-teal-600 font-medium mb-2">{day.title} <span className="text-sm bg-teal-100 text-teal-800 px-2 py-1 rounded ml-2">主要區域：{day.region}</span></h3>
+                  <p className="text-slate-500 text-sm leading-relaxed mt-2">{day.summary}</p>
+                </div>
+                <button 
+                  onClick={() => openAddModal(day.day)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm font-bold transition shadow-sm self-start sm:self-auto"
+                >
+                  <Plus className="w-4 h-4" /> 新增行程
+                </button>
               </div>
 
               {/* 時間軸 TimeLine */}
@@ -683,13 +790,13 @@ export default function App() {
                     {/* 卡片內容 */}
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition relative group">
                       
-                      {/* 移動按鈕 */}
+                      {/* 編輯/移出行程按鈕 */}
                       <button 
-                        onClick={() => openMoveModal(act, day.day)}
+                        onClick={() => openEditModal(act, day.day)}
                         className="absolute top-4 right-4 p-2 bg-slate-50 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded-full transition opacity-50 group-hover:opacity-100 focus:opacity-100 z-10"
-                        title="將此活動移至其他天"
+                        title="編輯此項目"
                       >
-                        <ArrowRightLeft className="w-5 h-5" />
+                        <Edit3 className="w-5 h-5" />
                       </button>
 
                       <div className="p-5">
@@ -807,66 +914,167 @@ export default function App() {
       </footer>
 
       {/* ==========================================
-          移動行程用的對話框 Modal (AI 防呆設計)
+          統一編修行程對話框 Modal (新增/編輯/刪除/移動)
           ========================================== */}
-      {isMoveModalOpen && movingActivity && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animation-fade-in">
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden my-8 animation-fade-in">
             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-lg flex items-center gap-2 text-slate-800">
-                <ArrowRightLeft className="text-teal-600 w-5 h-5" /> 移動活動卡片
+                {isAddMode ? <Plus className="text-teal-600 w-5 h-5" /> : <Edit3 className="text-teal-600 w-5 h-5" />}
+                {isAddMode ? '新增行程項目' : '編輯行程項目'}
               </h3>
-              <button onClick={() => setIsMoveModalOpen(false)} className="text-slate-400 hover:text-slate-600 bg-white rounded-full p-1 shadow-sm"><X className="w-5 h-5" /></button>
+              <button onClick={() => setIsEditModalOpen(false)} className="text-slate-400 hover:text-slate-600 bg-white rounded-full p-1 shadow-sm"><X className="w-5 h-5" /></button>
             </div>
             
-            <div className="p-6">
-              <div className="mb-4 bg-white border border-slate-200 p-3 rounded-lg shadow-sm">
-                <p className="text-xs text-slate-500 mb-1">您選擇移動的活動：</p>
-                <p className="font-bold text-slate-800 truncate">{movingActivity.activity.title}</p>
-                <p className="text-xs text-teal-600 font-medium mt-1">地理位置：{movingActivity.activity.region}</p>
+            <div className="p-6 space-y-4 max-h-[65vh] overflow-y-auto">
+              
+              {/* 時間與類型 */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">時間時間 (例如 10:00)</label>
+                  <input 
+                    type="text" 
+                    className="w-full border border-slate-200 rounded-lg p-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 outline-none"
+                    value={formTime}
+                    onChange={(e) => setFormTime(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">項目類型</label>
+                  <select 
+                    className="w-full border border-slate-200 rounded-lg p-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 outline-none bg-white font-medium"
+                    value={formType}
+                    onChange={(e) => setFormType(e.target.value)}
+                  >
+                    <option value="camera">📷 景點 / 拍照</option>
+                    <option value="hotel">🏨 飯店 / 住宿</option>
+                    <option value="transport">🚗 交通 / 接送</option>
+                    <option value="coffee">☕ 咖啡廳 / 下午茶</option>
+                    <option value="food">🍽️ 美食 / 餐廳</option>
+                    <option value="shopping">🛍️ 購物 / 商場</option>
+                    <option value="info">ℹ️ 研討會 / 其他資訊</option>
+                  </select>
+                </div>
               </div>
 
-              <label className="block text-sm font-medium text-slate-700 mb-2">請選擇目標天數：</label>
-              <select 
-                className="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-teal-500 outline-none transition mb-4 text-slate-800 font-medium"
-                value={targetDayId}
-                onChange={(e) => {
-                  setTargetDayId(Number(e.target.value));
-                  setAiWarning(null); // 切換天數時清除先前的警告
-                }}
-              >
-                {tripSchedule.days.map(d => (
-                  <option key={d.day} value={d.day}>
-                    Day {d.day} - {d.date} ({d.region})
-                  </option>
-                ))}
-              </select>
+              {/* 名稱 */}
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">行程名稱</label>
+                <input 
+                  type="text" 
+                  className="w-full border border-slate-200 rounded-lg p-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 outline-none font-semibold"
+                  placeholder="例如：參訪美功鐵道市場"
+                  value={formTitle}
+                  onChange={(e) => setFormTitle(e.target.value)}
+                />
+              </div>
+
+              {/* 地理區域與日期天數 */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">地理位置</label>
+                  <select 
+                    className="w-full border border-slate-200 rounded-lg p-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 outline-none bg-white font-medium"
+                    value={formRegion}
+                    onChange={(e) => setFormRegion(e.target.value)}
+                  >
+                    <option value="曼谷">曼谷</option>
+                    <option value="芭達雅">芭達雅</option>
+                    <option value="羅勇">羅勇</option>
+                    <option value="曼谷近郊">曼谷近郊</option>
+                    <option value="台灣">台灣</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">排定天數 (移動行程)</label>
+                  <select 
+                    className="w-full border border-slate-200 rounded-lg p-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 outline-none bg-white font-medium"
+                    value={targetDayId}
+                    onChange={(e) => {
+                      setTargetDayId(Number(e.target.value));
+                      setAiWarning(null); // 切換天數時清除先前的警告
+                    }}
+                  >
+                    {tripSchedule.days.map(d => (
+                      <option key={d.day} value={d.day}>
+                        Day {d.day} - {d.date} ({d.region})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* 詳細說明 */}
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">詳細說明 (交通或集合備註)</label>
+                <textarea 
+                  className="w-full border border-slate-200 rounded-lg p-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-teal-500 outline-none h-20 resize-none"
+                  placeholder="請輸入行程的詳細資訊或交通指引..."
+                  value={formDesc}
+                  onChange={(e) => setFormDesc(e.target.value)}
+                />
+              </div>
+
+              {/* 參考連結 */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
+                <span className="block text-xs font-bold text-slate-500 uppercase tracking-wider">參考網址 / 預訂連結</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <input 
+                    type="text" 
+                    placeholder="連結標題 (如：看食記)" 
+                    className="border border-slate-200 bg-white rounded-lg p-2 text-xs text-slate-800 outline-none focus:ring-1 focus:ring-teal-500"
+                    value={formLinkText}
+                    onChange={(e) => setFormLinkText(e.target.value)}
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="URL 網址 (https://...)" 
+                    className="border border-slate-200 bg-white rounded-lg p-2 text-xs text-slate-800 outline-none focus:ring-1 focus:ring-teal-500"
+                    value={formLinkUrl}
+                    onChange={(e) => setFormLinkUrl(e.target.value)}
+                  />
+                </div>
+              </div>
 
               {/* AI 警告區塊 */}
               {aiWarning && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-r-lg animation-fade-in">
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg animation-fade-in">
                   <div className="flex gap-3">
                     <AlertTriangle className="text-red-500 w-6 h-6 flex-shrink-0" />
                     <div>
                       <h4 className="text-red-800 font-bold mb-1">AI 行程防呆提醒</h4>
-                      <p className="text-sm text-red-700 whitespace-pre-line leading-relaxed">{aiWarning}</p>
+                      <p className="text-xs text-red-700 whitespace-pre-line leading-relaxed">{aiWarning}</p>
                     </div>
                   </div>
                 </div>
               )}
 
-              <div className="flex justify-end gap-3 mt-6">
+            </div>
+
+            <div className="p-6 border-t border-slate-100 flex justify-between items-center bg-slate-50">
+              <div>
+                {!isAddMode && (
+                  <button 
+                    onClick={handleDeleteActivity}
+                    className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-lg text-sm font-bold flex items-center gap-1.5 transition"
+                  >
+                    <Trash2 className="w-4 h-4" /> 刪除此項目
+                  </button>
+                )}
+              </div>
+              <div className="flex gap-2">
                 <button 
-                  onClick={() => setIsMoveModalOpen(false)}
-                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition"
                 >
                   取消
                 </button>
                 <button 
-                  onClick={executeMoveActivity}
-                  className={`px-4 py-2 font-medium rounded-lg transition shadow-sm flex items-center gap-2 ${aiWarning ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-teal-600 hover:bg-teal-700 text-white'}`}
+                  onClick={handleSaveActivity}
+                  className={`px-5 py-2 font-bold rounded-lg text-sm transition shadow-sm flex items-center gap-1.5 ${aiWarning ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-teal-600 hover:bg-teal-700 text-white'}`}
                 >
-                  {aiWarning ? '我了解風險，強制變更' : '確認移動'}
+                  {aiWarning ? '我了解風險，強制儲存' : '儲存變更'}
                 </button>
               </div>
             </div>
