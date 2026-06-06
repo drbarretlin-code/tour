@@ -1151,11 +1151,15 @@ export default function App() {
   // 每日分頁路線資訊圖表更新狀態
   const [refreshingInfographics, setRefreshingInfographics] = useState({});
 
-  const handleUpdateDayInfographic = (dayId) => {
+  const handleUpdateDayInfographic = async (dayId) => {
     setRefreshingInfographics(prev => ({ ...prev, [dayId]: true }));
-    setTimeout(() => {
+    try {
+      await handleUpdateInfographic();
+    } catch (err) {
+      console.error("更新日圖表失敗:", err);
+    } finally {
       setRefreshingInfographics(prev => ({ ...prev, [dayId]: false }));
-    }, 1200);
+    }
   };
 
   // ==========================================
@@ -1914,18 +1918,37 @@ export default function App() {
                     )
                   );
                   
+                  let x, y, config;
                   if (matchedConfig) {
-                    stops.push({
-                      title: act.title,
-                      time: act.time,
-                      type: act.type,
-                      config: matchedConfig,
-                      x: parseFloat(matchedConfig.style.left),
-                      y: parseFloat(matchedConfig.style.top),
-                      w: parseFloat(matchedConfig.style.width || 0),
-                      h: parseFloat(matchedConfig.style.height || 0)
-                    });
+                    x = parseFloat(matchedConfig.style.left);
+                    y = parseFloat(matchedConfig.style.top);
+                    config = matchedConfig;
+                  } else {
+                    // Stable hash calculation for consistent placement on the map
+                    let hash = 0;
+                    for (let i = 0; i < act.title.length; i++) {
+                      hash = act.title.charCodeAt(i) + ((hash << 5) - hash);
+                    }
+                    x = 15 + Math.abs(hash % 70);
+                    y = 15 + Math.abs((hash >> 8) % 70);
+                    config = {
+                      key: `custom-act-${act.id}`,
+                      name: act.title,
+                      mapUrl: act.links?.find(l => l.text.includes("地圖"))?.url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(act.title)}`,
+                      infoUrl: act.links?.find(l => l.text.includes("介紹"))?.url || `https://www.google.com/search?q=${encodeURIComponent(act.title)}`
+                    };
                   }
+                  
+                  stops.push({
+                    title: act.title,
+                    time: act.time,
+                    type: act.type,
+                    config: config,
+                    x: x,
+                    y: y,
+                    w: matchedConfig ? parseFloat(matchedConfig.style.width || 0) : 0,
+                    h: matchedConfig ? parseFloat(matchedConfig.style.height || 0) : 0
+                  });
                 });
 
                 // 若非最後一天且有飯店名稱，則加入回飯店作為終點
@@ -1933,18 +1956,37 @@ export default function App() {
                   const matchedHotel = HOTSPOT_CONFIGS.find(cfg =>
                     cfg.keywords.some(kw => day.hotelName.toLowerCase().includes(kw.toLowerCase()))
                   );
+                  
+                  let hx, hy, hConfig;
                   if (matchedHotel) {
-                    stops.push({
-                      title: `返回住宿：${day.hotelName}`,
-                      time: "晚上",
-                      type: "hotel",
-                      config: matchedHotel,
-                      x: parseFloat(matchedHotel.style.left),
-                      y: parseFloat(matchedHotel.style.top),
-                      w: parseFloat(matchedHotel.style.width || 0),
-                      h: parseFloat(matchedHotel.style.height || 0)
-                    });
+                    hx = parseFloat(matchedHotel.style.left);
+                    hy = parseFloat(matchedHotel.style.top);
+                    hConfig = matchedHotel;
+                  } else {
+                    let hash = 0;
+                    for (let i = 0; i < day.hotelName.length; i++) {
+                      hash = day.hotelName.charCodeAt(i) + ((hash << 5) - hash);
+                    }
+                    hx = 15 + Math.abs(hash % 70);
+                    hy = 15 + Math.abs((hash >> 8) % 70);
+                    hConfig = {
+                      key: `custom-hotel-${day.day}`,
+                      name: day.hotelName,
+                      mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(day.hotelName)}`,
+                      infoUrl: `https://www.google.com/search?q=${encodeURIComponent(day.hotelName)}`
+                    };
                   }
+                  
+                  stops.push({
+                    title: `返回住宿：${day.hotelName}`,
+                    time: "晚上",
+                    type: "hotel",
+                    config: hConfig,
+                    x: hx,
+                    y: hy,
+                    w: matchedHotel ? parseFloat(matchedHotel.style.width || 0) : 0,
+                    h: matchedHotel ? parseFloat(matchedHotel.style.height || 0) : 0
+                  });
                 }
 
                 // 為每一個繪製在圖表上的節點加上順序
