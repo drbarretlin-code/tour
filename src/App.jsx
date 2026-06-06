@@ -138,7 +138,7 @@ const initialTripData = {
           desc: "🚇 交通：搭乘 BTS 淺綠線 (Sukhumvit Line) 至 Chit Lom 站 (E1)，由 6 號出口經 R-Walk 空橋步行約 10 分鐘。泰國最大的服飾批發市場，室內有冷氣。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=The+Platinum+Fashion+Mall", icon: MapPin },
-            { text: "景點介紹", url: "https://www.google.com/maps/search/?api=1&query=The+Platinum+Fashion+Mall", icon: Info },
+            { text: "景點介紹", url: "https://www.bring-you.info/zh-tw/pratunam-market", icon: Info },
             { text: "飯店至水門市場路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/The+Platinum+Fashion+Mall/", icon: Navigation }
           ]
         },
@@ -164,8 +164,8 @@ const initialTripData = {
           desc: "全家會合。搭乘豪華遊船一邊享用 Buffet 一邊欣賞鄭王廟、大皇宮夜景。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=River+City+Bangkok", icon: MapPin },
-            { text: "景點介紹", url: "https://www.google.com/maps/search/?api=1&query=Chao+Phraya+River", icon: Info },
-            { text: "遊船預訂參考", url: "https://www.klook.com/", icon: ExternalLink }
+            { text: "景點介紹", url: "https://www.klook.com/zh-TW/activity/362-chao-phraya-princess-cruise-bangkok/", icon: Info },
+            { text: "遊船預訂參考", url: "https://www.klook.com/zh-TW/activity/362-chao-phraya-princess-cruise-bangkok/", icon: ExternalLink }
           ]
         }
       ]
@@ -214,7 +214,7 @@ const initialTripData = {
           desc: "絕美歐式鄉村風花園咖啡館，坐在花園裡享受悠閒的英式下午茶。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Pa+Dee+Rayong", icon: MapPin },
-            { text: "景點介紹", url: "https://www.google.com/maps/search/?api=1&query=Pa+Dee+Rayong", icon: Info },
+            { text: "景點介紹", url: "https://www.viviyu.com/archives/5654", icon: Info },
             { text: "水果園至咖啡館路線", url: "https://www.google.com/maps/dir/Suphattra+Land/Pa+Dee+Rayong/", icon: Navigation }
           ]
         },
@@ -278,7 +278,7 @@ const initialTripData = {
           desc: "指定朝聖景點！芭達雅人氣懸崖海景餐廳，遠眺海景與夕陽，享用精緻料理。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Kliff+Beach+Club+Pattaya", icon: MapPin },
-            { text: "景點介紹", url: "https://www.google.com/maps/search/?api=1&query=Kliff+Beach+Club+Pattaya", icon: Info },
+            { text: "景點介紹", url: "https://flyblog.cc/cross-pattaya-pratamnak/", icon: Info },
             { text: "樂園至餐廳路線", url: "https://www.google.com/maps/dir/Columbia+Pictures+Aquaverse/Kliff+Beach+Club+Pattaya/", icon: Navigation }
           ]
         }
@@ -365,8 +365,10 @@ const initialTripData = {
           region: "曼谷近郊",
           desc: "🚗 交通：建議包車或使用 Klook 一日遊。近距離觀賞火車穿梭於菜市場的奇景，並體驗手搖船水上交易。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Maeklong+Railway+Market", icon: MapPin },
-            { text: "景點介紹", url: "https://www.google.com/maps/search/?api=1&query=Maeklong+Railway+Market", icon: Info }
+            { text: "鐵道市場地圖", url: "https://www.google.com/maps/search/?api=1&query=Maeklong+Railway+Market", icon: MapPin },
+            { text: "鐵道市場介紹", url: "https://www.klook.com/zh-TW/activity/91667-maeklong-railway-market-amphawa-floating-market-day-tour-bangkok/", icon: Info },
+            { text: "水上市場地圖", url: "https://www.google.com/maps/search/?api=1&query=Damnoen+Saduak+Floating+Market", icon: MapPin },
+            { text: "水上市場介紹", url: "https://www.klook.com/zh-TW/activity/132-damnoen-saduak-floating-market-bangkok/", icon: Info }
           ]
         },
         {
@@ -378,7 +380,7 @@ const initialTripData = {
           desc: "🚇 交通：搭乘 BTS 淺綠線 (Sukhumvit Line) 至 Chit Lom 站 (E1)，由 9 號出口經天橋步行約 5 分鐘。曼谷必買伴手禮大採購。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Big+C+Supercenter+Ratchadamri", icon: MapPin },
-            { text: "景點介紹", url: "https://www.google.com/maps/search/?api=1&query=Big+C+Supercenter+Ratchadamri", icon: Info },
+            { text: "景點介紹", url: "https://www.bring-you.info/zh-tw/bangkok-must-buy", icon: Info },
             { text: "水上市場至商場路線", url: "https://www.google.com/maps/dir/Damnoen+Saduak+Floating+Market/Big+C+Supercenter+Ratchadamri/", icon: Navigation }
           ]
         },
@@ -427,7 +429,7 @@ const initialTripData = {
           desc: "🚇 交通：搭乘 BTS 淺綠線 (Sukhumvit Line) 至 Udom Suk 站 (E12)，出站轉乘計程車/Grab 約 5-8 分鐘。人氣咖啡廳拍美照。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=FO+SHO+BRO+Bangkok", icon: MapPin },
-            { text: "景點介紹", url: "https://www.google.com/maps/search/?api=1&query=FO+SHO+BRO+Bangkok", icon: Info },
+            { text: "景點介紹", url: "https://www.wendyjourney.com/fo-sho-bro/", icon: Info },
             { text: "飯店至咖啡廳路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/FO+SHO+BRO+Bangkok/", icon: Navigation }
           ]
         },
@@ -498,7 +500,7 @@ const HOTSPOT_CONFIGS = [
     name: '美功鐵道市場',
     style: { left: '5%', top: '48%', width: '25%', height: '18%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Maeklong+Railway+Market',
-    infoUrl: 'https://www.google.com/maps/search/?api=1&query=Maeklong+Railway+Market'
+    infoUrl: 'https://www.klook.com/zh-TW/activity/91667-maeklong-railway-market-amphawa-floating-market-day-tour-bangkok/'
   },
   {
     key: 'cross_pattaya',
@@ -514,7 +516,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Kliff 懸崖餐廳',
     style: { left: '60%', top: '45%', width: '15%', height: '16%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Kliff+Beach+Club+Pattaya',
-    infoUrl: 'https://www.google.com/maps/search/?api=1&query=Kliff+Beach+Club+Pattaya'
+    infoUrl: 'https://flyblog.cc/cross-pattaya-pratamnak/'
   },
   {
     key: 'suphattra',
@@ -530,7 +532,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Pa Dee 咖啡館',
     style: { left: '77%', top: '76%', width: '18%', height: '16%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Pa+Dee+Rayong',
-    infoUrl: 'https://www.google.com/maps/search/?api=1&query=Pa+Dee+Rayong'
+    infoUrl: 'https://www.viviyu.com/archives/5654'
   },
   {
     key: 'one_bangkok',
@@ -554,7 +556,7 @@ const HOTSPOT_CONFIGS = [
     name: '水門市場',
     style: { left: '12%', top: '20%', width: '10%', height: '8%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=The+Platinum+Fashion+Mall',
-    infoUrl: 'https://www.google.com/maps/search/?api=1&query=The+Platinum+Fashion+Mall'
+    infoUrl: 'https://www.bring-you.info/zh-tw/pratunam-market'
   },
   {
     key: 'savoey',
@@ -570,7 +572,47 @@ const HOTSPOT_CONFIGS = [
     name: 'FO SHO BRO 咖啡館',
     style: { left: '38%', top: '28%', width: '12%', height: '8%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=FO+SHO+BRO+Bangkok',
-    infoUrl: 'https://www.google.com/maps/search/?api=1&query=FO+SHO+BRO+Bangkok'
+    infoUrl: 'https://www.wendyjourney.com/fo-sho-bro/'
+  },
+  {
+    key: 'chao_phraya',
+    keywords: ['昭披耶河', 'Chao Phraya', '遊船'],
+    name: '昭披耶河遊船',
+    style: { left: '26%', top: '27%', width: '12%', height: '8%' },
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=Chao+Phraya+River',
+    infoUrl: 'https://www.klook.com/zh-TW/activity/362-chao-phraya-princess-cruise-bangkok/'
+  },
+  {
+    key: 'aquaverse',
+    keywords: ['Aquaverse', '樂園', '水上樂園'],
+    name: '哥倫比亞影業主題樂園 Aquaverse',
+    style: { left: '50%', top: '53%', width: '12%', height: '8%' },
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=Columbia+Pictures+Aquaverse',
+    infoUrl: 'https://www.klook.com/zh-TW/activity/71542-columbia-pictures-aquaverse-water-park-ticket-pattaya/'
+  },
+  {
+    key: 'big_c',
+    keywords: ['Big C', '伴手禮'],
+    name: 'Big C 採購',
+    style: { left: '22%', top: '22%', width: '10%', height: '8%' },
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=Big+C+Supercenter+Ratchadamri',
+    infoUrl: 'https://www.bring-you.info/zh-tw/bangkok-must-buy'
+  },
+  {
+    key: 'lets_relax',
+    keywords: ['Let\'s Relax', '按摩', 'SPA'],
+    name: 'Let\'s Relax 泰式按摩',
+    style: { left: '2%', top: '10%', width: '10%', height: '8%' },
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=Let%27s+Relax+Spa+Terminal+21',
+    infoUrl: 'https://www.klook.com/zh-TW/activity/1659-lets-relax-spa-treatments-bangkok/'
+  },
+  {
+    key: 'airport',
+    keywords: ['機場', 'Airport', 'Suvarnabhumi'],
+    name: '蘇凡納布機場',
+    style: { left: '38%', top: '2%', width: '12%', height: '8%' },
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=Suvarnabhumi+Airport',
+    infoUrl: 'https://www.klook.com/zh-TW/blog/bangkok-airport-transfers/'
   }
 ];
 
