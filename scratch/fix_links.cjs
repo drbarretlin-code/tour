@@ -5,132 +5,93 @@ const targetPath = path.join(__dirname, '../src/App.jsx');
 let content = fs.readFileSync(targetPath, 'utf8');
 
 const replacements = [
-  // 1. Terminal 21
+  // 1. Grande Centre Point Hotel Terminal 21
   {
-    from: 'https://maps.app.goo.gl/Terminal21Asok',
-    to: 'https://www.google.com/maps/search/?api=1&query=Terminal+21+Asok'
-  },
-  {
-    from: 'https://maps.app.goo.gl/GrandeCentrePointT21',
-    to: 'https://www.google.com/maps/search/?api=1&query=Grande+Centre+Point+Hotel+Terminal+21'
-  },
-  {
-    from: 'https://www.klook.com/zh-TW/hotels/detail/139366-grande-centre-point-hotel-terminal-21/',
-    to: 'https://www.klook.com/zh-TW/hotels/detail/210404-grande-centre-point-hotel-terminal-21/'
+    from: 'https://www.klook.com/zh-TW/hotels/detail/210404-grande-centre-point-hotel-terminal-21/',
+    to: 'https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html'
   },
 
-  // 2. One Bangkok
+  // 2. ICONSIAM
   {
-    from: 'https://maps.app.goo.gl/OneBangkokMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=One+Bangkok'
-  },
-  {
-    from: 'https://www.klook.com/zh-TW/blog/one-bangkok-thailand/',
-    to: 'https://www.onebangkok.com/'
+    from: 'https://www.klook.com/zh-TW/blog/iconsiam-bangkok/',
+    to: 'https://zh.wikipedia.org/wiki/ICONSIAM'
   },
 
-  // 3. Platinum Mall
+  // 3. Damnoen Saduak Floating Market (水上市場)
   {
-    from: 'https://maps.app.goo.gl/PlatinumMall',
-    to: 'https://www.google.com/maps/search/?api=1&query=The+Platinum+Fashion+Mall'
-  },
-  {
-    from: 'https://www.klook.com/zh-TW/blog/platinum-fashion-mall-bangkok/',
-    to: 'https://www.tripadvisor.com.tw/Attraction_Review-g293916-d621306-Reviews-The_Platinum_Fashion_Mall-Bangkok.html'
+    from: 'https://www.klook.com/zh-TW/blog/bangkok-floating-markets/',
+    to: 'https://zh.wikipedia.org/wiki/%E4%B8%B9%E8%83%BD%E6%B2%99%E5%A4%9A%E6%B0%B4%E4%B8%8A%E5%B8%82%E5%A0%B4'
   },
 
-  // 4. Iconsiam
+  // 4. Maeklong Railway Market (美功鐵道市場)
   {
-    from: 'https://maps.app.goo.gl/IconsiamMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=ICONSIAM'
+    from: 'https://www.klook.com/zh-TW/blog/maeklong-railway-market-bangkok/',
+    to: 'https://zh.wikipedia.org/wiki/%E7%BE%8E%E5%8A%9F%E9%90%B5%E8%B7%AF%E5%B8%82%E5%A0%B4'
   },
 
-  // 5. River City
+  // 5. Kliff Beach Club
   {
-    from: 'https://maps.app.goo.gl/RiverCityMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=River+City+Bangkok'
+    from: 'https://www.google.com/maps/place/Kliff+Beach+Club+Pattaya',
+    to: 'https://www.facebook.com/kliffbeachclub/'
   },
 
-  // 6. Suphattra Land
+  // 6. Suphattra Land Orchard
   {
-    from: 'https://maps.app.goo.gl/SuphattraLand',
-    to: 'https://www.google.com/maps/search/?api=1&query=Suphattra+Land'
+    from: 'https://www.klook.com/zh-TW/activity/95015-suphattra-land-orchard-rayong/',
+    to: 'https://www.facebook.com/suphattraland/'
   },
 
-  // 7. Pa Dee
+  // 7. Pa Dee Rayong Cafe
   {
-    from: 'https://maps.app.goo.gl/PaDeeRayongMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=Pa+Dee+Rayong'
+    from: 'https://www.google.com/maps/place/Pa+Dee+Rayong',
+    to: 'https://www.facebook.com/Padeecafecoffeeshop/'
   },
 
-  // 8. Cross Pattaya
+  // 8. Safari World Bangkok
   {
-    from: 'https://maps.app.goo.gl/CrossPattayaMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=Cross+Pattaya+Oceanphere'
-  },
-  {
-    from: 'https://www.klook.com/zh-TW/hotels/detail/491953-cross-pattaya-oceanphere/',
-    to: 'https://www.agoda.com/zh-tw/cross-pattaya-oceanphere_2/hotel/pattaya-th.html'
+    from: 'https://www.klook.com/zh-TW/blog/safari-world-bangkok/',
+    to: 'https://www.safariworld.com/'
   },
 
-  // 9. Aquaverse
+  // 9. Savoey Seafood Restaurant
   {
-    from: 'https://maps.app.goo.gl/AquaverseMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=Columbia+Pictures+Aquaverse'
+    from: 'https://www.klook.com/zh-TW/activity/9880-savoey-seafood-co-bangkok/',
+    to: 'https://www.savoey.com/'
   },
 
-  // 10. Kliff
+  // 10. FO SHO BRO Cafe
   {
-    from: 'https://maps.app.goo.gl/KliffMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=Kliff+Beach+Club+Pattaya'
+    from: 'https://www.wendyjourney.com/fo-sho-bro/',
+    to: 'https://www.facebook.com/foshobro.bkk/'
   },
 
-  // 11. Safari World
+  // 11. Big C Supercenter
   {
-    from: 'https://maps.app.goo.gl/SafariWorldMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=Safari+World+Bangkok'
+    from: 'https://www.klook.com/zh-TW/blog/bangkok-big-c-supercenter/',
+    to: 'https://zh.wikipedia.org/wiki/Big_C'
   },
 
-  // 12. Savoey
+  // 12. Let's Relax Spa
   {
-    from: 'https://maps.app.goo.gl/SavoeyMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=Savoey+Seafood+Co+Bangkok'
+    from: 'https://www.klook.com/zh-TW/activity/1659-lets-relax-spa-treatments-bangkok/',
+    to: 'https://letsrelaxspa.com/'
   },
 
-  // 13. Maeklong
+  // 13. Columbia Pictures Aquaverse
   {
-    from: 'https://maps.app.goo.gl/MaeklongMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=Maeklong+Railway+Market'
+    from: 'https://www.klook.com/zh-TW/activity/71542-columbia-pictures-aquaverse-water-park-ticket-pattaya/',
+    to: 'https://columbiapicturesaquaverse.com/'
   },
 
-  // 14. Big C
+  // 14. Chao Phraya River Cruise
   {
-    from: 'https://maps.app.goo.gl/BigCMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=Big+C+Supercenter+Ratchadamri'
-  },
-
-  // 15. Let's Relax
-  {
-    from: 'https://maps.app.goo.gl/LetsRelaxMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=Let%27s+Relax+Spa+Terminal+21'
-  },
-
-  // 16. Fo Sho Bro
-  {
-    from: 'https://maps.app.goo.gl/FoShoBroMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=FO+SHO+BRO+Bangkok'
-  },
-
-  // 17. Damnoen Saduak (for the configuration)
-  {
-    from: 'https://maps.app.goo.gl/DamnoenMap',
-    to: 'https://www.google.com/maps/search/?api=1&query=Damnoen+Saduak+Floating+Market'
+    from: 'https://www.klook.com/zh-TW/blog/chao-phraya-river-cruises-bangkok/',
+    to: 'https://zh.wikipedia.org/wiki/%E6%98%AD%E6%8A%AB%E8%80%B6%E6%B2%B3'
   }
 ];
 
 let replacedCount = 0;
 for (const replacement of replacements) {
-  // Use global replacement for each URL
   const escapedFrom = replacement.from.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
   const regex = new RegExp(escapedFrom, 'g');
   const occurrences = (content.match(regex) || []).length;

@@ -61,7 +61,7 @@ const initialTripData = {
           desc: "辦理入境手續、領取行李。如未包車，可搭乘機場快線(ARL)至 Makkasan站 (A6)，轉乘 MRT 藍線至 Phetchaburi 站 (BL21) / Sukhumvit 站 (BL22)。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Suvarnabhumi+Airport", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/blog/bangkok-airport-transfer/", icon: Info },
+            { text: "景點介紹", url: "https://www.klook.com/zh-TW/blog/bangkok-airport-transfers/", icon: Info },
             { text: "預訂接送", url: "https://www.klook.com/zh-TW/", icon: Car }
           ]
         },
@@ -74,7 +74,7 @@ const initialTripData = {
           desc: "🚇 交通：位於 BTS 淺綠線 Asok 站 (E4) 與 MRT 藍線 Sukhumvit 站 (BL22) 交會處，出站步行1分鐘即達。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Grande+Centre+Point+Hotel+Terminal+21", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/hotels/detail/210404-grande-centre-point-hotel-terminal-21/", icon: Info },
+            { text: "景點介紹", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Info },
             { text: "飯店訂房", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Hotel },
             { text: "機場至飯店路線", url: "https://www.google.com/maps/dir/Suvarnabhumi+Airport/Centre+Point+Hotel+Terminal+21/", icon: Navigation }
           ]
@@ -151,7 +151,7 @@ const initialTripData = {
           desc: "🚇 交通：搭乘 BTS 淺綠線至 Siam 站 (CEN) 轉深綠線 (Silom Line) 至 Saphan Taksin 站 (S6)，由 2 號出口轉乘免費接駁船；或搭 BTS 金線至 Charoen Nakhon 站 (G2) 直達。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=ICONSIAM", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/blog/iconsiam-bangkok/", icon: Info },
+            { text: "景點介紹", url: "https://zh.wikipedia.org/wiki/ICONSIAM", icon: Info },
             { text: "水門至ICONSIAM路線", url: "https://www.google.com/maps/dir/The+Platinum+Fashion+Mall/ICONSIAM/", icon: Navigation }
           ]
         },
@@ -164,7 +164,7 @@ const initialTripData = {
           desc: "全家會合。搭乘豪華遊船一邊享用 Buffet 一邊欣賞鄭王廟、大皇宮夜景。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=River+City+Bangkok", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/blog/chao-phraya-river-cruises-bangkok/", icon: Info },
+            { text: "景點介紹", url: "https://zh.wikipedia.org/wiki/%E6%98%AD%E6%8A%AB%E8%80%B6%E6%B2%B3", icon: Info },
             { text: "遊船預訂參考", url: "https://www.klook.com/", icon: ExternalLink }
           ]
         }
@@ -188,7 +188,7 @@ const initialTripData = {
           desc: "🚗 交通：車程約 2.5 小時，今日皆為專車點對點接送，確保舒適度。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Suphattra+Land", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/activity/95015-suphattra-land-orchard-rayong/", icon: Info },
+            { text: "景點介紹", url: "https://www.facebook.com/suphattraland/", icon: Info },
             { text: "曼谷至羅勇路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/Suphattra+Land/", icon: Navigation }
           ]
         },
@@ -201,7 +201,7 @@ const initialTripData = {
           desc: "水果大餐吃到飽，現摘榴槤與山竹，非常適合家庭遊客！",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Suphattra+Land", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/activity/95015-suphattra-land-orchard-rayong/", icon: Info }
+            { text: "景點介紹", url: "https://www.facebook.com/suphattraland/", icon: Info }
           ]
         },
         {
@@ -214,7 +214,7 @@ const initialTripData = {
           desc: "絕美歐式鄉村風花園咖啡館，坐在花園裡享受悠閒的英式下午茶。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Pa+Dee+Rayong", icon: MapPin },
-            { text: "景點介紹", url: "https://www.google.com/maps/place/Pa+Dee+Rayong", icon: Info },
+            { text: "景點介紹", url: "https://www.facebook.com/Padeecafecoffeeshop/", icon: Info },
             { text: "水果園至咖啡館路線", url: "https://www.google.com/maps/dir/Suphattra+Land/Pa+Dee+Rayong/", icon: Navigation }
           ]
         },
@@ -265,7 +265,7 @@ const initialTripData = {
           desc: "🚗 交通：建議包車或使用 Grab 前往。全球首座哥倫比亞影業主題水上樂園，全家玩水消暑。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Columbia+Pictures+Aquaverse", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/activity/71542-columbia-pictures-aquaverse-water-park-ticket-pattaya/", icon: Info },
+            { text: "景點介紹", url: "https://columbiapicturesaquaverse.com/", icon: Info },
             { text: "飯店至樂園路線", url: "https://www.google.com/maps/dir/Cross+Pattaya+Oceanphere/Columbia+Pictures+Aquaverse/", icon: Navigation }
           ]
         },
@@ -278,7 +278,7 @@ const initialTripData = {
           desc: "指定朝聖景點！芭達雅人氣懸崖海景餐廳，遠眺海景與夕陽，享用精緻料理。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Kliff+Beach+Club+Pattaya", icon: MapPin },
-            { text: "景點介紹", url: "https://www.google.com/maps/place/Kliff+Beach+Club+Pattaya", icon: Info },
+            { text: "景點介紹", url: "https://www.facebook.com/kliffbeachclub/", icon: Info },
             { text: "樂園至餐廳路線", url: "https://www.google.com/maps/dir/Columbia+Pictures+Aquaverse/Kliff+Beach+Club+Pattaya/", icon: Navigation }
           ]
         }
@@ -302,7 +302,7 @@ const initialTripData = {
           desc: "🚗 交通：包車北上返回曼谷近郊。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Safari+World+Bangkok", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/blog/safari-world-bangkok/", icon: Info },
+            { text: "景點介紹", url: "https://www.safariworld.com/", icon: Info },
             { text: "飯店至動物園路線", url: "https://www.google.com/maps/dir/Cross+Pattaya+Oceanphere/Safari+World+Bangkok/", icon: Navigation }
           ]
         },
@@ -315,7 +315,7 @@ const initialTripData = {
           desc: "搭乘遊園車近距離觀賞野生動物，並觀賞各項精彩表演。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Safari+World+Bangkok", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/blog/safari-world-bangkok/", icon: Info },
+            { text: "景點介紹", url: "https://www.safariworld.com/", icon: Info },
             { text: "預訂門票", url: "https://www.klook.com/zh-TW/activity/365-safari-world-bangkok/", icon: ExternalLink }
           ]
         },
@@ -328,7 +328,7 @@ const initialTripData = {
           desc: "🚗 交通：專車接送回到曼谷市區飯店。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Grande+Centre+Point+Hotel+Terminal+21", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/hotels/detail/210404-grande-centre-point-hotel-terminal-21/", icon: Info },
+            { text: "景點介紹", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Info },
             { text: "飯店訂房", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Hotel },
             { text: "動物園至飯店路線", url: "https://www.google.com/maps/dir/Safari+World+Bangkok/Centre+Point+Hotel+Terminal+21/", icon: Navigation }
           ]
@@ -342,7 +342,7 @@ const initialTripData = {
           desc: "🚇 交通：從飯店步行可達，或搭乘 BTS 淺綠線至 Asok (E4)。經典泰式海鮮餐廳，必點咖哩螃蟹。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Savoey+Seafood+Co+Bangkok", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/activity/9880-savoey-seafood-co-bangkok/", icon: Info },
+            { text: "景點介紹", url: "https://www.savoey.com/", icon: Info },
             { text: "飯店至餐廳路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/Savoey+Terminal21/", icon: Navigation }
           ]
         }
@@ -366,7 +366,7 @@ const initialTripData = {
           desc: "🚗 交通：建議包車或使用 Klook 一日遊。近距離觀賞火車穿梭於菜市場的奇景，並體驗手搖船水上交易。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Maeklong+Railway+Market", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/blog/maeklong-railway-market-bangkok/", icon: Info }
+            { text: "景點介紹", url: "https://zh.wikipedia.org/wiki/%E7%BE%8E%E5%8A%9F%E9%90%B5%E8%B7%AF%E5%B8%82%E5%A0%B4", icon: Info }
           ]
         },
         {
@@ -378,7 +378,7 @@ const initialTripData = {
           desc: "🚇 交通：搭乘 BTS 淺綠線 (Sukhumvit Line) 至 Chit Lom 站 (E1)，由 9 號出口經天橋步行約 5 分鐘。曼谷必買伴手禮大採購。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Big+C+Supercenter+Ratchadamri", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/blog/bangkok-big-c-supercenter/", icon: Info },
+            { text: "景點介紹", url: "https://zh.wikipedia.org/wiki/Big_C", icon: Info },
             { text: "水上市場至商場路線", url: "https://www.google.com/maps/dir/Damnoen+Saduak+Floating+Market/Big+C+Supercenter+Ratchadamri/", icon: Navigation }
           ]
         },
@@ -391,7 +391,7 @@ const initialTripData = {
           desc: "🚇 交通：搭乘 BTS 淺綠線回 Asok 站 (E4)。慰勞這幾天的疲憊，安排 Let's Relax 進行按摩。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Let%27s+Relax+Spa+Terminal+21", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/activity/1659-lets-relax-spa-treatments-bangkok/", icon: Info },
+            { text: "景點介紹", url: "https://letsrelaxspa.com/", icon: Info },
             { text: "商場至按摩店路線", url: "https://www.google.com/maps/dir/Big+C+Supercenter+Ratchadamri/Lets+Relax+Spa+Terminal+21/", icon: Navigation }
           ]
         }
@@ -415,7 +415,7 @@ const initialTripData = {
           desc: "整理行囊，將行李寄放在飯店大廳。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Grande+Centre+Point+Hotel+Terminal+21", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/hotels/detail/210404-grande-centre-point-hotel-terminal-21/", icon: Info }
+            { text: "景點介紹", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Info }
           ]
         },
         {
@@ -427,7 +427,7 @@ const initialTripData = {
           desc: "🚇 交通：搭乘 BTS 淺綠線 (Sukhumvit Line) 至 Udom Suk 站 (E12)，出站轉乘計程車/Grab 約 5-8 分鐘。人氣咖啡廳拍美照。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=FO+SHO+BRO+Bangkok", icon: MapPin },
-            { text: "景點介紹", url: "https://www.wendyjourney.com/fo-sho-bro/", icon: Info },
+            { text: "景點介紹", url: "https://www.facebook.com/foshobro.bkk/", icon: Info },
             { text: "飯店至咖啡廳路線", url: "https://www.google.com/maps/dir/Centre+Point+Hotel+Terminal+21/FO+SHO+BRO+Bangkok/", icon: Navigation }
           ]
         },
@@ -440,7 +440,7 @@ const initialTripData = {
           desc: "🚗 交通: 返回飯店領取行李，搭乘預約專車或 Grab 前往機場，最晚於起飛前 3 小時抵達。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Suvarnabhumi+Airport", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/blog/bangkok-airport-transfer/", icon: Info },
+            { text: "景點介紹", url: "https://www.klook.com/zh-TW/blog/bangkok-airport-transfers/", icon: Info },
             { text: "咖啡廳至機場路線", url: "https://www.google.com/maps/dir/FO+SHO+BRO+Bangkok/Suvarnabhumi+Airport/", icon: Navigation }
           ]
         },
@@ -474,7 +474,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Terminal 21',
     style: { left: '8%', top: '10%', width: '25%', height: '18%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Terminal+21+Asok',
-    infoUrl: 'https://www.klook.com/zh-TW/hotels/detail/210404-grande-centre-point-hotel-terminal-21/'
+    infoUrl: 'https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html'
   },
   {
     key: 'iconsiam',
@@ -482,7 +482,7 @@ const HOTSPOT_CONFIGS = [
     name: 'ICONSIAM',
     style: { left: '34%', top: '15%', width: '20%', height: '18%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=ICONSIAM',
-    infoUrl: 'https://www.klook.com/zh-TW/blog/iconsiam-bangkok/'
+    infoUrl: 'https://zh.wikipedia.org/wiki/ICONSIAM'
   },
   {
     key: 'floating_market',
@@ -490,7 +490,7 @@ const HOTSPOT_CONFIGS = [
     name: '丹能莎朵水上市場',
     style: { left: '5%', top: '28%', width: '25%', height: '18%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Damnoen+Saduak+Floating+Market',
-    infoUrl: 'https://www.klook.com/zh-TW/blog/bangkok-floating-markets/'
+    infoUrl: 'https://zh.wikipedia.org/wiki/%E4%B8%B9%E8%83%BD%E6%B2%99%E5%A4%9A%E6%B0%B4%E4%B8%8A%E5%B8%82%E5%A0%B4'
   },
   {
     key: 'railway_market',
@@ -498,7 +498,7 @@ const HOTSPOT_CONFIGS = [
     name: '美功鐵道市場',
     style: { left: '5%', top: '48%', width: '25%', height: '18%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Maeklong+Railway+Market',
-    infoUrl: 'https://www.klook.com/zh-TW/blog/maeklong-railway-market-bangkok/'
+    infoUrl: 'https://zh.wikipedia.org/wiki/%E7%BE%8E%E5%8A%9F%E9%90%B5%E8%B7%AF%E5%B8%82%E5%A0%B4'
   },
   {
     key: 'cross_pattaya',
@@ -514,7 +514,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Kliff 懸崖餐廳',
     style: { left: '60%', top: '45%', width: '15%', height: '16%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Kliff+Beach+Club+Pattaya',
-    infoUrl: 'https://www.google.com/maps/place/Kliff+Beach+Club+Pattaya'
+    infoUrl: 'https://www.facebook.com/kliffbeachclub/'
   },
   {
     key: 'suphattra',
@@ -522,7 +522,7 @@ const HOTSPOT_CONFIGS = [
     name: '素芭他水果園',
     style: { left: '54%', top: '70%', width: '20%', height: '16%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Suphattra+Land',
-    infoUrl: 'https://www.klook.com/zh-TW/activity/95015-suphattra-land-orchard-rayong/'
+    infoUrl: 'https://www.facebook.com/suphattraland/'
   },
   {
     key: 'padee',
@@ -530,7 +530,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Pa Dee 咖啡館',
     style: { left: '77%', top: '76%', width: '18%', height: '16%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Pa+Dee+Rayong',
-    infoUrl: 'https://www.google.com/maps/place/Pa+Dee+Rayong'
+    infoUrl: 'https://www.facebook.com/Padeecafecoffeeshop/'
   },
   {
     key: 'one_bangkok',
@@ -546,7 +546,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Safari World 賽福瑞動物園',
     style: { left: '20%', top: '2%', width: '15%', height: '10%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Safari+World+Bangkok',
-    infoUrl: 'https://www.klook.com/zh-TW/blog/safari-world-bangkok/'
+    infoUrl: 'https://www.safariworld.com/'
   },
   {
     key: 'water_market',
@@ -562,7 +562,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Savoey 上味泰餐館',
     style: { left: '5%', top: '2%', width: '12%', height: '8%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Savoey+Seafood+Co+Bangkok',
-    infoUrl: 'https://www.klook.com/zh-TW/activity/9880-savoey-seafood-co-bangkok/'
+    infoUrl: 'https://www.savoey.com/'
   },
   {
     key: 'fosho_bro',
@@ -570,7 +570,7 @@ const HOTSPOT_CONFIGS = [
     name: 'FO SHO BRO 咖啡館',
     style: { left: '38%', top: '28%', width: '12%', height: '8%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=FO+SHO+BRO+Bangkok',
-    infoUrl: 'https://www.wendyjourney.com/fo-sho-bro/'
+    infoUrl: 'https://www.facebook.com/foshobro.bkk/'
   }
 ];
 
@@ -673,7 +673,7 @@ const localMockAnalysis = (urlsText) => {
       suggestion = "推薦排在 Day 3 (羅勇日)，因為當天本來就安排了羅勇素芭他水果園，兩地包車距離僅 25 分鐘。";
       suggestedDay = 3;
       suggestedTime = "15:00";
-      mapUrl = "https://www.google.com/maps/place/Pa+Dee+Rayong";
+      mapUrl = "https://www.facebook.com/Padeecafecoffeeshop/";
     } else if (lineLower.includes('safari') || lineLower.includes('zoo') || lineLower.includes('animal')) {
       title = "Safari World 賽福瑞野生動物園";
       category = "camera";
@@ -714,7 +714,7 @@ const localMockAnalysis = (urlsText) => {
       suggestion = "建議排在 Day 4 傍晚 17:30，欣賞絕美日落。";
       suggestedDay = 4;
       suggestedTime = "17:30";
-      mapUrl = "https://www.google.com/maps/place/Kliff+Beach+Club+Pattaya";
+      mapUrl = "https://www.facebook.com/kliffbeachclub/";
     } else {
       title = line.replace(/https?:\/\/(www\.)?/, '').split('/')[0] || "新增網美景點";
       if (title.length > 20) title = title.substring(0, 20) + "...";
@@ -1017,7 +1017,7 @@ export default function App() {
       name: 'Day 5-7 返程路線',
       style: { left: '48%', top: '56%', width: '8%', height: '15%' },
       navUrl: 'https://www.google.com/maps/dir/Cross+Pattaya+Oceanphere/Safari+World+Bangkok/Centre+Point+Hotel+Terminal+21/FO+SHO+BRO+Bangkok',
-      infoUrl: 'https://www.klook.com/zh-TW/blog/safari-world-bangkok/',
+      infoUrl: 'https://www.safariworld.com/',
       show: tripSchedule.days.some(d => [5, 6, 7].includes(d.day) && d.activities.length > 0)
     }
   ];
@@ -1378,7 +1378,7 @@ export default function App() {
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">請貼入新增行程網址或名稱 (每行一筆)：</label>
                   <textarea
                     rows={6}
-                    placeholder="https://www.klook.com/zh-TW/activity/95015-suphattra-land-orchard-rayong/&#10;Savoey Terminal21&#10;https://www.google.com/maps/place/Kliff+Beach+Club+Pattaya"
+                    placeholder="https://www.facebook.com/suphattraland/&#10;Savoey Terminal21&#10;https://www.facebook.com/kliffbeachclub/"
                     className="w-full border border-slate-200 rounded-lg p-3 text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none resize-none font-mono"
                     value={aiInputUrls}
                     onChange={(e) => setAiInputUrls(e.target.value)}
@@ -1388,7 +1388,7 @@ export default function App() {
                 <div className="flex flex-wrap gap-3 items-center justify-between">
                   <div className="flex gap-2">
                     <button 
-                      onClick={() => setAiInputUrls("https://www.google.com/maps/place/Savoey+Terminal21\nhttps://www.klook.com/zh-TW/activity/95015-suphattra-land-orchard-rayong/\nhttps://www.google.com/maps/place/FO+SHO+BRO+Bangkok/")}
+                      onClick={() => setAiInputUrls("https://www.google.com/maps/place/Savoey+Terminal21\nhttps://www.facebook.com/suphattraland/\nhttps://www.google.com/maps/place/FO+SHO+BRO+Bangkok/")}
                       className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-lg transition"
                     >
                       載入範例資料
