@@ -748,6 +748,30 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('overview');
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  // 同步 URL Hash 與 activeTab，支援瀏覽器「上一頁/下一頁」歷史紀錄導航
+  React.useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash) {
+        setActiveTab(hash);
+      } else {
+        setActiveTab('overview');
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange();
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
+
+  const changeTab = (tab) => {
+    window.location.hash = tab;
+    setActiveTab(tab);
+  };
+
   // AI 排程助手相關狀態
   const [aiInputUrls, setAiInputUrls] = useState('');
   const [isAnalyzingAi, setIsAnalyzingAi] = useState(false);
@@ -1138,7 +1162,7 @@ export default function App() {
                   <div className="absolute right-0 mt-2 w-72 bg-white border border-slate-200 rounded-xl shadow-xl z-50 py-2.5 animation-scale-up">
                     <div className="px-4 py-1.5 text-xs font-bold text-slate-400 border-b border-slate-100 mb-1">📋 準備與工具</div>
                     <button 
-                      onClick={() => { setActiveTab('overview'); setDropdownOpen(false); }}
+                      onClick={() => { changeTab('overview'); setDropdownOpen(false); }}
                       className={`flex items-center justify-between w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-slate-50 transition ${activeTab === 'overview' ? 'text-teal-700 bg-teal-50/50' : 'text-slate-700'}`}
                     >
                       <span>總覽 & 準備資訊</span>
@@ -1146,7 +1170,7 @@ export default function App() {
                     </button>
                     
                     <button 
-                      onClick={() => { setActiveTab('ai-assistant'); setDropdownOpen(false); }}
+                      onClick={() => { changeTab('ai-assistant'); setDropdownOpen(false); }}
                       className={`flex items-center justify-between w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-slate-50 transition ${activeTab === 'ai-assistant' ? 'text-indigo-700 bg-indigo-50/50' : 'text-slate-700'}`}
                     >
                       <span className="flex items-center gap-1.5">🤖 AI 行程規劃助手 <span className="bg-indigo-100 text-indigo-800 text-[10px] px-1.5 py-0.5 rounded-full">推薦</span></span>
@@ -1157,7 +1181,7 @@ export default function App() {
                     {tripSchedule.days.map((day) => (
                       <button 
                         key={day.day}
-                        onClick={() => { setActiveTab(`day-${day.day}`); setDropdownOpen(false); }}
+                        onClick={() => { changeTab(`day-${day.day}`); setDropdownOpen(false); }}
                         className={`flex items-center justify-between w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-slate-50 transition ${activeTab === `day-${day.day}` ? 'text-teal-700 bg-teal-50/50' : 'text-slate-700'}`}
                       >
                         <div className="truncate text-left w-full">
@@ -1238,6 +1262,18 @@ export default function App() {
                       className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-lg transition"
                     >
                       清空輸入
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (window.history.length > 1) {
+                          window.history.back();
+                        } else {
+                          changeTab('overview');
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-lg transition"
+                    >
+                      返回上一頁
                     </button>
                   </div>
                   
@@ -1374,7 +1410,7 @@ export default function App() {
                         {isImported && (
                           <div className="flex justify-end gap-2 border-t border-slate-100 pt-4 mt-4">
                             <button
-                              onClick={() => { setActiveTab(`day-${selectedDay}`); }}
+                              onClick={() => { changeTab(`day-${selectedDay}`); }}
                               className="text-xs text-emerald-700 hover:text-emerald-800 font-semibold flex items-center gap-1.5"
                             >
                               前往 Day {selectedDay} 查看匯入結果 &rarr;
@@ -1721,14 +1757,14 @@ export default function App() {
               <div className="flex justify-between items-center mt-6 border-t border-slate-200 pt-6">
                 <button 
                   disabled={day.day === 1}
-                  onClick={() => setActiveTab(`day-${day.day - 1}`)}
+                  onClick={() => changeTab(`day-${day.day - 1}`)}
                   className="px-4 py-2 text-teal-600 font-medium disabled:opacity-30 disabled:cursor-not-allowed hover:bg-teal-50 rounded-lg transition"
                 >
                   &larr; 前一天
                 </button>
                 <button 
                   disabled={day.day === tripSchedule.days.length}
-                  onClick={() => setActiveTab(`day-${day.day + 1}`)}
+                  onClick={() => changeTab(`day-${day.day + 1}`)}
                   className="px-4 py-2 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
                 >
                   下一天 <ChevronRight className="w-4 h-4" />
