@@ -74,8 +74,8 @@ const initialTripData = {
           desc: "🚇 交通：位於 BTS 淺綠線 Asok 站 (E4) 與 MRT 藍線 Sukhumvit 站 (BL22) 交會處，出站步行1分鐘即達。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Grande+Centre+Point+Hotel+Terminal+21", icon: MapPin },
-            { text: "景點介紹", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Info },
-            { text: "飯店訂房", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Hotel },
+            { text: "景點介紹", url: "https://tw.hotels.com/ho403204/", icon: Info },
+            { text: "飯店訂房", url: "https://tw.hotels.com/ho403204/", icon: Hotel },
             { text: "機場至飯店路線", url: "https://www.google.com/maps/dir/Suvarnabhumi+Airport/Centre+Point+Hotel+Terminal+21/", icon: Navigation }
           ]
         },
@@ -227,8 +227,8 @@ const initialTripData = {
           desc: "入住指定的質感度假村，享受極致的放鬆與私人泳池時光。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Cross+Pattaya+Oceanphere", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/hotels/detail/491953-cross-pattaya-oceanphere/", icon: Info },
-            { text: "飯店訂房", url: "https://www.klook.com/zh-TW/hotels/detail/491953-cross-pattaya-oceanphere/", icon: Hotel },
+            { text: "景點介紹", url: "https://tw.hotels.com/ho32585204/", icon: Info },
+            { text: "飯店訂房", url: "https://tw.hotels.com/ho32585204/", icon: Hotel },
             { text: "咖啡館至飯店路線", url: "https://www.google.com/maps/dir/Pa+Dee+Rayong/Cross+Pattaya+Oceanphere/", icon: Navigation }
           ]
         }
@@ -252,8 +252,8 @@ const initialTripData = {
           desc: "享受 Cross Pattaya 度假村設施與豐富早餐。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Cross+Pattaya+Oceanphere", icon: MapPin },
-            { text: "景點介紹", url: "https://www.klook.com/zh-TW/hotels/detail/491953-cross-pattaya-oceanphere/", icon: Info },
-            { text: "飯店訂房", url: "https://www.klook.com/zh-TW/hotels/detail/491953-cross-pattaya-oceanphere/", icon: Hotel }
+            { text: "景點介紹", url: "https://tw.hotels.com/ho32585204/", icon: Info },
+            { text: "飯店訂房", url: "https://tw.hotels.com/ho32585204/", icon: Hotel }
           ]
         },
         {
@@ -328,8 +328,8 @@ const initialTripData = {
           desc: "🚗 交通：專車接送回到曼谷市區飯店。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Grande+Centre+Point+Hotel+Terminal+21", icon: MapPin },
-            { text: "景點介紹", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Info },
-            { text: "飯店訂房", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Hotel },
+            { text: "景點介紹", url: "https://tw.hotels.com/ho403204/", icon: Info },
+            { text: "飯店訂房", url: "https://tw.hotels.com/ho403204/", icon: Hotel },
             { text: "動物園至飯店路線", url: "https://www.google.com/maps/dir/Safari+World+Bangkok/Centre+Point+Hotel+Terminal+21/", icon: Navigation }
           ]
         },
@@ -417,7 +417,7 @@ const initialTripData = {
           desc: "整理行囊，將行李寄放在飯店大廳。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Grande+Centre+Point+Hotel+Terminal+21", icon: MapPin },
-            { text: "景點介紹", url: "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html", icon: Info }
+            { text: "景點介紹", url: "https://tw.hotels.com/ho403204/", icon: Info }
           ]
         },
         {
@@ -476,7 +476,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Terminal 21',
     style: { left: '8%', top: '10%', width: '25%', height: '18%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Terminal+21+Asok',
-    infoUrl: 'https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html'
+    infoUrl: 'https://tw.hotels.com/ho403204/'
   },
   {
     key: 'iconsiam',
@@ -508,7 +508,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Cross Pattaya',
     style: { left: '42%', top: '38%', width: '18%', height: '18%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Cross+Pattaya+Oceanphere',
-    infoUrl: 'https://www.klook.com/zh-TW/hotels/detail/491953-cross-pattaya-oceanphere/'
+    infoUrl: 'https://tw.hotels.com/ho32585204/'
   },
   {
     key: 'kliff',
@@ -617,9 +617,9 @@ const HOTSPOT_CONFIGS = [
 ];
 
 const HOTEL_BOOKING_URLS = {
-  "Centre Point Hotel Terminal 21": "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html",
-  "Cross Pattaya Oceanphere": "https://www.klook.com/zh-TW/hotels/detail/491953-cross-pattaya-oceanphere/",
-  "Grande Centre Point Hotel Terminal 21": "https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html"
+  "Centre Point Hotel Terminal 21": "https://tw.hotels.com/ho403204/",
+  "Cross Pattaya Oceanphere": "https://tw.hotels.com/ho32585204/",
+  "Grande Centre Point Hotel Terminal 21": "https://tw.hotels.com/ho403204/"
 };
 
 // ==========================================
@@ -1636,7 +1636,7 @@ export default function App() {
                     </p>
                   </div>
                 ) : (
-                  <div className="relative w-full max-w-[500px] aspect-square rounded-md shadow-inner bg-white">
+                  <div className="relative w-full aspect-square rounded-md shadow-inner bg-white">
                     <img 
                       src={infographicUrl} 
                       alt="行程資訊圖表" 
