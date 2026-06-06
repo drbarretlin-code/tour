@@ -5,88 +5,28 @@ const targetPath = path.join(__dirname, '../src/App.jsx');
 let content = fs.readFileSync(targetPath, 'utf8');
 
 const replacements = [
-  // 1. Grande Centre Point Hotel Terminal 21
+  // 1. Kliff Beach Club (Facebook -> Official Website)
   {
-    from: 'https://www.klook.com/zh-TW/hotels/detail/210404-grande-centre-point-hotel-terminal-21/',
-    to: 'https://www.agoda.com/zh-tw/grande-centre-point-hotel-terminal-21/hotel/bangkok-th.html'
+    from: 'https://www.facebook.com/kliffbeachclub/',
+    to: 'https://www.kliffbeachclub.com/'
   },
 
-  // 2. ICONSIAM
+  // 2. Suphattra Land (Facebook -> TripAdvisor)
   {
-    from: 'https://www.klook.com/zh-TW/blog/iconsiam-bangkok/',
-    to: 'https://zh.wikipedia.org/wiki/ICONSIAM'
+    from: 'https://www.facebook.com/suphattraland/',
+    to: 'https://www.tripadvisor.com.tw/Attraction_Review-g2237829-d2001550-Reviews-Supatra_Land_Orchard-Ban_Khai_Rayong_Province.html'
   },
 
-  // 3. Damnoen Saduak Floating Market (水上市場)
+  // 3. Pa Dee Rayong (Facebook -> TripAdvisor)
   {
-    from: 'https://www.klook.com/zh-TW/blog/bangkok-floating-markets/',
-    to: 'https://zh.wikipedia.org/wiki/%E4%B8%B9%E8%83%BD%E6%B2%99%E5%A4%9A%E6%B0%B4%E4%B8%8A%E5%B8%82%E5%A0%B4'
+    from: 'https://www.facebook.com/Padeecafecoffeeshop/',
+    to: 'https://www.tripadvisor.com.tw/Restaurant_Review-g2237827-d13801267-Reviews-Pa_Dee-Rayong_Rayong_Province.html'
   },
 
-  // 4. Maeklong Railway Market (美功鐵道市場)
+  // 4. FO SHO BRO (Facebook -> TripAdvisor)
   {
-    from: 'https://www.klook.com/zh-TW/blog/maeklong-railway-market-bangkok/',
-    to: 'https://zh.wikipedia.org/wiki/%E7%BE%8E%E5%8A%9F%E9%90%B5%E8%B7%AF%E5%B8%82%E5%A0%B4'
-  },
-
-  // 5. Kliff Beach Club
-  {
-    from: 'https://www.google.com/maps/place/Kliff+Beach+Club+Pattaya',
-    to: 'https://www.facebook.com/kliffbeachclub/'
-  },
-
-  // 6. Suphattra Land Orchard
-  {
-    from: 'https://www.klook.com/zh-TW/activity/95015-suphattra-land-orchard-rayong/',
-    to: 'https://www.facebook.com/suphattraland/'
-  },
-
-  // 7. Pa Dee Rayong Cafe
-  {
-    from: 'https://www.google.com/maps/place/Pa+Dee+Rayong',
-    to: 'https://www.facebook.com/Padeecafecoffeeshop/'
-  },
-
-  // 8. Safari World Bangkok
-  {
-    from: 'https://www.klook.com/zh-TW/blog/safari-world-bangkok/',
-    to: 'https://www.safariworld.com/'
-  },
-
-  // 9. Savoey Seafood Restaurant
-  {
-    from: 'https://www.klook.com/zh-TW/activity/9880-savoey-seafood-co-bangkok/',
-    to: 'https://www.savoey.com/'
-  },
-
-  // 10. FO SHO BRO Cafe
-  {
-    from: 'https://www.wendyjourney.com/fo-sho-bro/',
-    to: 'https://www.facebook.com/foshobro.bkk/'
-  },
-
-  // 11. Big C Supercenter
-  {
-    from: 'https://www.klook.com/zh-TW/blog/bangkok-big-c-supercenter/',
-    to: 'https://zh.wikipedia.org/wiki/Big_C'
-  },
-
-  // 12. Let's Relax Spa
-  {
-    from: 'https://www.klook.com/zh-TW/activity/1659-lets-relax-spa-treatments-bangkok/',
-    to: 'https://letsrelaxspa.com/'
-  },
-
-  // 13. Columbia Pictures Aquaverse
-  {
-    from: 'https://www.klook.com/zh-TW/activity/71542-columbia-pictures-aquaverse-water-park-ticket-pattaya/',
-    to: 'https://columbiapicturesaquaverse.com/'
-  },
-
-  // 14. Chao Phraya River Cruise
-  {
-    from: 'https://www.klook.com/zh-TW/blog/chao-phraya-river-cruises-bangkok/',
-    to: 'https://zh.wikipedia.org/wiki/%E6%98%AD%E6%8A%AB%E8%80%B6%E6%B2%B3'
+    from: 'https://www.facebook.com/foshobro.bkk/',
+    to: 'https://www.tripadvisor.com.tw/Restaurant_Review-g293916-d25101037-Reviews-Fo_Sho_Bro-Bangkok.html'
   }
 ];
 
