@@ -410,6 +410,37 @@ export default function App() {
     setImportedItems(prev => ({ ...prev, [item.title + '-' + idx]: true }));
   };
   
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [customNotes, setCustomNotes] = useState({});
+  const [isCopied, setIsCopied] = useState(false); 
+  
+  // 狀態管理：行程資料
+  const [tripSchedule, setTripSchedule] = useState(initialTripData);
+
+  // 編輯/新增行程的 Modal 狀態
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddMode, setIsAddMode] = useState(false);
+  const [editingActivity, setEditingActivity] = useState(null);
+  const [sourceDayId, setSourceDayId] = useState(1);
+  const [targetDayId, setTargetDayId] = useState(1);
+  
+  // 編輯表單欄位
+  const [formTime, setFormTime] = useState('');
+  const [formTitle, setFormTitle] = useState('');
+  const [formDesc, setFormDesc] = useState('');
+  const [formRegion, setFormRegion] = useState('曼谷');
+  const [formType, setFormType] = useState('camera');
+  const [formMapUrl, setFormMapUrl] = useState('');
+  const [formInfoUrl, setFormInfoUrl] = useState('');
+  
+  const [aiWarning, setAiWarning] = useState(null);
+
+  // 圖像生成狀態
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [infographicUrl, setInfographicUrl] = useState('image_1cf223.png'); // 預設使用上傳的圖片
+  const [generateError, setGenerateError] = useState(null);
+
   // 收集行程中所有的景點標題（做關鍵字比對用，自動清理無效熱區）
   const allActivityTitles = tripSchedule.days.flatMap(d => d.activities.map(a => a.title.toLowerCase()));
 
@@ -445,35 +476,6 @@ export default function App() {
       show: tripSchedule.days.some(d => [5, 6, 7].includes(d.day) && d.activities.length > 0)
     }
   ];
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [customNotes, setCustomNotes] = useState({});
-  const [isCopied, setIsCopied] = useState(false); 
-  
-  // 狀態管理：行程資料
-  const [tripSchedule, setTripSchedule] = useState(initialTripData);
-
-  // 編輯/新增行程的 Modal 狀態
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isAddMode, setIsAddMode] = useState(false);
-  const [editingActivity, setEditingActivity] = useState(null);
-  const [sourceDayId, setSourceDayId] = useState(1);
-  const [targetDayId, setTargetDayId] = useState(1);
-  
-  // 編輯表單欄位
-  const [formTime, setFormTime] = useState('');
-  const [formTitle, setFormTitle] = useState('');
-  const [formDesc, setFormDesc] = useState('');
-  const [formRegion, setFormRegion] = useState('曼谷');
-  const [formType, setFormType] = useState('camera');
-  const [formMapUrl, setFormMapUrl] = useState('');
-  const [formInfoUrl, setFormInfoUrl] = useState('');
-  
-  const [aiWarning, setAiWarning] = useState(null);
-
-  // 圖像生成狀態
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [infographicUrl, setInfographicUrl] = useState('image_1cf223.png'); // 預設使用上傳的圖片
-  const [generateError, setGenerateError] = useState(null);
 
   // 處理備註更新
   const handleNoteChange = (activityId, text) => {
