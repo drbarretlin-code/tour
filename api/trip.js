@@ -51,6 +51,14 @@ export default async function handler(req, res) {
             const content = fs.readFileSync(mockDbPath, 'utf8');
             data = JSON.parse(content);
             usedSource = 'local_file';
+          } else {
+            // 防禦性處理：如果是 Vercel 環境且 /tmp 臨時檔不存在，則讀取隨專案推送的 scratch/local_kv_db.json 做為初始基線
+            const repoDbPath = path.join(process.cwd(), 'scratch', 'local_kv_db.json');
+            if (fs.existsSync(repoDbPath)) {
+              const content = fs.readFileSync(repoDbPath, 'utf8');
+              data = JSON.parse(content);
+              usedSource = 'repo_file';
+            }
           }
         } catch (e) {
           console.warn('本地檔案讀取失敗，嘗試備援全域記憶體:', e.message);
