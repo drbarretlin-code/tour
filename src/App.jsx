@@ -704,7 +704,188 @@ JSON 結構樣式：
 };
 
 // ==========================================
-// 實務旅遊排程邏輯後置驗證器 (防止行程重疊/車程不足等不合理結果)
+// 共用工具函式：停留時間估算 / 交通車程估算 / 時間轉換
+// ==========================================
+const getDuration = (category, title) => {
+  const t = (title || "").toLowerCase();
+  const cat = (category || "").toLowerCase();
+  if (t.includes("午餐") || t.includes("晚餐") || t.includes("savoey") || t.includes("餐廳") || t.includes("美食") || t.includes("飯") || cat === "food") return 90;
+  if (t.includes("逛街") || t.includes("iconsiam") || t.includes("市集") || t.includes("夜市") || t.includes("商場") || t.includes("outlet") || cat === "shopping") return 120;
+  if (t.includes("咖啡") || t.includes("cafe") || cat === "coffee") return 60;
+  if (t.includes("動物園") || t.includes("safari") || t.includes("樂園")) return 240;
+  if (cat === "hotel") return 60;
+  if (cat === "transport") return 30;
+  return 90;
+};
+
+const getTravelTime = (reg1, reg2, title1, title2) => {
+  const r1 = reg1 || "曼谷";
+  const r2 = reg2 || "曼谷";
+  const t1 = (title1 || "").toLowerCase();
+  const t2 = (title2 || "").toLowerCase();
+  if (r1 !== r2) {
+    if ((r1 === "曼谷" && r2 === "羅勇") || (r1 === "羅勇" && r2 === "曼谷")) return 150;
+    if ((r1 === "曼谷" && r2 === "芭達雅") || (r1 === "芭達雅" && r2 === "曼谷")) return 120;
+    if ((r1 === "芭達雅" && r2 === "羅勇") || (r1 === "羅勇" && r2 === "芭達雅")) return 60;
+    if ((r1 === "曼谷" && r2 === "曼谷近郊") || (r1 === "曼谷近郊" && r2 === "曼谷")) return 60;
+    return 90;
+  }
+  if (t1.includes("one bangkok") && t2.includes("one bangkok")) return 5;
+  if (t1.includes("iconsiam") && t2.includes("iconsiam")) return 5;
+  if (t1.includes("terminal 21") && t2.includes("terminal 21")) return 5;
+  if (r1 === "曼谷") return 40;
+  return 30;
+};
+
+const timeToMins = (tStr) => {
+  if (!tStr) return 0;
+  const parts = tStr.split(":");
+  if (parts.length < 2) return 0;
+  return Number(parts[0]) * 60 + Number(parts[1]);
+};
+
+const minsToTime = (mins) => {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+};
+
+// ==========================================
+// 智慧時段探測器：掃描某天行程的所有空檔，找出最佳安插時段
+// ==========================================
+const findBestTimeSlot = (item, dayData, tripSchedule) => {
+  const dayNum = Number(dayData.day);
+  const itemDuration = getDuration(item.category, item.title);
+  const itemRegion = item.region || "曼谷";
+  const dayRegion = dayData.region || "曼谷";
+  const activities = (dayData.activities || []).slice().sort((a, b) => a.time.localeCompare(b.time));
+
+  const DAY_START = 8 * 60;   // 最早 08:00
+  const DAY_END = 22 * 60;    // 最晚 22:00
+
+  // 步驟1：區域相容性初步檢查
+  const crossTravel = getTravelTime(dayRegion, itemRegion, "", "");
+  const isCrossRegion = dayRegion !== itemRegion && crossTravel >= 120;
+
+  // 步驟2：掃描所有可插入的時間空檔 (gaps)
+  const gaps = [];
+  
+  if (activities.length === 0) {
+    // 當天完全無行程，從早上到晚上都是空的
+    gaps.push({ start: DAY_START, end: DAY_END, prevAct: null, nextAct: null });
+  } else {
+    // 第一段空檔：從早上到第一個行程之前
+    const firstActStart = timeToMins(activities[0].time);
+    if (firstActStart > DAY_START) {
+      gaps.push({ start: DAY_START, end: firstActStart, prevAct: null, nextAct: activities[0] });
+    }
+
+    // 中間空檔：每兩個行程之間
+    for (let i = 0; i < activities.length - 1; i++) {
+      const currAct = activities[i];
+      const nextAct = activities[i + 1];
+      const currEnd = timeToMins(currAct.time) + getDuration(currAct.type, currAct.title);
+      const nextStart = timeToMins(nextAct.time);
+      if (currEnd < nextStart) {
+        gaps.push({ start: currEnd, end: nextStart, prevAct: currAct, nextAct: nextAct });
+      }
+    }
+
+    // 最後一段空檔：從最後一個行程結束到一天結束
+    const lastAct = activities[activities.length - 1];
+    const lastEnd = timeToMins(lastAct.time) + getDuration(lastAct.type, lastAct.title);
+    if (lastEnd < DAY_END) {
+      gaps.push({ start: lastEnd, end: DAY_END, prevAct: lastAct, nextAct: null });
+    }
+  }
+
+  // 步驟3：逐一評估每個空檔，計算實際可用時間
+  let bestSlot = null;
+  let bestScore = -Infinity;
+
+  for (const gap of gaps) {
+    // 計算從前一個行程到新景點的交通車程
+    const travelFromPrev = gap.prevAct 
+      ? getTravelTime(gap.prevAct.region || dayRegion, itemRegion, gap.prevAct.title, item.title) 
+      : 0;
+    
+    // 計算從新景點到下一個行程的交通車程
+    const travelToNext = gap.nextAct 
+      ? getTravelTime(itemRegion, gap.nextAct.region || dayRegion, item.title, gap.nextAct.title) 
+      : 0;
+
+    // 新景點最早可開始的時間 = 空檔起始 + 從前一站過來的交通時間
+    const earliestStart = gap.start + travelFromPrev;
+    
+    // 新景點必須結束的最後期限 = 空檔結束 - 前往下一站的交通時間
+    const latestEnd = gap.end - travelToNext;
+    
+    // 可用的總淨時間
+    const availableTime = latestEnd - earliestStart;
+
+    if (availableTime >= itemDuration) {
+      // 此空檔可以完整容納新景點 ✅
+      const suggestedStart = earliestStart;
+      
+      // 評分邏輯：偏好下午時段 (14:00-17:00)、避免太早或太晚
+      let score = 100;
+      if (suggestedStart >= 14 * 60 && suggestedStart <= 17 * 60) score += 20; // 偏好下午
+      if (suggestedStart >= 10 * 60 && suggestedStart < 14 * 60) score += 10; // 上午次優
+      if (suggestedStart >= 18 * 60) score -= 10; // 傍晚稍低
+      score += (availableTime - itemDuration) / 10; // 空檔越寬裕越好
+      if (gap.prevAct) score += 5; // 有前一行程比較自然
+      
+      if (score > bestScore) {
+        bestScore = score;
+        bestSlot = {
+          time: minsToTime(suggestedStart),
+          timeMins: suggestedStart,
+          gap,
+          travelFromPrev,
+          travelToNext,
+          availableTime,
+          bufferTime: availableTime - itemDuration,
+          affectedActivities: []
+        };
+      }
+    } else if (availableTime >= itemDuration * 0.6) {
+      // 空檔不夠完整但可以勉強擠入（需要壓縮前後行程）⚠️
+      const suggestedStart = earliestStart;
+      const deficit = itemDuration - availableTime;
+      const affected = [];
+      
+      if (gap.nextAct) {
+        affected.push({
+          title: gap.nextAct.title,
+          originalTime: gap.nextAct.time,
+          suggestedNewTime: minsToTime(timeToMins(gap.nextAct.time) + deficit),
+          delayMinutes: deficit,
+          type: 'delay'
+        });
+      }
+
+      const score = 30 - deficit; // 基礎分較低
+      if (score > bestScore && !isCrossRegion) {
+        bestScore = score;
+        bestSlot = {
+          time: minsToTime(suggestedStart),
+          timeMins: suggestedStart,
+          gap,
+          travelFromPrev,
+          travelToNext,
+          availableTime,
+          bufferTime: availableTime - itemDuration,
+          affectedActivities: affected
+        };
+      }
+    }
+  }
+
+  return { bestSlot, isCrossRegion, crossTravel, itemDuration, dayNum };
+};
+
+// ==========================================
+// 實務旅遊排程邏輯後置驗證器 (含智慧時段計算)
 // ==========================================
 const validateItineraryLogic = (item, tripSchedule) => {
   const validated = { ...item };
@@ -713,60 +894,14 @@ const validateItineraryLogic = (item, tripSchedule) => {
   const targetDay = tripSchedule.days.find(d => Number(d.day) === dayNum);
   if (!targetDay) return validated;
 
-  const getDuration = (category, title) => {
-    const t = (title || "").toLowerCase();
-    const cat = (category || "").toLowerCase();
-    if (t.includes("午餐") || t.includes("晚餐") || t.includes("savoey") || t.includes("餐廳") || t.includes("美食") || t.includes("飯") || cat === "food") {
-      return 90; // 1.5小時
-    }
-    if (t.includes("逛街") || t.includes("iconsiam") || t.includes("市集") || t.includes("夜市") || t.includes("商場") || t.includes("outlet") || cat === "shopping") {
-      return 120; // 2小時
-    }
-    if (t.includes("咖啡") || t.includes("cafe") || cat === "coffee") {
-      return 60; // 1小時
-    }
-    if (t.includes("動物園") || t.includes("safari") || t.includes("樂園")) {
-      return 240; // 4小時
-    }
-    if (cat === "hotel") return 60;
-    if (cat === "transport") return 30;
-    return 90; // default 1.5小時
-  };
+  const itemRegion = validated.region || "曼谷";
+  const dayRegion = targetDay.region || "曼谷";
 
-  const getTravelTime = (reg1, reg2, title1, title2) => {
-    const r1 = reg1 || "曼谷";
-    const r2 = reg2 || "曼谷";
-    const t1 = (title1 || "").toLowerCase();
-    const t2 = (title2 || "").toLowerCase();
-
-    if (r1 !== r2) {
-      if ((r1 === "曼谷" && r2 === "羅勇") || (r1 === "羅勇" && r2 === "曼谷")) return 150; // 2.5小時
-      if ((r1 === "曼谷" && r2 === "芭達雅") || (r1 === "芭達雅" && r2 === "曼谷")) return 120; // 2小時
-      if ((r1 === "芭達雅" && r2 === "羅勇") || (r1 === "羅勇" && r2 === "芭達雅")) return 60; // 1小時
-      if ((r1 === "曼谷" && r2 === "曼谷近郊") || (r1 === "曼谷近郊" && r2 === "曼谷")) return 60; // 1小時
-      return 90;
-    }
-
-    // 同一區域
-    if (t1.includes("one bangkok") && t2.includes("one bangkok")) return 5;
-    if (t1.includes("iconsiam") && t2.includes("iconsiam")) return 5;
-    if (t1.includes("terminal 21") && t2.includes("terminal 21")) return 5;
-    
-    if (r1 === "曼谷") return 40; // 曼谷塞車常態，預設40分鐘
-    return 30;
-  };
-
-  const timeToMins = (tStr) => {
-    if (!tStr) return 0;
-    const parts = tStr.split(":");
-    if (parts.length < 2) return 0;
-    return Number(parts[0]) * 60 + Number(parts[1]);
-  };
-
+  // 如果有使用者手動指定的時間，先以該時間進行衝突驗證
   const itemMins = timeToMins(validated.suggestedTime);
   const itemDuration = getDuration(validated.category, validated.title);
+  const activities = (targetDay.activities || []).slice().sort((a, b) => a.time.localeCompare(b.time));
 
-  const activities = targetDay.activities || [];
   let conflictReason = "";
   let locationConflict = "";
 
@@ -774,9 +909,8 @@ const validateItineraryLogic = (item, tripSchedule) => {
     const actMins = timeToMins(act.time);
     const actDuration = getDuration(act.type, act.title);
     
-    // 狀況1：既有行程在推薦行程之前
     if (actMins <= itemMins) {
-      const travel = getTravelTime(act.region || targetDay.region, validated.region, act.title, validated.title);
+      const travel = getTravelTime(act.region || dayRegion, itemRegion, act.title, validated.title);
       const neededEnd = actMins + actDuration + travel;
       if (neededEnd > itemMins) {
         const diff = neededEnd - itemMins;
@@ -786,9 +920,8 @@ const validateItineraryLogic = (item, tripSchedule) => {
       }
     }
     
-    // 狀況2：既有行程在推薦行程之後
     if (actMins > itemMins) {
-      const travel = getTravelTime(validated.region, act.region || targetDay.region, validated.title, act.title);
+      const travel = getTravelTime(itemRegion, act.region || dayRegion, validated.title, act.title);
       const neededEnd = itemMins + itemDuration + travel;
       if (neededEnd > actMins) {
         const diff = neededEnd - actMins;
@@ -800,22 +933,18 @@ const validateItineraryLogic = (item, tripSchedule) => {
   }
 
   // 跨區衝突驗證
-  if (targetDay.region && validated.region && targetDay.region !== validated.region) {
-    const crossTravel = getTravelTime(targetDay.region, validated.region, "", "");
-    if (crossTravel >= 120) {
-      if (!conflictReason) {
-        conflictReason = `跨區交通衝突：此景點位於「${validated.region}」，而 Day ${dayNum} 的主要活動區域在「${targetDay.region}」，單趟車程長達 ${crossTravel} 分鐘，往返耗費體力且時間嚴重衝突，不建議排在此天。`;
-        locationConflict = `跨區交通衝突：單趟車程長達 ${crossTravel} 分鐘。`;
-      }
+  if (dayRegion !== itemRegion) {
+    const crossTravel = getTravelTime(dayRegion, itemRegion, "", "");
+    if (crossTravel >= 120 && !conflictReason) {
+      conflictReason = `跨區交通衝突：此景點位於「${itemRegion}」，而 Day ${dayNum} 的主要活動區域在「${dayRegion}」，單趟車程長達 ${crossTravel} 分鐘，往返耗費體力且時間嚴重衝突，不建議排在此天。`;
+      locationConflict = `跨區交通衝突：單趟車程長達 ${crossTravel} 分鐘。`;
     }
   }
 
   if (conflictReason) {
     validated.aiDecision = "not_recommended";
     validated.aiDecisionReason = conflictReason;
-    if (locationConflict) {
-      validated.locationWarning = locationConflict;
-    }
+    if (locationConflict) validated.locationWarning = locationConflict;
   } else {
     // 評估同質性/性質重疊
     let similarAct = null;
@@ -827,11 +956,7 @@ const validateItineraryLogic = (item, tripSchedule) => {
           (a.title.includes("咖啡") && validated.title.includes("咖啡")) ||
           (a.title.includes("Savoey") && validated.title.includes("Savoey"))
         ));
-        
-        if (isSameCategory || hasKeywordMatch) {
-          similarAct = a;
-          break;
-        }
+        if (isSameCategory || hasKeywordMatch) { similarAct = a; break; }
       }
       if (similarAct) break;
     }
@@ -844,11 +969,102 @@ const validateItineraryLogic = (item, tripSchedule) => {
       validated.similarityWarning = `同質警示：與既有行程中的「${similarAct.title}」性質相近。`;
     } else {
       validated.aiDecision = "adoptable";
-      validated.aiDecisionReason = `位置順路且時間充裕：此景點位於「${validated.region}」，與 Day ${dayNum} 的活動區域一致，且前後行程有充足的交通與停留緩衝時間，無同質行程衝突，推薦直接採用。`;
+      validated.aiDecisionReason = `位置順路且時間充裕：此景點位於「${itemRegion}」，與 Day ${dayNum} 的活動區域一致，且前後行程有充足的交通與停留緩衝時間，無同質行程衝突，推薦直接採用。`;
     }
   }
 
   return validated;
+};
+
+// ==========================================
+// 全行程多日智慧排程分析器：掃描所有天數，找出每天的最佳安插時段
+// ==========================================
+const analyzeAllDaysFeasibility = (item, tripSchedule) => {
+  const itemDuration = getDuration(item.category, item.title);
+
+  return tripSchedule.days.map(d => {
+    const slotResult = findBestTimeSlot(item, d, tripSchedule);
+    const { bestSlot, isCrossRegion, crossTravel } = slotResult;
+
+    if (isCrossRegion) {
+      return {
+        day: d.day,
+        region: d.region,
+        decision: 'not_recommended',
+        reason: `跨區交通衝突：此景點位於「${item.region}」，Day ${d.day} 主要區域為「${d.region}」，單趟車程長達 ${crossTravel} 分鐘，不建議排在此天。`,
+        bestTime: null,
+        affectedActivities: [],
+        bufferTime: 0,
+        similarTitle: null
+      };
+    }
+
+    if (!bestSlot) {
+      return {
+        day: d.day,
+        region: d.region,
+        decision: 'not_recommended',
+        reason: `當天行程已排滿，無法找到可容納此景點（需 ${itemDuration} 分鐘）的空檔。`,
+        bestTime: null,
+        affectedActivities: [],
+        bufferTime: 0,
+        similarTitle: null
+      };
+    }
+
+    // 用找到的最佳時段進行完整的驗證（包含同質性檢查）
+    const evalAtBestTime = validateItineraryLogic({
+      ...item,
+      suggestedDay: d.day,
+      suggestedTime: bestSlot.time
+    }, tripSchedule);
+
+    const prevLabel = bestSlot.gap.prevAct ? `「${bestSlot.gap.prevAct.title}」結束後` : "早上空檔";
+    const nextLabel = bestSlot.gap.nextAct ? `「${bestSlot.gap.nextAct.title}」之前` : "傍晚/晚上";
+    
+    let detailReason = "";
+    if (evalAtBestTime.aiDecision === 'adoptable') {
+      detailReason = `可安插於 ${bestSlot.time}（${prevLabel} → ${nextLabel}）。`;
+      if (bestSlot.travelFromPrev > 0) detailReason += ` 車程 ${bestSlot.travelFromPrev} 分鐘。`;
+      detailReason += ` 預估停留 ${itemDuration} 分鐘，剩餘緩衝 ${bestSlot.bufferTime} 分鐘。`;
+    } else if (evalAtBestTime.aiDecision === 'optional') {
+      detailReason = evalAtBestTime.aiDecisionReason;
+    } else {
+      detailReason = evalAtBestTime.aiDecisionReason;
+    }
+
+    // 如果有受影響的行程，附加提示
+    if (bestSlot.affectedActivities.length > 0) {
+      const affectedTexts = bestSlot.affectedActivities.map(a => 
+        `⚠ 需將「${a.title}」從 ${a.originalTime} 延後至 ${a.suggestedNewTime}（延後 ${a.delayMinutes} 分鐘）`
+      );
+      detailReason += "\n" + affectedTexts.join("\n");
+
+      if (evalAtBestTime.aiDecision === 'adoptable') {
+        return {
+          day: d.day,
+          region: d.region,
+          decision: 'adoptable_with_changes',
+          reason: detailReason,
+          bestTime: bestSlot.time,
+          affectedActivities: bestSlot.affectedActivities,
+          bufferTime: bestSlot.bufferTime,
+          similarTitle: null
+        };
+      }
+    }
+
+    return {
+      day: d.day,
+      region: d.region,
+      decision: evalAtBestTime.aiDecision,
+      reason: detailReason,
+      bestTime: bestSlot.time,
+      affectedActivities: bestSlot.affectedActivities || [],
+      bufferTime: bestSlot.bufferTime,
+      similarTitle: evalAtBestTime.similarActivityTitleToDelete || null
+    };
+  });
 };
 
 const localMockAnalysis = (urlsText) => {
@@ -1006,9 +1222,21 @@ export default function App() {
     setUserDecisions(prev => ({ ...prev, [idx]: decision }));
   };
 
-  // 處理 AI 結果中天數與時間的本地修改
+  // 處理 AI 結果中天數與時間的本地修改（切換天數時自動計算最佳時段）
   const handleResultDayChange = (idx, dayNum) => {
     setResultDaySelections(prev => ({ ...prev, [idx]: dayNum }));
+    
+    // 切換天數時，自動計算該天的最佳安插時段
+    if (aiAnalysisResults && aiAnalysisResults[idx]) {
+      const result = aiAnalysisResults[idx];
+      const targetDay = tripSchedule.days.find(d => Number(d.day) === Number(dayNum));
+      if (targetDay) {
+        const slotResult = findBestTimeSlot(result, targetDay, tripSchedule);
+        if (slotResult.bestSlot) {
+          setResultTimeSelections(prev => ({ ...prev, [idx]: slotResult.bestSlot.time }));
+        }
+      }
+    }
   };
 
   const handleResultTimeChange = (idx, timeStr) => {
@@ -1800,21 +2028,8 @@ export default function App() {
                       activeEvaluation.aiDecision === 'optional' ? 'swap' : 'adopt'
                     );
 
-                    // 計算全行程 7 天的安插可行性分析
-                    const dayFeasibilities = tripSchedule.days.map(d => {
-                      const evalResult = validateItineraryLogic({
-                        ...result,
-                        suggestedDay: d.day,
-                        suggestedTime: selectedTime
-                      }, tripSchedule);
-                      return {
-                        day: d.day,
-                        region: d.region,
-                        decision: evalResult.aiDecision,
-                        reason: evalResult.aiDecisionReason,
-                        similarTitle: evalResult.similarActivityTitleToDelete
-                      };
-                    });
+                    // 計算全行程 7 天的安插可行性分析（使用智慧時段探測器）
+                    const dayFeasibilities = analyzeAllDaysFeasibility(result, tripSchedule);
 
                     // 依據 AI 決策狀態設定標記與色彩
                     let decisionBadge = "";
@@ -1941,11 +2156,11 @@ export default function App() {
                           {result.suggestion}
                         </div>
 
-                        {/* 全行程 7 天安插可行性分析 (互動式切換按鈕) */}
+                        {/* 全行程 7 天安插可行性分析 (互動式切換按鈕 + 智慧時段推薦) */}
                         <div className="mt-4 pt-4 border-t border-slate-100">
                           <span className="block text-[11px] font-bold text-slate-700 mb-2 flex items-center gap-1">
                             <Calendar className="w-3.5 h-3.5 text-indigo-500" />
-                            <span>全行程 7 天安插可行性比對 (於 {selectedTime})：</span>
+                            <span>全行程 7 天智慧安插可行性分析（AI 自動推薦最佳時段）：</span>
                           </span>
                           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
                             {dayFeasibilities.map((f) => {
@@ -1954,28 +2169,39 @@ export default function App() {
                               let textClass = "";
                               let icon = "";
                               let tooltip = "";
+                              let timeLabel = "";
 
                               if (f.decision === 'adoptable') {
                                 bgClass = "bg-emerald-50 hover:bg-emerald-100/80";
                                 borderClass = "border-emerald-200";
                                 textClass = "text-emerald-800";
                                 icon = "🟢 可安插";
-                                tooltip = "可採用：位置順路且時間充裕";
+                                tooltip = f.reason;
+                                timeLabel = f.bestTime ? `⏰ ${f.bestTime}` : "";
+                              } else if (f.decision === 'adoptable_with_changes') {
+                                bgClass = "bg-amber-50 hover:bg-amber-100/80";
+                                borderClass = "border-amber-200";
+                                textClass = "text-amber-800";
+                                icon = "🟠 可擠入";
+                                tooltip = f.reason;
+                                timeLabel = f.bestTime ? `⏰ ${f.bestTime}` : "";
                               } else if (f.decision === 'optional') {
                                 bgClass = "bg-purple-50 hover:bg-purple-100/80";
                                 borderClass = "border-purple-200";
                                 textClass = "text-purple-800";
                                 icon = "🟡 可取代";
                                 tooltip = `可取代：與「${f.similarTitle}」性質相近，建議替換`;
+                                timeLabel = f.bestTime ? `⏰ ${f.bestTime}` : "";
                               } else {
                                 bgClass = "bg-slate-50 hover:bg-slate-100/80";
                                 borderClass = "border-slate-200";
                                 textClass = "text-slate-500";
                                 icon = "❌ 不建議";
                                 tooltip = f.reason;
+                                timeLabel = "";
                               }
 
-                              const isCurrentSelected = f.day === selectedDay;
+                              const isCurrentSelected = Number(f.day) === Number(selectedDay);
 
                               return (
                                 <button
@@ -1983,21 +2209,38 @@ export default function App() {
                                   type="button"
                                   disabled={isCompleted}
                                   onClick={() => handleResultDayChange(idx, f.day)}
-                                  title={`${tooltip} (點擊直接切換至 Day ${f.day})`}
+                                  title={`${tooltip}\n(點擊直接切換至 Day ${f.day}${f.bestTime ? '，建議時段 ' + f.bestTime : ''})`}
                                   className={`flex flex-col items-center justify-center p-2 rounded-lg border text-center transition ${bgClass} ${borderClass} ${textClass} ${
                                     isCurrentSelected ? 'ring-2 ring-indigo-500 ring-offset-1 font-bold' : 'opacity-85 hover:opacity-100'
                                   }`}
                                 >
                                   <span className="text-[10px] block font-sans font-bold">Day {f.day}</span>
                                   <span className="text-[9px] block truncate max-w-full font-medium">{f.region}</span>
-                                  <span className="text-[10px] mt-1 font-bold">{icon}</span>
+                                  <span className="text-[10px] mt-0.5 font-bold">{icon}</span>
+                                  {timeLabel && <span className="text-[9px] mt-0.5 font-mono font-semibold opacity-80">{timeLabel}</span>}
+                                  {f.affectedActivities && f.affectedActivities.length > 0 && (
+                                    <span className="text-[8px] mt-0.5 text-amber-600 font-medium">⚠ 需調整 {f.affectedActivities.length} 項</span>
+                                  )}
                                 </button>
                               );
                             })}
                           </div>
                           <p className="text-[10px] text-slate-500 mt-2 font-medium leading-normal">
-                            💡 提示：點擊上方 Day 欄位，系統將即時切換排定天數並動態重新計算警告與決策。
+                            💡 提示：AI 已依據每日行程空檔與區域相容性，自動計算各天最佳安插時段。點擊 Day 欄位即可切換並套用建議時段。
                           </p>
+                          {/* 顯示受影響行程的詳細提示 */}
+                          {dayFeasibilities.filter(f => Number(f.day) === Number(selectedDay) && f.affectedActivities && f.affectedActivities.length > 0).map(f => (
+                            <div key={`affected-${f.day}`} className="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-lg">
+                              <span className="text-[11px] font-bold text-amber-800 flex items-center gap-1 mb-1">
+                                <AlertTriangle className="w-3.5 h-3.5" /> 安插此景點將影響以下行程時段：
+                              </span>
+                              {f.affectedActivities.map((a, ai) => (
+                                <p key={ai} className="text-[10px] text-amber-700 ml-4">
+                                  • 「{a.title}」需從 {a.originalTime} 延後至 {a.suggestedNewTime}（延後 {a.delayMinutes} 分鐘）
+                                </p>
+                              ))}
+                            </div>
+                          ))}
                         </div>
 
                         {/* 匯入行程操作區 */}
