@@ -108,10 +108,11 @@ const initialTripData = {
           title: "抵達曼谷機場 (BKK)",
           type: "transport",
           region: "曼谷",
-          desc: "搭乘預約的機場接送專車前往曼谷市區飯店寄放行李。辦理入境手續與行李提領。",
+          desc: "辦理入境手續與行李提領。\n🚗 交通指引：建議預約機場接送專車直達飯店（車程約 40-50 分鐘），避免家庭攜帶大件行李在捷運轉乘奔波。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Suvarnabhumi+Airport" },
-            { text: "預訂接送", url: "https://www.klook.com/zh-TW/transport/airport-transfer/bangkok/" }
+            { text: "Klook 機場接送", url: "https://www.klook.com/zh-TW/transport/airport-transfer/bangkok/" },
+            { text: "淘泰朗機場接送", url: "https://taotailangthai.com/product-category/picup10hours-hotel/" }
           ]
         },
         {
@@ -120,9 +121,9 @@ const initialTripData = {
           title: "抵達 曼谷格蘭德中心點隆比尼飯店 寄放行李",
           type: "hotel",
           region: "曼谷",
-          desc: "位於地鐵 Lumphini 站旁，交通極其便利，可步行至 One Bangkok。寄放行李後開啟旅程。",
+          desc: "抵達飯店寄存行李。\n🚇 交通指引：若搭乘大眾交通，可於 BKK 機場 B 樓搭乘 ARL 機場快線至 Makkasan 站 (A6)，經通道步行至 MRT 藍線 Phetchaburi 站 (BL21)，搭乘至 Lumphini 站 (BL25) 2 號出口即可抵達飯店。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Grande+Centre+Point+Lumpini" },
+            { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Grande+Centre+Point+Lumphini" },
             { text: "飯店訂房", url: "https://tw.hotels.com/ho1258679072/" }
           ]
         },
@@ -132,7 +133,7 @@ const initialTripData = {
           title: "隆比尼公園 (Lumphini Park) 散步",
           type: "camera",
           region: "曼谷",
-          desc: "步行至飯店旁的隆比尼公園散步，呼吸新鮮空氣，運氣好還能看到著名的野生大澤巨蜥！",
+          desc: "步行至飯店旁的隆比尼公園散步，呼吸新鮮空氣並觀賞大澤巨蜥。\n🚶 交通指引：從飯店大門右轉步行約 1-2 分鐘即可直達公園入口綠地。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Lumphini+Park" }
           ]
@@ -143,7 +144,7 @@ const initialTripData = {
           title: "午餐與下午茶：Baan Suan Sathon ＆ Park Sathorn",
           type: "coffee",
           region: "曼谷",
-          desc: "森林系童話餐廳與網美咖啡廳，享用美味泰式料理及英式下午茶，置身於森林瀑布、古堡仙境中拍美照！",
+          desc: "森林系童話餐廳與網美咖啡廳，置身於瀑布古堡仙境中享用泰式料理與下午茶。\n🚗 交通指引：此處位於 Sathorn 巷弄內，無直達捷運。強烈建議使用 Grab/Bolt App 叫車，或搭乘計程車直達，車程約 8 分鐘（距離約 2.5 公里）。",
           links: [
             { text: "餐廳地圖", url: "https://www.google.com/maps/search/?api=1&query=Baan+Suan+Sathon" },
             { text: "咖啡廳地圖", url: "https://www.google.com/maps/search/?api=1&query=Park+Sathorn+Restaurant" }
@@ -155,7 +156,7 @@ const initialTripData = {
           title: "商場逛街：One Bangkok (曼谷一號) ＆ Central Embassy",
           type: "shopping",
           region: "曼谷",
-          desc: "走訪曼谷全新奢華造鎮地標 One Bangkok 及頂級貴婦百貨 Central Embassy 逛街採購。",
+          desc: "走訪全新地標 One Bangkok 及頂級貴婦百貨 Central Embassy。\n🚇 交通指引：從森林餐廳搭車前往 One Bangkok（約 8 分鐘）。One Bangkok 旁為 MRT Lumphini 站 (BL25)，欲前往 Central Embassy，可搭藍線 1 站至 Silom 站，出站走空中廊道至 BTS Sala Daeng 站轉乘 Silom 線至 Siam 站，再轉乘 Sukhumvit 線搭至 Phloen Chit 站 (E2)，2 號或 5 號出口直接連結 Central Embassy。由於轉乘較多，家庭出行亦建議直接叫 Grab (約 10 分鐘)。",
           links: [
             { text: "One Bangkok 地圖", url: "https://www.google.com/maps/search/?api=1&query=One+Bangkok" },
             { text: "Central Embassy 地圖", url: "https://www.google.com/maps/search/?api=1&query=Central+Embassy" }
@@ -167,7 +168,7 @@ const initialTripData = {
           title: "晚餐：Central Embassy 百貨內享用",
           type: "food",
           region: "曼谷",
-          desc: "在貴婦百貨美食街或高級餐廳享用精緻泰式晚餐。飯後搭 Grab 回 Lumpini 飯店辦理入住與休息。",
+          desc: "於百貨美食街或餐廳享用晚餐，飯後返回飯店辦理入住。\n🚗 交通指引：建議叫 Grab/Bolt 返回 Lumpini 飯店，車程約 10 分鐘，能避免下班交通巔峰期的轉乘擁擠。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Central+Embassy" }
           ]
@@ -189,7 +190,7 @@ const initialTripData = {
           title: "SDConference 研討會 (麗笙套房飯店)",
           type: "info",
           region: "曼谷",
-          desc: "主辦人前往研討會場「曼谷素坤逸麗笙套房飯店」參與全天學術商務研討會。",
+          desc: "主辦人參與全天研討會。\n🚇 交通指引：由飯店旁 MRT Lumphini 站 (BL25) 搭乘藍線往 Bang Sue 方向搭乘 3 站至 Sukhumvit 站 (BL22)。由 1 號或 2 號出口出站，沿 Sukhumvit Soi 13 步行約 8-10 分鐘（或利用飯店 Tuk Tuk 接駁）即可抵達 Radisson Suites Sukhumvit。",
           links: [
             { text: "會場地圖", url: "https://www.google.com/maps/search/?api=1&query=Radisson+Suites+Bangkok+Sukhumvit" },
             { text: "會場官網", url: "https://www.radissonhotels.com/en-us/hotels/radisson-bangkok-sukhumvit" }
@@ -201,7 +202,7 @@ const initialTripData = {
           title: "家人行程：Siam Paragon ＆ Central World 購物",
           type: "shopping",
           region: "曼谷",
-          desc: "家人搭捷運至 Siam 站，利用天橋系統輕鬆逛 Siam Paragon 百貨與 Central World，避開炎熱天氣。",
+          desc: "家人走訪暹羅商圈進行採購。\n🚇 交通指引：從 MRT Lumphini 站 (BL25) 搭乘藍線至 Silom 站 (BL26)，經空中廊道轉乘 BTS 至 Siam 站 (CEN)。Siam 站 3 號或 5 號出口直接連結 Siam Paragon；欲前往 Central World，沿著高架天橋系統 (Skywalk) 往 Chit Lom 站方向步行約 5-8 分鐘即可抵達。",
           links: [
             { text: "Siam Paragon 地圖", url: "https://www.google.com/maps/search/?api=1&query=Siam+Paragon" },
             { text: "Central World 地圖", url: "https://www.google.com/maps/search/?api=1&query=Central+World" }
@@ -213,7 +214,7 @@ const initialTripData = {
           title: "全家四面佛 (Erawan Shrine) 齊聚祈福",
           type: "camera",
           region: "曼谷",
-          desc: "研討會結束後，全家於曼谷市中心最具靈性的四面佛會合祈福，祈求闔家平安順遂。",
+          desc: "研討會結束後，全家於四面佛齊聚祈福。\n🚶 交通指引：從 Central World 或 Siam Paragon 出發，沿天橋 (Skywalk) 步行至 Central World 旁的十字路口（鄰近 Grand Hyatt Erawan 飯店），步行約 3-5 分鐘即可抵達。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Erawan+Shrine" }
           ]
@@ -224,7 +225,7 @@ const initialTripData = {
           title: "晚餐：Central World 享用美食",
           type: "food",
           region: "曼谷",
-          desc: "於 Central World 百貨內挑選知名泰式餐廳（如 Nara Thai Cuisine）享用豐盛晚餐，隨後返回 Lumpini 飯店休整。",
+          desc: "於 Central World 內挑選知名餐廳共進晚餐，飯後返回飯店。\n🚇 交通指引：從商場步行至 BTS Chit Lom 站 (E1) 搭乘淺綠線至 Siam 站，轉乘深綠線至 Sala Daeng 站 (S2)/MRT Silom 站 (BL26) 搭乘藍線回 Lumphini 站 (BL25)。或直接叫 Grab 以避開轉乘。",
           links: [
             { text: "餐廳地圖", url: "https://www.google.com/maps/search/?api=1&query=Central+World" }
           ]
@@ -246,9 +247,11 @@ const initialTripData = {
           title: "辦理退房，包車專車前往羅勇府",
           type: "transport",
           region: "曼谷-羅勇",
-          desc: "飯店大廳會合，專車接駁直奔羅勇（車程約 2.5 小時），免去大眾運輸奔波，舒適便利。",
+          desc: "飯店退房，搭乘預約包車南下。\n🚗 交通指引：本日跨越曼谷、羅勇、芭達雅三地，強烈建議預約「跨城/跨府包車一日遊 (10小時)」。司機會在大廳接送，全程專車接駁，無行李移動困擾。",
           links: [
-            { text: "曼谷至羅勇路線", url: "https://www.google.com/maps/dir/Grande+Centre+Point+Lumpini/Suphattra+Land/" }
+            { text: "Klook 曼谷私人包車", url: "https://www.klook.com/zh-TW/activity/89200-bangkok-surroundings-private-car-charter/" },
+            { text: "KKday 曼谷客製化包車", url: "https://www.kkday.com/zh-tw/product/136414-bangkok-customized-tour-private-charter" },
+            { text: "淘泰朗包車一日遊", url: "https://taotailangthai.com/product-category/picup10hours-hotel/" }
           ]
         },
         {
@@ -257,7 +260,7 @@ const initialTripData = {
           title: "指定景點：素芭他觀光果園 (Suphattra Land)",
           type: "camera",
           region: "羅勇",
-          desc: "搭乘果園電瓶導覽車，大啖現採新鮮金枕頭榴槤、山竹、紅毛丹等熱帶水果吃到飽！",
+          desc: "大啖現採金枕頭榴槤與山竹水果吃到飽。\n🚗 交通指引：包車專車抵達果園，車程約 2.5 小時。入園後搭乘果園電瓶導覽車參觀。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Suphattra+Land" },
             { text: "景點介紹", url: "https://lordcat.net/archives/927" }
@@ -269,7 +272,7 @@ const initialTripData = {
           title: "指定景點：ร้านปาฎี (Pa Dee) 歐式花園咖啡館",
           type: "coffee",
           region: "羅勇",
-          desc: "被綠意與鮮花簇擁的南歐鄉村風莊園，品嚐精緻的蜂蜜千層蛋糕與花草茶，隨處都是網美拍照熱點。",
+          desc: "享受歐式鄉村風莊園與蜂蜜千層蛋糕。\n🚗 交通指引：由包車司機接送，從水果園出發至 Pa Dee 咖啡廳車程約 30 分鐘。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Pa+Dee+Rayong" },
             { text: "果園至咖啡廳路線", url: "https://www.google.com/maps/dir/Suphattra+Land/Pa+Dee+Rayong/" }
@@ -281,7 +284,7 @@ const initialTripData = {
           title: "指定景點：Tamnanpar Restaurant 森林瀑布餐廳",
           type: "food",
           region: "羅勇",
-          desc: "置身於真正的熱帶雨林瀑布祕境中，聆聽流水與鳥鳴，來一份熱帶泰式特色點心或提早享用森林晚宴。",
+          desc: "熱帶雨林瀑布祕境中享用點心或森林晚宴。\n🚗 交通指引：由包車司機接送，從 Pa Dee 咖啡廳車程約 15 分鐘即可抵達。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Tamnanpar+Forest+Restaurant" },
             { text: "咖啡廳至餐廳路線", url: "https://www.google.com/maps/dir/Pa+Dee+Rayong/Tamnanpar+Forest+Restaurant/" }
@@ -293,7 +296,7 @@ const initialTripData = {
           title: "專車前往芭達雅度假村 check-in",
           type: "hotel",
           region: "芭達雅",
-          desc: "抵達奢華私人泳池別墅度假飯店「芭提雅寰庭帕塔納克酒店 (Cross Pattaya Oceanphere)」，享受放鬆時光。",
+          desc: "抵達豪華別墅度假飯店辦理入住。\n🚗 交通指引：由包車司機接送，從羅勇森林餐廳驅車前往芭達雅 Jomtien 區飯店，車程約 1.2 小時。辦理 check-in 後結束今日包車服務。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Cross+Pattaya+Oceanphere" },
             { text: "飯店訂房", url: "https://tw.hotels.com/ho32585204/" },
@@ -306,7 +309,7 @@ const initialTripData = {
           title: "晚餐：The Oxygen Pattaya 海景餐廳",
           type: "food",
           region: "芭達雅",
-          desc: "芭達雅超美超人氣海景景觀餐廳！餐點與特調精美美味，在超寬敞的戶外海風草坪座享用晚餐，氣氛滿分。",
+          desc: "在超美海景景觀餐廳草坪座享用晚餐。\n🚗 交通指引：位於 Na Jomtien，距離 Cross Pattaya Oceanphere 僅約 8-10 分鐘車程，建議使用 Bolt / Grab 叫車前往最划算便利。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=The+Oxygen+Pattaya" }
           ]
@@ -328,9 +331,11 @@ const initialTripData = {
           title: "體驗：四方水上市場 (Pattaya Floating Market)",
           type: "camera",
           region: "芭達雅",
-          desc: "純人工打造的傳統木雕風格水上市場，感受水鄉文化、乘手搖船，人潮適中，極具在地風情。",
+          desc: "體驗傳統水鄉文化與木雕水上市場。\n🚗 交通指引：因芭達雅大眾運輸不便，本日景點跨度大，強烈建議預訂「芭達雅包車一日遊 (10小時)」或使用 Bolt/Grab 單程叫車。從飯店搭車前往約 15 分鐘。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Pattaya+Floating+Market" }
+            { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Pattaya+Floating+Market" },
+            { text: "Klook 芭達雅包車", url: "https://www.klook.com/zh-TW/activity/89200-bangkok-surroundings-private-car-charter/" },
+            { text: "KKday 芭達雅包車", url: "https://www.kkday.com/zh-tw/product/136414-bangkok-customized-tour-private-charter" }
           ]
         },
         {
@@ -339,7 +344,7 @@ const initialTripData = {
           title: "景點：House of Benedict 網美空間",
           type: "coffee",
           region: "芭達雅",
-          desc: "極富想像力的室內複合式奇幻空間，融合了藝術造景、特色酒吧與咖啡廳，拍照張張是大片！",
+          desc: "複合式室內奇幻藝術造景與午餐。\n🚗 交通指引：搭乘包車前往，從四方水上市場出發約 5-8 分鐘即可抵達。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=House+of+Benedict+Pattaya" }
           ]
@@ -350,7 +355,7 @@ const initialTripData = {
           title: "必去行程：羅摩耶那水上樂園 (Ramayana Water Park) 狂歡",
           type: "camera",
           region: "芭達雅",
-          desc: "泰國最大的水上樂園！水源天然，享有 21 種世界級滑水道、巨型衝浪池和互動式水上城堡，全家消暑首選！",
+          desc: "泰國最大世界級水上樂園，全家消暑狂歡。\n🚗 交通指引：搭乘包車前往，從 House of Benedict 出發向東行駛約 20 分鐘即可抵達水上樂園。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Ramayana+Water+Park" },
             { text: "門票預訂", url: "https://www.klook.com/zh-TW/activity/1560-ramayana-water-park-pattaya/" }
@@ -362,7 +367,7 @@ const initialTripData = {
           title: "晚餐：Kliff Beach Club 懸崖餐廳 ＆ The Lunar Beach House",
           type: "food",
           region: "芭達雅",
-          desc: "指定必去！在懸崖峭壁之上，遠眺暹羅灣金色夕陽落日，享用精緻下午茶、安格斯牛肉及無敵海景。（隔壁 The Lunar Beach House 亦為絕美海景備案）",
+          desc: "在懸崖峭壁之上看夕陽吃下午茶與晚餐。\n🚗 交通指引：搭乘包車前往，從水上樂園驅車前往位於 Cosy Beach 的懸崖餐廳，車程約 35 分鐘。晚餐後司機可在此接送。",
           links: [
             { text: "Kliff 地圖", url: "https://www.google.com/maps/search/?api=1&query=Kliff+Beach+Club+Pattaya" },
             { text: "Lunar 地圖", url: "https://www.google.com/maps/search/?api=1&query=The+Lunar+Beach+House+Pattaya" }
@@ -374,7 +379,7 @@ const initialTripData = {
           title: "探訪：Thepprasit Night Market 週末夜市",
           type: "shopping",
           region: "芭達雅",
-          desc: "週五至週日限定營業的芭達雅超人氣在地夜市！在帳篷下品嚐地道泰式街頭小吃、水果沙拉、椰子冰淇淋。",
+          desc: "週五限定的超人氣週末夜市吃小吃。\n🚗 交通指引：搭乘包車前往，從懸崖餐廳前往夜市車程約 15 分鐘。逛完後由包車送回 Cross 飯店休息（車程約 15 分鐘），結束包車服務。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Thepprasit+Night+Market" }
           ]
@@ -396,8 +401,10 @@ const initialTripData = {
           title: "退房並包車返回曼谷 Asok 市區",
           type: "transport",
           region: "芭達雅-曼谷",
-          desc: "退房後乘專屬包車返回曼谷飯店，避開假日正午塞車車潮。",
+          desc: "專車北上返回曼谷市區。\n🚗 交通指引：建議預約「單趟跨城包車別墅接送（芭達雅至曼谷）」直達飯店大門，避開大件行李長途交通的不便，車程約 2 小時。",
           links: [
+            { text: "Klook 跨城接送", url: "https://www.klook.com/zh-TW/transport/private-car/bangkok/" },
+            { text: "淘泰朗單趟接送", url: "https://taotailangthai.com/product-category/picup10hours-hotel/" },
             { text: "跨城路線", url: "https://www.google.com/maps/dir/Cross+Pattaya+Oceanphere/Grande+Centre+Point+Hotel+Terminal+21/" }
           ]
         },
@@ -407,7 +414,7 @@ const initialTripData = {
           title: "辦理入住、手標牌泰奶 ＆ Pier 21 午餐",
           type: "hotel",
           region: "曼谷",
-          desc: "抵達 Grande Centre Point Terminal 21 寄存行李。先到 5 樓 Pier 21 享用平價小吃，並至 LG 樓層點一杯必喝的「手標牌 ChaTraMue 泰奶」！",
+          desc: "飯店寄放行李，於 Pier 21 享用平價美食，並喝手標牌泰式奶茶。\n🚶 交通指引：飯店大廳直接連結 Terminal 21 購物中心。手標牌茶舖位於 B 樓 (LG 樓層)；美食街位於 5 樓，步行搭乘商場手扶梯即可輕鬆抵達。",
           links: [
             { text: "飯店地圖", url: "https://www.google.com/maps/search/?api=1&query=Grande+Centre+Point+Hotel+Terminal+21" },
             { text: "手標奶茶介紹", url: "https://www.chatramue.com.cn/" }
@@ -419,7 +426,7 @@ const initialTripData = {
           title: "逛街：水門市場 (Pratunam Market) 老街血拼",
           type: "shopping",
           region: "曼谷",
-          desc: "搭 BTS 至 Chit Lom 站步行前往水門老街及 Platinum 時裝百貨，體驗曼谷最大服飾批發市場的樂趣。",
+          desc: "水門老街與時裝百貨大採購。\n🚇 交通指引：於 BTS Asok 站 (E4) 搭乘淺綠線至 Chit Lom 站 (E1)，約 6 分鐘。由 9 號出口出站，沿著天橋步道 (R-Walk) 步行約 8-10 分鐘，穿過運河橋即可抵達水門市場或 Platinum 時裝百貨。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=The+Platinum+Fashion+Mall" }
           ]
@@ -430,7 +437,7 @@ const initialTripData = {
           title: "晚餐：飯店周邊 ＆ 舒壓腳底按摩",
           type: "food",
           region: "曼谷",
-          desc: "回到 Asok 站，在周邊餐廳（如 Savoey 上味泰）享用海鮮大餐，隨後找家優質 SPA 做腳底舒壓按摩。",
+          desc: "吃經典泰式海鮮餐並做精緻按摩放鬆。\n🚇 交通指引：由 BTS Chit Lom 站 (E1) 搭乘捷運淺綠線返回 Asok 站 (E4)，出站步行約 2 分鐘即可回到飯店旁的 Savoey Seafood 餐廳及各大連鎖按摩店。",
           links: [
             { text: "Savoey 地圖", url: "https://www.google.com/maps/search/?api=1&query=Savoey+Seafood+CO.+Terminal21+Asok" }
           ]
@@ -441,7 +448,7 @@ const initialTripData = {
           title: "宵夜與逛街：SW1 Market 夜市 (ASOK站)",
           type: "shopping",
           region: "曼谷",
-          desc: "Terminal 21 旁邊新興的深夜食堂美食夜市！提供各種泰式小吃、烤串、生活雜貨及特色伴手禮，氛圍熱絡。",
+          desc: "Terminal 21 旁的深夜食堂美食與雜貨小夜市。\n🚶 交通指引：夜市就在 Asok 捷運站旁（Terminal 21大樓旁），從飯店大廳下樓後步行約 2-3 分鐘即可到達，非常便利。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=SW1+Market+Bangkok" }
           ]
@@ -463,9 +470,11 @@ const initialTripData = {
           title: "出發：美功鐵道市場 (Maeklong Railway Market)",
           type: "transport",
           region: "曼谷近郊",
-          desc: "專車前往美功，親眼見證火車緩緩穿過狹窄菜市場、鐵路攤販瞬間收攤的世紀奇景！",
+          desc: "專車前往美功鐵道市場。\n🚗 交通指引：本日安排「曼谷近郊一日遊包車 (10小時)」，往返美功及丹嫩沙多車程較遠，專車到飯店接駁。至美功車程約 1.5 小時。",
           links: [
-            { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Maeklong+Railway+Market" }
+            { text: "Klook 私人包車", url: "https://www.klook.com/zh-TW/activity/89200-bangkok-surroundings-private-car-charter/" },
+            { text: "KKday 私人包車", url: "https://www.kkday.com/zh-tw/product/136414-bangkok-customized-tour-private-charter" },
+            { text: "淘泰朗一日遊包車", url: "https://taotailangthai.com/product-category/picup10hours-hotel/" }
           ]
         },
         {
@@ -474,7 +483,7 @@ const initialTripData = {
           title: "體驗：丹嫩沙多水上市場 (Damnoen Saduak)",
           type: "camera",
           region: "曼谷近郊",
-          desc: "搭乘傳統手搖木船，穿梭於繁忙的水上水道，向河道商販購買泰式椰絲餅、水上米粉湯與熱帶水果。",
+          desc: "搭乘手搖木船，大口吃水上美食。\n🚗 交通指引：搭乘包車前往，從美功鐵道市場出發約 20 分鐘車程即可抵達丹嫩沙多水上市場大門。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Damnoen+Saduak+Floating+Market" }
           ]
@@ -485,7 +494,7 @@ const initialTripData = {
           title: "採購：Big C Supercenter (Rajdamri店) 伴手禮",
           type: "shopping",
           region: "曼谷",
-          desc: "曼谷最大最好買的 Big C 超市！狂掃泰國必買的零食、藥妝、海苔、大哥豆、皇家蜂蜜，買滿一箱直接打包裝箱。",
+          desc: "在大型 Big C 瘋狂採購零食與名產。\n🚗 交通指引：由包車司機載回曼谷市區 Big C，車程約 1.5 小時。採購完後因行李箱體積大，可請包車司機將全家及戰利品載回飯店，隨後結束包車。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Big+C+Supercenter+Ratchadamri" }
           ]
@@ -496,7 +505,7 @@ const initialTripData = {
           title: "晚餐：Terminal 21 內慶功宴",
           type: "food",
           region: "曼谷",
-          desc: "採購完畢返回 Terminal 21 百貨，挑選一家心儀的餐廳享用豐盛的泰國之旅慶功宴，隨後休整行李。",
+          desc: "在商場挑選心儀餐廳享用慶功晚宴。\n🚶 交通指引：直接搭乘商場電梯至 4 樓或 5 樓的主題美食餐廳區享用，用膳完直接回房休息整理行李。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Terminal+21+Asok" }
           ]
@@ -518,7 +527,7 @@ const initialTripData = {
           title: "舒壓：Let's Relax SPA (Terminal 21店)",
           type: "hotel",
           region: "曼谷",
-          desc: "安排精緻的泰式古法草藥球按摩或精油 SPA，徹底釋放這幾天下來的肌肉酸痛與疲憊。",
+          desc: "體驗經典草藥球泰式按摩。\n🚶 交通指引：SPA館位於 Terminal 21 購物中心 6 樓，從飯店房間下樓搭乘商場手扶梯即可在 2 分鐘內抵達，省時又方便。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Let%27s+Relax+Spa+Terminal+21" }
           ]
@@ -529,7 +538,7 @@ const initialTripData = {
           title: "退房寄存行李，乘 BTS 轉接駁船至 ICONSIAM",
           type: "transport",
           region: "曼谷",
-          desc: "辦理退房並寄放行李，搭捷運至 Saphan Taksin 站，再搭乘寬敞舒適的免費河畔接駁船前往 ICONSIAM。",
+          desc: "退房寄存行李，出發往 ICONSIAM。\n🚇 交通指引：於 BTS Asok 站 (E4) 搭乘淺綠線至 Siam 站 (CEN)，轉乘 Silom 深綠線至 Saphan Taksin 站 (S6)。從 2 號出口出站，至 Sathorn 碼頭轉乘 ICONSIAM 免費接駁船（每 15-20 分鐘一班，船程約 10 分鐘）直達商場碼頭。",
           links: [
             { text: "轉乘指引", url: "https://www.google.com/maps/dir/Grande+Centre+Point+Hotel+Terminal+21/Saphan+Taksin+BTS+Station/" }
           ]
@@ -540,7 +549,7 @@ const initialTripData = {
           title: "逛街：ICONSIAM (暹羅天地) 百貨",
           type: "shopping",
           region: "曼谷",
-          desc: "曼谷天花板等級的河畔極致奢華百貨！一樓室內水上市場 (SookSiam) 匯聚泰國 77 府小吃與手工藝，是出發機場前的絕佳停靠站。",
+          desc: "探索頂級室內水上市場 (SookSiam) 與美食。\n🛳️ 交通指引：接駁船會直接停靠在 ICONSIAM 河畔大門。入內後即可展開最後的逛街採購與午餐行程。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=ICONSIAM" }
           ]
@@ -551,8 +560,10 @@ const initialTripData = {
           title: "返回 Terminal 21 提領行李，搭車前往機場",
           type: "transport",
           region: "曼谷",
-          desc: "搭船與地鐵返回飯店領取行李。搭乘預約的 SUV 送機專車，直奔蘇凡納布機場 (BKK)，避開週一傍晚大塞車。",
+          desc: "返回飯店提取行李，搭車前往 BKK 機場。\n🚗 交通指引：建議預約「機場送機專車」返回飯店提取行李並直奔 BKK 機場（車程約 45 分鐘），避免週一下班巔峰期塞車。若想搭乘大眾運輸，可步行至 MRT Sukhumvit 站 (BL22) 搭乘 1 站至 Phetchaburi 站 (BL21)，由 1 號出口步行至 Makkasan 機場快線站 (A6)，搭乘 Airport Rail Link (ARL) 直達蘇萬那普機場 (BKK)，車程約 25 分鐘。",
           links: [
+            { text: "Klook 送機預訂", url: "https://www.klook.com/zh-TW/transport/airport-transfer/bangkok/" },
+            { text: "淘泰朗送機預訂", url: "https://taotailangthai.com/product-category/picup10hours-hotel/" },
             { text: "機場路線", url: "https://www.google.com/maps/dir/Grande+Centre+Point+Hotel+Terminal+21/Suvarnabhumi+Airport" }
           ]
         },
@@ -562,7 +573,7 @@ const initialTripData = {
           title: "抵達 蘇萬那普機場 (BKK) 報到返台",
           type: "transport",
           region: "曼谷",
-          desc: "最晚於起飛前 3 小時抵達，辦理登機與行李寄託。隨後搭機於 23:59 前平安抵達桃園機場，結束美好的泰國避暑商務家庭之旅！",
+          desc: "於起飛前 3 小時抵達機場辦理報到，返台結束旅程。\n🚶 交通指引：抵達 BKK 機場出發大廳 4 樓，根據航空公司櫃台引導辦理登機及行李託運，並可在入關後於免稅店做最後採購。",
           links: [
             { text: "景點地圖", url: "https://www.google.com/maps/search/?api=1&query=Suvarnabhumi+Airport" }
           ]
@@ -1767,7 +1778,7 @@ export default function App() {
     );
   };
 
-      const ROUTE_CONFIGS = [
+        const ROUTE_CONFIGS = [
     {
       key: 'bangkok-route',
       name: 'Day 1-2 曼谷路線',
