@@ -1571,9 +1571,6 @@ export default function App() {
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [isPreparingPrint, setIsPreparingPrint] = useState(false);
   const [printOptions, setPrintOptions] = useState({
-    expandMap: true,
-    expandInfo: true,
-    expandRoute: true,
     expandInfographic: true
   });
 
@@ -1901,11 +1898,28 @@ export default function App() {
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative">
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
+          @page {
+            margin: 8mm !important;
+          }
+          body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #fff !important;
+          }
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
           .print-hidden {
             display: none !important;
           }
           .print-only {
             display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 4mm !important;
+            box-sizing: border-box !important;
           }
           .page-break-inside-avoid {
             page-break-inside: avoid;
@@ -3499,50 +3513,11 @@ export default function App() {
                   <input 
                     type="checkbox" 
                     className="mt-1 accent-teal-600 w-4 h-4 rounded" 
-                    checked={printOptions.expandMap}
-                    onChange={(e) => setPrintOptions(prev => ({ ...prev, expandMap: e.target.checked }))}
-                  />
-                  <div>
-                    <span className="text-sm font-bold text-slate-700 block">1. 展開景點地圖</span>
-                    <span className="text-xs text-slate-400">在各行程下方嵌入 Google 地圖畫面並附帶導航二維碼</span>
-                  </div>
-                </label>
-
-                <label className="flex items-start gap-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 cursor-pointer transition">
-                  <input 
-                    type="checkbox" 
-                    className="mt-1 accent-teal-600 w-4 h-4 rounded" 
-                    checked={printOptions.expandInfo}
-                    onChange={(e) => setPrintOptions(prev => ({ ...prev, expandInfo: e.target.checked }))}
-                  />
-                  <div>
-                    <span className="text-sm font-bold text-slate-700 block">2. 展開景點介紹</span>
-                    <span className="text-xs text-slate-400">在行程下方附帶景點介紹或官網網址與二維碼</span>
-                  </div>
-                </label>
-
-                <label className="flex items-start gap-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 cursor-pointer transition">
-                  <input 
-                    type="checkbox" 
-                    className="mt-1 accent-teal-600 w-4 h-4 rounded" 
-                    checked={printOptions.expandRoute}
-                    onChange={(e) => setPrintOptions(prev => ({ ...prev, expandRoute: e.target.checked }))}
-                  />
-                  <div>
-                    <span className="text-sm font-bold text-slate-700 block">3. 展開 Google 路線導航地圖</span>
-                    <span className="text-xs text-slate-400">在有設定路線的項目下嵌入路線地圖與導航二維碼</span>
-                  </div>
-                </label>
-
-                <label className="flex items-start gap-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 cursor-pointer transition">
-                  <input 
-                    type="checkbox" 
-                    className="mt-1 accent-teal-600 w-4 h-4 rounded" 
                     checked={printOptions.expandInfographic}
                     onChange={(e) => setPrintOptions(prev => ({ ...prev, expandInfographic: e.target.checked }))}
                   />
                   <div>
-                    <span className="text-sm font-bold text-slate-700 block">4. 展開行程路線與時程圖表</span>
+                    <span className="text-sm font-bold text-slate-700 block">展開行程路線與時程圖表</span>
                     <span className="text-xs text-slate-400">在每天的日程頂部顯示 3D 路線軌跡地圖與行程針腳</span>
                   </div>
                 </label>
@@ -3897,28 +3872,11 @@ export default function App() {
                     )}
 
                     {/* 展開景點地圖 */}
-                    {printOptions.expandMap && mapLink && (
-                      <div className="mt-3 pt-3 border-t border-slate-100">
-                        <span className="text-[10px] font-bold text-emerald-700 block mb-1">📍 景點位置與地圖</span>
-                        <PrintMapEmbed query={act.title} />
-                        <QRCode url={mapLink.url} label="Google 地圖導航" />
-                      </div>
-                    )}
-
-                    {/* 展開景點介紹 */}
-                    {printOptions.expandInfo && infoLink && (
+                    {/* 景點說明保留 QR code 方式陳列 */}
+                    {infoLink && (
                       <div className="mt-3 pt-3 border-t border-slate-100">
                         <span className="text-[10px] font-bold text-indigo-700 block mb-1">ℹ️ 景點詳細介紹連結</span>
                         <QRCode url={infoLink.url} label="網頁介紹連結" />
-                      </div>
-                    )}
-
-                    {/* 展開 Google 路線導航地圖 */}
-                    {printOptions.expandRoute && routeLink && (
-                      <div className="mt-3 pt-3 border-t border-slate-100">
-                        <span className="text-[10px] font-bold text-amber-700 block mb-1">🧭 交通路線與導航</span>
-                        <PrintRouteEmbed url={routeLink.url} />
-                        <QRCode url={routeLink.url} label="Google 路線導航" />
                       </div>
                     )}
                   </div>
