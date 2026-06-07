@@ -1574,7 +1574,8 @@ export default function App() {
   const [printOptions, setPrintOptions] = useState({
     expandMap: true,
     expandInfo: true,
-    expandRoute: true
+    expandRoute: true,
+    expandInfographic: true
   });
 
   const handlePrint = () => {
@@ -3527,6 +3528,19 @@ export default function App() {
                     <span className="text-xs text-slate-400">在有設定路線的項目下嵌入路線地圖與導航二維碼</span>
                   </div>
                 </label>
+
+                <label className="flex items-start gap-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 cursor-pointer transition">
+                  <input 
+                    type="checkbox" 
+                    className="mt-1 accent-teal-600 w-4 h-4 rounded" 
+                    checked={printOptions.expandInfographic}
+                    onChange={(e) => setPrintOptions(prev => ({ ...prev, expandInfographic: e.target.checked }))}
+                  />
+                  <div>
+                    <span className="text-sm font-bold text-slate-700 block">4. 展開行程路線與時程圖表</span>
+                    <span className="text-xs text-slate-400">在每天的日程頂部顯示 3D 路線軌跡地圖與行程針腳</span>
+                  </div>
+                </label>
               </div>
             </div>
 
@@ -3591,6 +3605,143 @@ export default function App() {
             <p className="text-xs text-slate-500 mb-6 leading-relaxed bg-slate-50 p-2.5 rounded border border-slate-100">
               {day.summary}
             </p>
+
+            {/* 展開每日路線與時程資訊圖表 */}
+            {printOptions.expandInfographic && (() => {
+              const stops = [];
+              
+              day.activities.forEach((act) => {
+                const matchedConfig = HOTSPOT_CONFIGS.find(cfg => 
+                  cfg.keywords.some(kw => 
+                    act.title.toLowerCase().includes(kw.toLowerCase()) || 
+                    act.desc?.toLowerCase().includes(kw.toLowerCase())
+                  )
+                );
+                
+                let x, y, config;
+                if (matchedConfig) {
+                  x = parseFloat(matchedConfig.style.left);
+                  y = parseFloat(matchedConfig.style.top);
+                  config = matchedConfig;
+                } else {
+                  let hash = 0;
+                  for (let i = 0; i < act.title.length; i++) {
+                    hash = act.title.charCodeAt(i) + ((hash << 5) - hash);
+                  }
+                  x = 15 + Math.abs(hash % 70);
+                  y = 15 + Math.abs((hash >> 8) % 70);
+                  config = {
+                    key: `custom-act-${act.id}`,
+                    name: act.title,
+                    mapUrl: act.links?.find(l => l.text.includes("地圖"))?.url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(act.title)}`,
+                    infoUrl: act.links?.find(l => l.text.includes("介紹"))?.url || `https://www.google.com/search?q=${encodeURIComponent(act.title)}`
+                  };
+                }
+                
+                stops.push({
+                  title: act.title,
+                  time: act.time,
+                  type: act.type,
+                  config: config,
+                  x: x,
+                  y: y,
+                  w: matchedConfig ? parseFloat(matchedConfig.style.width || 0) : 0,
+                  h: matchedConfig ? parseFloat(matchedConfig.style.height || 0) : 0
+                });
+              });
+
+              if (day.day !== 7 && day.hotelName) {
+                const matchedHotel = HOTSPOT_CONFIGS.find(cfg =>
+                  cfg.keywords.some(kw => day.hotelName.toLowerCase().includes(kw.toLowerCase()))
+                );
+                
+                let hx, hy, hConfig;
+                if (matchedHotel) {
+                  hx = parseFloat(matchedHotel.style.left);
+                  hy = parseFloat(matchedHotel.style.top);
+                  hConfig = matchedHotel;
+                } else {
+                  let hash = 0;
+                  for (let i = 0; i < day.hotelName.length; i++) {
+                    hash = day.hotelName.charCodeAt(i) + ((hash << 5) - hash);
+                  }
+                  hx = 15 + Math.abs(hash % 70);
+                  hy = 15 + Math.abs((hash >> 8) % 70);
+                  hConfig = {
+                    key: `custom-hotel-${day.day}`,
+                    name: day.hotelName,
+                    mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(day.hotelName)}`,
+                    infoUrl: `https://www.google.com/search?q=${encodeURIComponent(day.hotelName)}`
+                  };
+                }
+                
+                stops.push({
+                  title: `返回住宿：${day.hotelName}`,
+                  time: "晚上",
+                  type: "hotel",
+                  config: hConfig,
+                  x: hx,
+                  y: hy,
+                  w: matchedHotel ? parseFloat(matchedHotel.style.width || 0) : 0,
+                  h: matchedHotel ? parseFloat(matchedHotel.style.height || 0) : 0
+                });
+              }
+
+              const positionedStops = stops.map((stop, idx) => ({
+                ...stop,
+                order: idx + 1
+              }));
+
+              if (positionedStops.length === 0) return null;
+
+              return (
+                <div className="mb-6 page-break-inside-avoid">
+                  <span className="text-[10px] font-extrabold text-teal-800 block mb-1.5">🗺️ Day {day.day} 行程路線與時程資訊圖表</span>
+                  <div className="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-slate-300 bg-slate-50 shadow-sm">
+                    <img 
+                      src={infographicUrl} 
+                      alt={`Day ${day.day} 行程路線圖`} 
+                      className="w-full h-full object-cover opacity-90" 
+                    />
+                    
+                    {/* SVG 連接路徑線 */}
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full pointer-events-none z-10">
+                      {positionedStops.length > 1 && (
+                        <path
+                          d={positionedStops.map((stop, idx) => {
+                            const cx = stop.x + stop.w / 2;
+                            const cy = stop.y + stop.h / 2;
+                            return `${idx === 0 ? 'M' : 'L'} ${cx} ${cy}`;
+                          }).join(' ')}
+                          fill="none"
+                          stroke="#0d9488"
+                          strokeWidth="0.6"
+                          strokeDasharray="2 1.5"
+                        />
+                      )}
+                    </svg>
+
+                    {/* 針腳編號 */}
+                    {positionedStops.map((stop, index) => {
+                      const cx = stop.x + stop.w / 2;
+                      const cy = stop.y + stop.h / 2;
+
+                      return (
+                        <div 
+                          key={index}
+                          className="absolute flex items-center justify-center transform -translate-x-1/2 -translate-y-1/2 z-20"
+                          style={{ left: `${cx}%`, top: `${cy}%` }}
+                        >
+                          <div className="w-5 h-5 rounded-full bg-teal-600 border border-white flex items-center justify-center text-[9px] font-black text-white shadow-sm">
+                            {stop.order}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* 時間軸行程項目 */}
             <div className="space-y-6">
