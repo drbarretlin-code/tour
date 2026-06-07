@@ -26,7 +26,9 @@ import {
   Loader2,
   Sparkles,
   Plus,
-  Trash2
+  Trash2,
+  DollarSign,
+  Plane
 } from 'lucide-react';
 
 // ==========================================
@@ -1404,6 +1406,12 @@ export default function App() {
   const [customNotes, setCustomNotes] = useState({});
   const [isCopied, setIsCopied] = useState(false); 
   
+  // 匯率計算器狀態
+  const [currencyAmount, setCurrencyAmount] = useState('1000');
+  const [currencyDirection, setCurrencyDirection] = useState('twd_to_thb'); // 'twd_to_thb' | 'thb_to_twd'
+  const EXCHANGE_RATE_TWD_TO_THB = 1.10; // 1 TWD ≈ 1.10 THB (2026 概估)
+  const [expandedTerminalMap, setExpandedTerminalMap] = useState({});
+  
   // 狀態管理：行程資料
   const [tripSchedule, setTripSchedule] = useState(initialTripData);
   const [syncStatus, setSyncStatus] = useState('loading');
@@ -2516,19 +2524,133 @@ export default function App() {
               <p className="text-xs text-slate-400 mt-3 text-right">※ 提示：當您在其他分頁調整了景點順序後，可點擊上方按鈕根據最新行程即時生成路線圖表。</p>
             </section>
 
-            {/* 需求確認區 */}
-            <section className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-              <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <Check className="text-teal-600" /> 行程客製化重點確認
-              </h2>
-              <ul className="space-y-3">
-                {tripSchedule.requirements.map((req, idx) => (
-                  <li key={idx} className="flex items-start gap-3 bg-slate-50 p-3 rounded-lg text-slate-700">
-                    <span className="bg-teal-100 text-teal-800 w-6 h-6 rounded-full flex items-center justify-center text-sm flex-shrink-0 mt-0.5">{idx+1}</span>
-                    <p className="leading-relaxed">{req}</p>
-                  </li>
-                ))}
-              </ul>
+            {/* 匯率計算小工具 */}
+            <section className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 transition-all duration-300 hover:shadow-md">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <div className="p-2 bg-gradient-to-tr from-amber-500 to-yellow-400 text-white rounded-lg shadow-sm">
+                      <DollarSign className="w-5 h-5" />
+                    </div>
+                    泰銖/台幣 匯率換算助手
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-1">即時試算今日花費與預算 (當前匯率約 1 TWD = {EXCHANGE_RATE_TWD_TO_THB} THB)</p>
+                </div>
+                <div className="flex bg-slate-100 p-1 rounded-lg self-start">
+                  <button 
+                    onClick={() => setCurrencyDirection('twd_to_thb')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${currencyDirection === 'twd_to_thb' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                  >
+                    🇹🇼 TWD ➔ 🇹🇭 THB
+                  </button>
+                  <button 
+                    onClick={() => setCurrencyDirection('thb_to_twd')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${currencyDirection === 'thb_to_twd' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                  >
+                    🇹🇭 THB ➔ 🇹🇼 TWD
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 items-center">
+                {/* 輸入與換算 */}
+                <div className="space-y-4">
+                  <div className="relative">
+                    <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                      {currencyDirection === 'twd_to_thb' ? '輸入台幣 (TWD)' : '輸入泰銖 (THB)'}
+                    </label>
+                    <div className="relative rounded-lg shadow-sm">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span className="text-slate-400 font-semibold">{currencyDirection === 'twd_to_thb' ? '$' : '฿'}</span>
+                      </div>
+                      <input
+                        type="number"
+                        value={currencyAmount}
+                        onChange={(e) => setCurrencyAmount(e.target.value)}
+                        className="block w-full pl-8 pr-12 py-3 border border-slate-200 rounded-lg text-slate-800 font-bold placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                        placeholder="請輸入金額..."
+                      />
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <span className="text-slate-400 text-sm font-medium">{currencyDirection === 'twd_to_thb' ? 'TWD' : 'THB'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 轉換按鈕 / 動態方向符號 */}
+                  <div className="flex justify-center my-1">
+                    <button 
+                      onClick={() => setCurrencyDirection(prev => prev === 'twd_to_thb' ? 'thb_to_twd' : 'twd_to_thb')}
+                      className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-full border border-slate-200 shadow-sm transition hover:rotate-180 duration-300"
+                    >
+                      <ArrowRightLeft className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                      {currencyDirection === 'twd_to_thb' ? '換算結果 (THB)' : '換算結果 (TWD)'}
+                    </label>
+                    <div className="relative bg-teal-50/50 border border-teal-100 rounded-lg p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-teal-700 text-lg font-semibold">{currencyDirection === 'twd_to_thb' ? '฿' : '$'}</span>
+                        <span className="text-2xl font-black text-teal-800 tracking-tight">
+                          {currencyAmount && !isNaN(currencyAmount) 
+                            ? (currencyDirection === 'twd_to_thb' 
+                              ? (Number(currencyAmount) * EXCHANGE_RATE_TWD_TO_THB).toLocaleString(undefined, {maximumFractionDigits: 1})
+                              : (Number(currencyAmount) / EXCHANGE_RATE_TWD_TO_THB).toLocaleString(undefined, {maximumFractionDigits: 1}))
+                            : '0'
+                          }
+                        </span>
+                      </div>
+                      <span className="text-xs font-semibold text-teal-600 bg-teal-100/50 px-2 py-1 rounded-md">
+                        {currencyDirection === 'twd_to_thb' ? 'THB 泰銖' : 'TWD 台幣'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 快速常用金額與實用資訊 */}
+                <div className="bg-slate-50 rounded-lg p-4 border border-slate-100 h-full flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                      💡 旅遊消費實用指南 (THB/TWD 概念)
+                    </h3>
+                    <div className="space-y-2.5 text-xs text-slate-600">
+                      <div className="flex justify-between border-b border-slate-100 pb-1.5">
+                        <span>泰國路邊攤泰式炒麵 (Pad Thai)</span>
+                        <span className="font-semibold text-slate-800">~ 60 - 80 ฿ (~ 55 - 73 NTD)</span>
+                      </div>
+                      <div className="flex justify-between border-b border-slate-100 pb-1.5">
+                        <span>泰式奶茶 (Thai Tea)</span>
+                        <span className="font-semibold text-slate-800">~ 40 - 70 ฿ (~ 36 - 64 NTD)</span>
+                      </div>
+                      <div className="flex justify-between border-b border-slate-100 pb-1.5">
+                        <span>泰式古法按摩 (1小時)</span>
+                        <span className="font-semibold text-slate-800">~ 250 - 400 ฿ (~ 227 - 364 NTD)</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>預估每日生活花費 (不含住宿交通)</span>
+                        <span className="font-semibold text-slate-800">~ 1,500 ฿ (~ 1,364 NTD) / 人</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 pt-3 border-t border-slate-200/60">
+                    <div className="text-[10px] text-slate-400 mb-2 font-medium">快速試算金額點選：</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[500, 1000, 3000, 5000, 10000].map(val => (
+                        <button
+                          key={val}
+                          onClick={() => setCurrencyAmount(val.toString())}
+                          className="bg-white hover:bg-teal-50 border border-slate-200 hover:border-teal-300 text-slate-600 hover:text-teal-700 text-xs px-2.5 py-1 rounded transition font-medium shadow-sm"
+                        >
+                          {val.toLocaleString()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </section>
 
             {/* 緊急與實用資訊 */}
@@ -2910,6 +3032,47 @@ export default function App() {
                                 </a>
                               );
                             })}
+                          </div>
+                        )}
+
+                        {/* 航站大廳導覽圖 (限第一天/最後一天的機場卡片) */}
+                        {((day.day === 1 && act.id === 'd1-1') || (day.day === 7 && act.id === 'd7-3')) && (
+                          <div className="mt-4 pt-4 border-t border-slate-100">
+                            <button
+                              onClick={() => {
+                                setExpandedTerminalMap(prev => ({
+                                  ...prev,
+                                  [act.id]: !prev[act.id]
+                                }));
+                              }}
+                              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-teal-50 hover:from-blue-100 hover:to-teal-100 border border-blue-100 text-blue-700 hover:text-blue-800 rounded-lg text-xs font-bold transition shadow-sm"
+                            >
+                              <Plane className="w-4 h-4 text-blue-500" />
+                              {expandedTerminalMap[act.id] ? '收起航站大廳導覽圖 ▴' : '🗺️ 展開航站大廳導覽圖 (Suvarnabhumi Airport BKK) ▾'}
+                            </button>
+                            
+                            {expandedTerminalMap[act.id] && (
+                              <div className="mt-3 bg-slate-50 border border-slate-200 rounded-lg p-3 transition-all duration-300">
+                                <div className="text-xs font-bold text-slate-700 mb-2 flex items-center justify-between">
+                                  <span>{day.day === 1 ? '🇹🇭 曼谷蘇凡納布機場 (BKK) 入境大廳平面圖 (Level 2)' : '🇹🇭 曼谷蘇凡納布機場 (BKK) 出境大廳平面圖 (Level 4)'}</span>
+                                  <span className="text-[10px] text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded font-mono">BKK AIRPORT MAP</span>
+                                </div>
+                                <div className="rounded-md overflow-hidden border border-slate-200 bg-white">
+                                  <img 
+                                    src={day.day === 1 ? '/bkk_arrival_map.png' : '/bkk_departure_map.png'} 
+                                    alt={day.day === 1 ? 'BKK Arrival Terminal Map' : 'BKK Departure Terminal Map'}
+                                    className="w-full h-auto object-cover hover:scale-105 transition duration-300"
+                                  />
+                                </div>
+                                <div className="mt-2 text-[10px] text-slate-400 leading-relaxed">
+                                  {day.day === 1 ? (
+                                    <span>💡 抵達指引：下飛機後順著「Immigration (入境)」指標前進，至 Level 2 辦理入境與行李提取。提取行李後，出口位於 Level 2 大廳。若欲搭乘機場快線 (ARL)，請搭手扶梯下至 B1 層。</span>
+                                  ) : (
+                                    <span>💡 離境指引：專車或 Grab 將在 Level 4 離境大廳入口停靠。進入航廈後請尋找對應航空公司的 Check-in 櫃檯辦理登機。安檢與證照查驗位於 Level 4 後方中央。</span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         )}
 
