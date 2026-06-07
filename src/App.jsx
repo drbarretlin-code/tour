@@ -890,6 +890,15 @@ const findBestTimeSlot = (item, dayData, tripSchedule) => {
 const validateItineraryLogic = (item, tripSchedule) => {
   const validated = { ...item };
   
+  // 每次驗證前先清除所有警告/決策欄位，避免舊值殘留
+  validated.aiDecision = null;
+  validated.aiDecisionReason = "";
+  validated.locationWarning = "無";
+  validated.similarityWarning = "無";
+  validated.experienceWarning = "無";
+  validated.similarActivityIdToDelete = null;
+  validated.similarActivityTitleToDelete = null;
+  
   const dayNum = Number(validated.suggestedDay);
   const targetDay = tripSchedule.days.find(d => Number(d.day) === dayNum);
   if (!targetDay) return validated;
