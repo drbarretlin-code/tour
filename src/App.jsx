@@ -832,6 +832,12 @@ export default function App() {
   const [importedItems, setImportedItems] = useState({});
   const [resultDaySelections, setResultDaySelections] = useState({});
   const [resultTimeSelections, setResultTimeSelections] = useState({});
+  const [userDecisions, setUserDecisions] = useState({}); // { [idx]: 'adopt' | 'skip' | 'swap' }
+
+  // 處理使用者決策的本地修改
+  const handleUserDecisionChange = (idx, decision) => {
+    setUserDecisions(prev => ({ ...prev, [idx]: decision }));
+  };
 
   // 處理 AI 結果中天數與時間的本地修改
   const handleResultDayChange = (idx, dayNum) => {
@@ -842,6 +848,20 @@ export default function App() {
     setResultTimeSelections(prev => ({ ...prev, [idx]: timeStr }));
   };
 
+  const initUserDecisions = (results) => {
+    const initialDecisions = {};
+    results.forEach((item, idx) => {
+      if (item.aiDecision === 'not_recommended') {
+        initialDecisions[idx] = 'skip';
+      } else if (item.aiDecision === 'optional' && item.similarActivityIdToDelete) {
+        initialDecisions[idx] = 'swap';
+      } else {
+        initialDecisions[idx] = 'adopt';
+      }
+    });
+    setUserDecisions(initialDecisions);
+  };
+
   // 開始 AI 分析評估
   const handleStartAiAnalysis = async () => {
     if (!aiInputUrls.trim()) return;
@@ -850,12 +870,14 @@ export default function App() {
     setImportedItems({});
     setResultDaySelections({});
     setResultTimeSelections({});
+    setUserDecisions({});
 
     try {
       // 呼叫真實的 Gemini 2.5 Flash API 進行分析評估
       const result = await callGeminiAnalysis(aiInputUrls, tripSchedule);
       if (result && result.analysisResults) {
         setAiAnalysisResults(result.analysisResults);
+        initUserDecisions(result.analysisResults);
       } else {
         throw new Error("Invalid output structure");
       }
@@ -863,6 +885,7 @@ export default function App() {
       console.warn("Gemini API 呼叫失敗，啟用高仿真本地 Rule-based 分析器:", err.message);
       const result = localMockAnalysis(aiInputUrls);
       setAiAnalysisResults(result.analysisResults);
+      initUserDecisions(result.analysisResults);
     } finally {
       setIsAnalyzingAi(false);
     }
@@ -870,8 +893,14 @@ export default function App() {
 
   // 匯入景點到行程中
   const handleImportToItinerary = async (item, idx) => {
+    const decision = userDecisions[idx] || 'adopt';
     const dayToImport = resultDaySelections[idx] || item.suggestedDay;
     const timeToImport = resultTimeSelections[idx] || item.suggestedTime;
+
+    if (decision === 'skip') {
+      setImportedItems(prev => ({ ...prev, [item.title + '-' + idx]: 'skipped' }));
+      return;
+    }
 
     // 計算出發點與路線名稱
     const targetDay = tripSchedule.days.find(d => d.day === dayToImport);
@@ -923,16 +952,26 @@ export default function App() {
     try {
       await updateTripSchedule(prev => {
         const updatedDays = prev.days.map(day => {
-          if (day.day === dayToImport) {
-            const list = [...day.activities, newActivity];
-            list.sort((a, b) => a.time.localeCompare(b.time));
-            return { ...day, activities: list };
+          let list = [...day.activities];
+          
+          // 如果使用者選擇取代，則在列表中移除對應相似景點的 ID
+          if (decision === 'swap' && item.similarActivityIdToDelete) {
+            list = list.filter(a => a.id !== item.similarActivityIdToDelete);
           }
-          return day;
+          
+          if (day.day === dayToImport) {
+            list.push(newActivity);
+            list.sort((a, b) => a.time.localeCompare(b.time));
+          } else if (decision === 'swap' && item.similarActivityIdToDelete) {
+            // 在其他天也過濾一次，防範跨天移動/取代的漏網之魚
+            list = list.filter(a => a.id !== item.similarActivityIdToDelete);
+          }
+          
+          return { ...day, activities: list };
         });
         return { ...prev, days: updatedDays };
       });
-      setImportedItems(prev => ({ ...prev, [item.title + '-' + idx]: true }));
+      setImportedItems(prev => ({ ...prev, [item.title + '-' + idx]: decision === 'swap' ? 'swapped' : 'imported' }));
     } catch (err) {
       alert("匯入失敗：無法連線至雲端資料庫，請檢查您的網路連線或稍後再試。");
     }
@@ -1558,19 +1597,60 @@ export default function App() {
 
                 <div className="grid gap-6">
                   {aiAnalysisResults.map((result, idx) => {
-                    const isImported = importedItems[result.title + '-' + idx];
+                    const status = importedItems[result.title + '-' + idx]; // 'imported' | 'swapped' | 'skipped' | undefined
+                    const isCompleted = !!status;
                     
                     const selectedDay = resultDaySelections[idx] || result.suggestedDay;
                     const selectedTime = resultTimeSelections[idx] || result.suggestedTime;
+                    const currentDecision = userDecisions[idx] || 'adopt'; // 'adopt' | 'skip' | 'swap'
+
+                    // 依據 AI 決策狀態設定標記與色彩
+                    let decisionBadge = "";
+                    let decisionClass = "";
+                    let decisionIcon = null;
+
+                    if (result.aiDecision === 'adoptable') {
+                      decisionBadge = "可採用";
+                      decisionClass = "bg-emerald-50 border-emerald-100 text-emerald-800";
+                      decisionIcon = <Check className="w-4 h-4 text-emerald-600" />;
+                    } else if (result.aiDecision === 'not_recommended') {
+                      decisionBadge = "不建議";
+                      decisionClass = "bg-rose-50 border-rose-105 text-rose-800 bg-rose-50/40";
+                      decisionIcon = <X className="w-4 h-4 text-rose-600" />;
+                    } else {
+                      decisionBadge = "可選擇性";
+                      decisionClass = "bg-purple-55 border-purple-100 text-purple-800 bg-purple-50/60";
+                      decisionIcon = <ArrowRightLeft className="w-4 h-4 text-purple-600" />;
+                    }
 
                     return (
-                      <div key={idx} className={`bg-white rounded-xl shadow-sm border p-6 transition relative overflow-hidden ${isImported ? 'border-emerald-200 bg-emerald-50/10' : 'border-slate-200 hover:border-indigo-300'}`}>
-                        {isImported && (
-                          <div className="absolute top-0 right-0 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg flex items-center gap-1">
+                      <div 
+                        key={idx} 
+                        className={`bg-white rounded-xl shadow-sm border p-6 transition relative overflow-hidden ${
+                          status === 'imported' ? 'border-emerald-200 bg-emerald-50/10' :
+                          status === 'swapped' ? 'border-purple-200 bg-purple-50/10' :
+                          status === 'skipped' ? 'border-slate-200 bg-slate-50/40 opacity-70' :
+                          'border-slate-200 hover:border-indigo-300'
+                        }`}
+                      >
+                        {/* 完成狀態標記 */}
+                        {status === 'imported' && (
+                          <div className="absolute top-0 right-0 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg flex items-center gap-1 shadow-sm">
                             <Check className="w-3.5 h-3.5" /> 已成功匯入
                           </div>
                         )}
+                        {status === 'swapped' && (
+                          <div className="absolute top-0 right-0 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg flex items-center gap-1 shadow-sm">
+                            <ArrowRightLeft className="w-3.5 h-3.5" /> 已取代並匯入
+                          </div>
+                        )}
+                        {status === 'skipped' && (
+                          <div className="absolute top-0 right-0 bg-slate-550 text-white text-xs font-bold px-3 py-1 rounded-bl-lg flex items-center gap-1 shadow-sm">
+                            <X className="w-3.5 h-3.5" /> 已略過建議
+                          </div>
+                        )}
 
+                        {/* 分類與地理位置標籤 */}
                         <div className="flex flex-wrap items-center gap-2 mb-3">
                           <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-bold text-xs">
                             {result.region}
@@ -1580,100 +1660,172 @@ export default function App() {
                           </span>
                         </div>
 
-                        <h4 className="text-lg font-bold text-slate-800 mb-2 truncate pr-16">{result.title}</h4>
-                        <p className="text-slate-500 text-xs mb-4 break-all truncate">連結網址：<a href={result.url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline">{result.url}</a></p>
+                        <h4 className="text-lg font-bold text-slate-800 mb-1 truncate pr-24">{result.title}</h4>
+                        <p className="text-slate-500 text-[11px] mb-4 break-all truncate">連結網址：<a href={result.url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline hover:text-indigo-800">{result.url}</a></p>
 
-                        {/* 警示與警告區塊 */}
-                        <div className="space-y-3.5 my-4">
-                          {/* 同質性警告 */}
-                          {result.similarityWarning && result.similarityWarning !== "無" && (
-                            <div className="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg">
-                              <div className="flex gap-2">
-                                <AlertTriangle className="text-amber-600 w-5 h-5 flex-shrink-0 mt-0.5" />
-                                <div>
-                                  <span className="block text-xs font-bold text-amber-800">同質性高風險警示</span>
-                                  <span className="text-xs text-amber-700 leading-relaxed">{result.similarityWarning}</span>
-                                </div>
-                              </div>
-                            </div>
-                          )}
+                        {/* AI 評估結果分析卡片 */}
+                        <div className={`border rounded-xl p-4 mb-4 ${decisionClass}`}>
+                          <div className="flex items-center gap-1.5 mb-2">
+                            {decisionIcon}
+                            <span className="font-extrabold text-sm tracking-wide">AI 評估方案：{decisionBadge}</span>
+                          </div>
+                          
+                          <p className="text-xs leading-relaxed font-medium">
+                            <strong className="block mb-1 opacity-90 text-[11px] uppercase tracking-wider">實務邏輯分析與建議理由（包含交通車程/停留時間/同質重疊/區域性分析）：</strong>
+                            {result.aiDecisionReason}
+                          </p>
 
-                          {/* 地理位置警告 */}
-                          {result.locationWarning && result.locationWarning !== "無" && (
-                            <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded-r-lg">
-                              <div className="flex gap-2">
-                                <AlertTriangle className="text-red-600 w-5 h-5 flex-shrink-0 mt-0.5" />
-                                <div>
-                                  <span className="block text-xs font-bold text-red-800">地理位置衝突警告</span>
-                                  <span className="text-xs text-red-700 leading-relaxed">{result.locationWarning}</span>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* 不好體驗警告 */}
-                          {result.experienceWarning && result.experienceWarning !== "無" && (
-                            <div className="bg-orange-50 border-l-4 border-orange-500 p-3 rounded-r-lg">
-                              <div className="flex gap-2">
-                                <AlertTriangle className="text-orange-600 w-5 h-5 flex-shrink-0 mt-0.5" />
-                                <div>
-                                  <span className="block text-xs font-bold text-orange-800">不好體驗因子警告</span>
-                                  <span className="text-xs text-orange-700 leading-relaxed">{result.experienceWarning}</span>
-                                </div>
-                              </div>
+                          {/* 地理位置/同質性/不好體驗警告 */}
+                          {(result.locationWarning !== "無" || result.similarityWarning !== "無" || result.experienceWarning !== "無") && (
+                            <div className="flex flex-col gap-1.5 mt-3 pt-3 border-t border-current/10">
+                              {result.locationWarning && result.locationWarning !== "無" && (
+                                <span className="text-[11px] font-semibold flex items-center gap-1 opacity-90">
+                                  ⚠️ 地理衝突: {result.locationWarning}
+                                </span>
+                              )}
+                              {result.similarityWarning && result.similarityWarning !== "無" && (
+                                <span className="text-[11px] font-semibold flex items-center gap-1 opacity-90">
+                                  ⚠️ 同質警示: {result.similarityWarning}
+                                </span>
+                              )}
+                              {result.experienceWarning && result.experienceWarning !== "無" && (
+                                <span className="text-[11px] font-semibold flex items-center gap-1 opacity-90">
+                                  ⚠️ 體驗風險: {result.experienceWarning}
+                                </span>
+                              )}
                             </div>
                           )}
                         </div>
 
                         {/* AI 排程建議 */}
-                        <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 text-sm text-slate-700 leading-relaxed mb-4">
-                          <strong className="text-indigo-800 block mb-1">🤖 AI 排程建議與理由：</strong>
+                        <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/50 text-xs text-slate-600 leading-relaxed mb-4">
+                          <strong className="text-indigo-800 block mb-1">🤖 AI 排程建議：</strong>
                           {result.suggestion}
                         </div>
 
-                        {/* 匯入行程操作 */}
-                        {!isImported && (
-                          <div className="flex flex-wrap gap-4 items-end justify-between border-t border-slate-100 pt-4 mt-4 bg-slate-50/40 p-3 rounded-lg">
-                            <div className="flex flex-wrap gap-3">
-                              <div>
-                                <label className="block text-[10px] font-bold text-slate-500 mb-1 font-sans">排定天數</label>
-                                <select 
-                                  value={selectedDay}
-                                  onChange={(e) => handleResultDayChange(idx, Number(e.target.value))}
-                                  className="border border-slate-200 bg-white rounded-lg px-2 py-1.5 text-xs text-slate-700 font-medium"
+                        {/* 匯入行程操作區 */}
+                        {!isCompleted && (
+                          <div className="border-t border-slate-100 pt-4 mt-4 space-y-4">
+                            
+                            {/* 使用者決策選擇按鈕 */}
+                            <div>
+                              <span className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2 font-sans">請選擇您的決策動作：</span>
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                
+                                {/* 採用按鈕 */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleUserDecisionChange(idx, 'adopt')}
+                                  className={`flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-bold rounded-lg border transition ${
+                                    currentDecision === 'adopt'
+                                      ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm'
+                                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                                  }`}
                                 >
-                                  {tripSchedule.days.map(d => (
-                                    <option key={d.day} value={d.day}>Day {d.day} ({d.region})</option>
-                                  ))}
-                                </select>
-                              </div>
-                              <div>
-                                <label className="block text-[10px] font-bold text-slate-500 mb-1 font-sans">排定時間</label>
-                                <input 
-                                  type="text" 
-                                  value={selectedTime}
-                                  onChange={(e) => handleResultTimeChange(idx, e.target.value)}
-                                  className="border border-slate-200 bg-white rounded-lg px-2 py-1 text-xs text-slate-700 font-medium w-16 text-center"
-                                />
+                                  <Check className="w-3.5 h-3.5" /> 直接採用匯入
+                                </button>
+                                
+                                {/* 取代按鈕 */}
+                                <button
+                                  type="button"
+                                  disabled={!result.similarActivityTitleToDelete}
+                                  onClick={() => handleUserDecisionChange(idx, 'swap')}
+                                  className={`flex flex-col items-center justify-center py-2 px-3 text-xs font-bold rounded-lg border transition min-h-[42px] ${
+                                    !result.similarActivityTitleToDelete
+                                      ? 'opacity-40 cursor-not-allowed bg-slate-100 border-slate-200 text-slate-400'
+                                      : currentDecision === 'swap'
+                                      ? 'bg-purple-600 border-purple-600 text-white shadow-sm'
+                                      : 'bg-white border-slate-200 text-slate-600 hover:bg-purple-50/20 hover:border-purple-300'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-1.5">
+                                    <ArrowRightLeft className="w-3.5 h-3.5" /> 取代衝突行程
+                                  </div>
+                                  {result.similarActivityTitleToDelete && (
+                                    <span className={`text-[9px] mt-0.5 font-medium truncate max-w-full block ${currentDecision === 'swap' ? 'text-purple-100' : 'text-slate-400'}`}>
+                                      將刪除: {result.similarActivityTitleToDelete}
+                                    </span>
+                                  )}
+                                </button>
+                                
+                                {/* 略過按鈕 */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleUserDecisionChange(idx, 'skip')}
+                                  className={`flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-bold rounded-lg border transition ${
+                                    currentDecision === 'skip'
+                                      ? 'bg-rose-600 border-rose-600 text-white shadow-sm'
+                                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  <X className="w-3.5 h-3.5" /> 略過此建議
+                                </button>
                               </div>
                             </div>
-                            
-                            <button
-                              onClick={() => handleImportToItinerary(result, idx)}
-                              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm"
-                            >
-                              <Plus className="w-3.5 h-3.5" /> 確認匯入此行程
-                            </button>
+
+                            {/* 天數與時間選擇器（若不為略過） */}
+                            {currentDecision !== 'skip' && (
+                              <div className="flex flex-wrap gap-4 items-end bg-slate-50/50 border border-slate-150 p-3 rounded-lg">
+                                <div>
+                                  <label className="block text-[10px] font-bold text-slate-500 mb-1 font-sans">排定天數</label>
+                                  <select 
+                                    value={selectedDay}
+                                    onChange={(e) => handleResultDayChange(idx, Number(e.target.value))}
+                                    className="border border-slate-200 bg-white rounded-lg px-2.5 py-1.5 text-xs text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                  >
+                                    {tripSchedule.days.map(d => (
+                                      <option key={d.day} value={d.day}>Day {d.day} ({d.region})</option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-[10px] font-bold text-slate-500 mb-1 font-sans">排定時間</label>
+                                  <input 
+                                    type="text" 
+                                    value={selectedTime}
+                                    onChange={(e) => handleResultTimeChange(idx, e.target.value)}
+                                    className="border border-slate-200 bg-white rounded-lg px-2 py-1 text-xs text-slate-700 font-medium w-20 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {/* 執行決策動作按鈕 */}
+                            <div className="flex justify-end pt-2">
+                              <button
+                                onClick={() => handleImportToItinerary(result, idx)}
+                                className={`px-5 py-2.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow-sm text-white ${
+                                  currentDecision === 'adopt' ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/10' :
+                                  currentDecision === 'swap' ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-500/10' :
+                                  'bg-rose-600 hover:bg-rose-700 shadow-rose-500/10'
+                                }`}
+                              >
+                                {currentDecision === 'adopt' ? (
+                                  <>
+                                    <Plus className="w-3.5 h-3.5" /> 執行決策：確認採用匯入
+                                  </>
+                                ) : currentDecision === 'swap' ? (
+                                  <>
+                                    <ArrowRightLeft className="w-3.5 h-3.5" /> 執行決策：確認取代匯入
+                                  </>
+                                ) : (
+                                  <>
+                                    <X className="w-3.5 h-3.5" /> 執行決策：確認略過此建議
+                                  </>
+                                )}
+                              </button>
+                            </div>
                           </div>
                         )}
 
-                        {isImported && (
+                        {/* 成功匯入後的導覽按鍵 */}
+                        {(status === 'imported' || status === 'swapped') && (
                           <div className="flex justify-end gap-2 border-t border-slate-100 pt-4 mt-4">
                             <button
                               onClick={() => { changeTab(`day-${selectedDay}`); }}
-                              className="text-xs text-emerald-700 hover:text-emerald-800 font-semibold flex items-center gap-1.5"
+                              className="text-xs text-indigo-700 hover:text-indigo-800 font-bold flex items-center gap-1.5 hover:underline"
                             >
-                              前往 Day {selectedDay} 查看匯入結果 &rarr;
+                              前往 Day {selectedDay} 查看匯入與排程結果 &rarr;
                             </button>
                           </div>
                         )}
