@@ -532,7 +532,7 @@ const HOTSPOT_CONFIGS = [
     name: 'Pa Dee 咖啡館',
     style: { left: '77%', top: '76%', width: '18%', height: '16%' },
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=Pa+Dee+Rayong',
-    infoUrl: 'https://www.viviyu.com/archives/5654'
+    infoUrl: 'https://www.vivigy.com/archives/5654'
   },
   {
     key: 'one_bangkok',
@@ -634,7 +634,7 @@ const callGeminiAnalysis = async (urlsText, tripSchedule) => {
 請針對這些新增項目進行分析，評估它們的「地理位置（曼谷/羅勇/芭達雅/曼谷近郊）」、「景點分類（如: coffee/food/shopping/camera/hotel/transport/info）」、以及「與既有行程的同質性（如同質性太高、功能重疊等）」。
 
 **既有行程摘要**：
-${JSON.stringify(tripSchedule.days.map(d => ({ day: d.day, date: d.date, region: d.region, activities: d.activities.map(a => ({ title: a.title, type: a.type, desc: a.desc })) })))}
+${JSON.stringify(tripSchedule.days.map(d => ({ day: d.day, date: d.date, region: d.region, activities: d.activities.map(a => ({ id: a.id, title: a.title, type: a.type, desc: a.desc, time: a.time, region: a.region })) })))}
 
 **使用者貼入的新增網址/景點**：
 ${urlsText}
@@ -643,10 +643,19 @@ ${urlsText}
 1. 分析每一個輸入。如果使用者貼入的是網址，請根據網址中的關鍵字或旅遊常識，推估出景點的實際中文名稱與細節。
 2. 進行以下評估：
    - **分類與地理位置**：推估其主要區域是曼谷、羅勇、芭達雅還是曼谷近郊，並判斷其分類。
-   - **同質性警示 (similarityWarning)**：比對既有行程，是否已經有類似的咖啡廳、餐廳、購物點或景點。若同質性太高，請提出提醒（例如：您已安排 Pa Dee 咖啡與 FO SHO BRO 咖啡，此處可能同質性高）。如果沒有，請寫 "無"。
-   - **地理位置衝突 (locationWarning)**：如果推薦的天數主要活動區域與本景點區域相距甚遠，請警告。例如：Day 1 主要活動在曼谷，若把此景點（位於羅勇）排在 Day 1 會有嚴重交通衝突。如果沒有，請寫 "無"。
-   - **不好體驗因素警示 (experienceWarning)**：例如：7月是泰國雨季，戶外景點容易受雨天影響；或者此地交通極易擁堵等。如果沒有，請寫 "無"。
+   - **決策分類 (aiDecision)**：必須為 'adoptable' (可採用)、'not_recommended' (不建議) 或 'optional' (可選擇性) 之一。
+     - **adoptable (可採用)**：此景點地理區域與推薦天數一致，與前後景點無時間或交通衝突，且無同質性重疊。
+     - **not_recommended (不建議)**：跨區過遠（例如在曼谷日去羅勇，交通單趟 > 2 小時）、或前後時間嚴重衝突（例如上一個行程在 14:00 開始，新增行程排在 15:00，扣除 1 小時車程後，前一個行程根本沒有停留時間，這在實務上是不可能的）、或行程過滿。
+     - **optional (可選擇性)**：同質性高（例如又去另一家相似的網美咖啡廳），若使用者想去，建議刪除或取代行程中既有的某個相似行程。
+   - **決策理由 (aiDecisionReason)**：詳細的中文評估理由。如果是 'not_recommended' 且屬於時間或交通衝突，請精準指出是與哪一個景點（起點）到哪一個景點（終點）之間的時間被嚴重壓縮。
+   - **同質性警示 (similarityWarning)**：比對既有行程，是否已經有類似的景點。若有同質性重疊，請寫出提醒；沒有則寫 "無"。
+   - **地理位置衝突 (locationWarning)**：如果推薦的天數主要活動區域與本景點區域相距甚遠，或是兩地車程長導致時間嚴重被壓縮，請警告。沒有則寫 "無"。
+   - **不好體驗因素警示 (experienceWarning)**：例如泰國雨季受雨天影響、交通極易擁堵等。沒有則寫 "無"。
    - **建議與排定理由 (suggestion)**：說明推薦排在第幾天、什麼時間，以及為什麼。
+   - **建議天數 (suggestedDay)**：推薦排在第幾天 (數字)。
+   - **建議時間 (suggestedTime)**：推薦的時間 (如 "14:00")。
+   - **建議取代/刪除之行程 (similarActivityIdToDelete 與 similarActivityTitleToDelete)**：若為 'optional'，請提供該衝突行程的 ID (如 "ai-imported-...") 與標題；若非 'optional' 則寫 null。
+
 3. 請務必只回傳標準的 JSON 格式（以 { "analysisResults": [...] } 的格式回傳），不要包含任何 markdown 的 \`\`\`json 包裹標記，以便於程式解析。
 
 JSON 結構樣式：
@@ -657,12 +666,16 @@ JSON 結構樣式：
       "url": "輸入的原始網址",
       "category": "分類 (如: coffee, food, shopping, camera, hotel, transport, info)",
       "region": "地理區域 (如: 曼谷, 羅勇, 芭達雅, 曼谷近郊)",
+      "aiDecision": "adoptable | not_recommended | optional",
+      "aiDecisionReason": "詳細評估理由",
       "similarityWarning": "警示內容或無",
       "locationWarning": "警示內容或無",
       "experienceWarning": "警示內容或無",
       "suggestion": "排程建議說明",
       "suggestedDay": 1,
-      "suggestedTime": "14:00"
+      "suggestedTime": "14:00",
+      "similarActivityIdToDelete": "既有衝突行程的 ID 或 null",
+      "similarActivityTitleToDelete": "既有衝突行程的標題或 null"
     }
   ]
 }
@@ -688,6 +701,154 @@ JSON 結構樣式：
   const data = await response.json();
   const jsonText = data.candidates[0].content.parts[0].text;
   return JSON.parse(jsonText);
+};
+
+// ==========================================
+// 實務旅遊排程邏輯後置驗證器 (防止行程重疊/車程不足等不合理結果)
+// ==========================================
+const validateItineraryLogic = (item, tripSchedule) => {
+  const validated = { ...item };
+  
+  const dayNum = Number(validated.suggestedDay);
+  const targetDay = tripSchedule.days.find(d => Number(d.day) === dayNum);
+  if (!targetDay) return validated;
+
+  const getDuration = (category, title) => {
+    const t = (title || "").toLowerCase();
+    const cat = (category || "").toLowerCase();
+    if (t.includes("午餐") || t.includes("晚餐") || t.includes("savoey") || t.includes("餐廳") || t.includes("美食") || t.includes("飯") || cat === "food") {
+      return 90; // 1.5小時
+    }
+    if (t.includes("逛街") || t.includes("iconsiam") || t.includes("市集") || t.includes("夜市") || t.includes("商場") || t.includes("outlet") || cat === "shopping") {
+      return 120; // 2小時
+    }
+    if (t.includes("咖啡") || t.includes("cafe") || cat === "coffee") {
+      return 60; // 1小時
+    }
+    if (t.includes("動物園") || t.includes("safari") || t.includes("樂園")) {
+      return 240; // 4小時
+    }
+    if (cat === "hotel") return 60;
+    if (cat === "transport") return 30;
+    return 90; // default 1.5小時
+  };
+
+  const getTravelTime = (reg1, reg2, title1, title2) => {
+    const r1 = reg1 || "曼谷";
+    const r2 = reg2 || "曼谷";
+    const t1 = (title1 || "").toLowerCase();
+    const t2 = (title2 || "").toLowerCase();
+
+    if (r1 !== r2) {
+      if ((r1 === "曼谷" && r2 === "羅勇") || (r1 === "羅勇" && r2 === "曼谷")) return 150; // 2.5小時
+      if ((r1 === "曼谷" && r2 === "芭達雅") || (r1 === "芭達雅" && r2 === "曼谷")) return 120; // 2小時
+      if ((r1 === "芭達雅" && r2 === "羅勇") || (r1 === "羅勇" && r2 === "芭達雅")) return 60; // 1小時
+      if ((r1 === "曼谷" && r2 === "曼谷近郊") || (r1 === "曼谷近郊" && r2 === "曼谷")) return 60; // 1小時
+      return 90;
+    }
+
+    // 同一區域
+    if (t1.includes("one bangkok") && t2.includes("one bangkok")) return 5;
+    if (t1.includes("iconsiam") && t2.includes("iconsiam")) return 5;
+    if (t1.includes("terminal 21") && t2.includes("terminal 21")) return 5;
+    
+    if (r1 === "曼谷") return 40; // 曼谷塞車常態，預設40分鐘
+    return 30;
+  };
+
+  const timeToMins = (tStr) => {
+    if (!tStr) return 0;
+    const parts = tStr.split(":");
+    if (parts.length < 2) return 0;
+    return Number(parts[0]) * 60 + Number(parts[1]);
+  };
+
+  const itemMins = timeToMins(validated.suggestedTime);
+  const itemDuration = getDuration(validated.category, validated.title);
+
+  const activities = targetDay.activities || [];
+  let conflictReason = "";
+  let locationConflict = "";
+
+  for (const act of activities) {
+    const actMins = timeToMins(act.time);
+    const actDuration = getDuration(act.type, act.title);
+    
+    // 狀況1：既有行程在推薦行程之前
+    if (actMins <= itemMins) {
+      const travel = getTravelTime(act.region || targetDay.region, validated.region, act.title, validated.title);
+      const neededEnd = actMins + actDuration + travel;
+      if (neededEnd > itemMins) {
+        const diff = neededEnd - itemMins;
+        conflictReason = `時間與交通衝突：您已安排在 ${act.time} 進行「${act.title}」（預估停留 ${actDuration} 分鐘），且前往此地車程約需 ${travel} 分鐘。若此景點排在 ${validated.suggestedTime}，將導致前個景點停留時間嚴重不足（被壓縮 ${diff} 分鐘），不符實務旅遊邏輯。`;
+        locationConflict = `交通時間不足：從「${act.title}」前往此地車程約 ${travel} 分鐘。`;
+        break;
+      }
+    }
+    
+    // 狀況2：既有行程在推薦行程之後
+    if (actMins > itemMins) {
+      const travel = getTravelTime(validated.region, act.region || targetDay.region, validated.title, act.title);
+      const neededEnd = itemMins + itemDuration + travel;
+      if (neededEnd > actMins) {
+        const diff = neededEnd - actMins;
+        conflictReason = `時間與交通衝突：此景點預計停留 ${itemDuration} 分鐘，且前往下一個行程「${act.title}」（於 ${act.time} 開始）車程需約 ${travel} 分鐘。若此景點排在 ${validated.suggestedTime}，將導致下個行程遲到 ${diff} 分鐘，不符實務旅遊邏輯。`;
+        locationConflict = `交通時間不足：前往下個行程「${act.title}」車程約 ${travel} 分鐘。`;
+        break;
+      }
+    }
+  }
+
+  // 跨區衝突驗證
+  if (targetDay.region && validated.region && targetDay.region !== validated.region) {
+    const crossTravel = getTravelTime(targetDay.region, validated.region, "", "");
+    if (crossTravel >= 120) {
+      if (!conflictReason) {
+        conflictReason = `跨區交通衝突：此景點位於「${validated.region}」，而 Day ${dayNum} 的主要活動區域在「${targetDay.region}」，單趟車程長達 ${crossTravel} 分鐘，往返耗費體力且時間嚴重衝突，不建議排在此天。`;
+        locationConflict = `跨區交通衝突：單趟車程長達 ${crossTravel} 分鐘。`;
+      }
+    }
+  }
+
+  if (conflictReason) {
+    validated.aiDecision = "not_recommended";
+    validated.aiDecisionReason = conflictReason;
+    if (locationConflict) {
+      validated.locationWarning = locationConflict;
+    }
+  } else {
+    // 評估同質性/性質重疊
+    let similarAct = null;
+    for (const d of tripSchedule.days) {
+      for (const a of d.activities || []) {
+        const isSameCategory = (a.type === validated.category) && (a.type === "coffee" || a.type === "food" || a.type === "shopping");
+        const hasKeywordMatch = (a.title && validated.title && (
+          a.title.includes(validated.title) || validated.title.includes(a.title) ||
+          (a.title.includes("咖啡") && validated.title.includes("咖啡")) ||
+          (a.title.includes("Savoey") && validated.title.includes("Savoey"))
+        ));
+        
+        if (isSameCategory || hasKeywordMatch) {
+          similarAct = a;
+          break;
+        }
+      }
+      if (similarAct) break;
+    }
+
+    if (similarAct) {
+      validated.aiDecision = "optional";
+      validated.similarActivityIdToDelete = similarAct.id;
+      validated.similarActivityTitleToDelete = similarAct.title;
+      validated.aiDecisionReason = `可選擇性安排：此景點與既有行程中的「${similarAct.title}」性質高度重疊。建議若想拜訪此地，可點選下方「取代衝突行程」按鈕，系統將自動為您刪除「${similarAct.title}」並換成此景點。`;
+      validated.similarityWarning = `同質警示：與既有行程中的「${similarAct.title}」性質相近。`;
+    } else {
+      validated.aiDecision = "adoptable";
+      validated.aiDecisionReason = `位置順路且時間充裕：此景點位於「${validated.region}」，與 Day ${dayNum} 的活動區域一致，且前後行程有充足的交通與停留緩衝時間，無同質行程衝突，推薦直接採用。`;
+    }
+  }
+
+  return validated;
 };
 
 const localMockAnalysis = (urlsText) => {
@@ -883,16 +1044,20 @@ export default function App() {
       // 呼叫真實的 Gemini 2.5 Flash API 進行分析評估
       const result = await callGeminiAnalysis(aiInputUrls, tripSchedule);
       if (result && result.analysisResults) {
-        setAiAnalysisResults(result.analysisResults);
-        initUserDecisions(result.analysisResults);
+        // 套用實務旅遊排程邏輯後置驗證
+        const validatedResults = result.analysisResults.map(item => validateItineraryLogic(item, tripSchedule));
+        setAiAnalysisResults(validatedResults);
+        initUserDecisions(validatedResults);
       } else {
         throw new Error("Invalid output structure");
       }
     } catch (err) {
       console.warn("Gemini API 呼叫失敗，啟用高仿真本地 Rule-based 分析器:", err.message);
       const result = localMockAnalysis(aiInputUrls);
-      setAiAnalysisResults(result.analysisResults);
-      initUserDecisions(result.analysisResults);
+      // 套用實務旅遊排程邏輯後置驗證
+      const validatedResults = result.analysisResults.map(item => validateItineraryLogic(item, tripSchedule));
+      setAiAnalysisResults(validatedResults);
+      initUserDecisions(validatedResults);
     } finally {
       setIsAnalyzingAi(false);
     }
