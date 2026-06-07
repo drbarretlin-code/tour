@@ -59,7 +59,6 @@ const PrintMapEmbed = ({ query }) => {
         title="Map" 
         src={embedUrl} 
         className="w-full h-full border-0" 
-        loading="lazy"
       />
     </div>
   );
@@ -75,7 +74,6 @@ const PrintRouteEmbed = ({ url }) => {
         title="Route Map" 
         src={embedUrl} 
         className="w-full h-full border-0" 
-        loading="lazy"
       />
     </div>
   );
@@ -1571,6 +1569,7 @@ export default function App() {
   
   // PDF 匯出與列印狀態
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [isPreparingPrint, setIsPreparingPrint] = useState(false);
   const [printOptions, setPrintOptions] = useState({
     expandMap: true,
     expandInfo: true,
@@ -1579,10 +1578,12 @@ export default function App() {
   });
 
   const handlePrint = () => {
-    setIsPrintModalOpen(false);
+    setIsPreparingPrint(true);
     setTimeout(() => {
+      setIsPrintModalOpen(false);
+      setIsPreparingPrint(false);
       window.print();
-    }, 300);
+    }, 3000); // 3 seconds delay to let iframes and images load in print container
   };
 
   
@@ -1911,12 +1912,16 @@ export default function App() {
             break-inside: avoid;
           }
           .print-day-section {
-            page-break-before: always;
-            break-before: page;
+            page-break-before: auto !important;
+            break-before: auto !important;
+            border-bottom: 2px dashed #cbd5e1;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
           }
-          .print-day-section:first-child {
-            page-break-before: avoid;
-            break-before: avoid;
+          .print-day-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
           }
         }
       `}} />
@@ -3547,15 +3552,26 @@ export default function App() {
             <div className="p-6 border-t border-slate-100 flex justify-end gap-2 bg-slate-50">
               <button 
                 onClick={() => setIsPrintModalOpen(false)}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition cursor-pointer"
+                disabled={isPreparingPrint}
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition cursor-pointer disabled:opacity-50"
               >
                 取消
               </button>
               <button 
                 onClick={handlePrint}
-                className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg text-sm transition shadow-sm flex items-center gap-1.5 cursor-pointer"
+                disabled={isPreparingPrint}
+                className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg text-sm transition shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-80"
               >
-                <Printer className="w-4 h-4" /> 確認列印 / 匯出 PDF
+                {isPreparingPrint ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    正在準備圖面 (請等候 3 秒)...
+                  </>
+                ) : (
+                  <>
+                    <Printer className="w-4 h-4" /> 確認列印 / 匯出 PDF
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -3572,14 +3588,103 @@ export default function App() {
             <span>📅 行程日期: {tripSchedule.dates}</span>
             <span>👥 人數: {tripSchedule.pax}</span>
           </div>
+        </div>
+
+        {/* 首頁所有卡片資訊於 PDF 開頭處列出 */}
+        <div className="space-y-6 mb-8 page-break-inside-avoid border-b-2 border-slate-200 pb-6">
+          <h2 className="text-lg font-bold text-slate-700 mb-2">📋 行程概觀與準備資訊</h2>
+          
+          {/* 行程確認重點 */}
           {tripSchedule.requirements && tripSchedule.requirements.length > 0 && (
-            <div className="mt-3 bg-slate-50 rounded-lg p-3 border border-slate-100 text-xs">
-              <span className="font-bold text-slate-700 block mb-1">📋 行程確認重點:</span>
-              <ul className="list-disc pl-4 space-y-1 text-slate-600">
+            <div className="bg-slate-55/65 rounded-xl p-4 border border-slate-200 text-xs">
+              <span className="font-bold text-slate-700 block mb-1.5">📌 行程客製化重點確認:</span>
+              <ul className="list-disc pl-5 space-y-1 text-slate-600">
                 {tripSchedule.requirements.map((req, idx) => (
                   <li key={idx}>{req}</li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {/* 匯率消費指南 */}
+          <div className="bg-slate-55/65 rounded-xl p-4 border border-slate-200 text-xs">
+            <span className="font-bold text-slate-700 block mb-2">💰 泰銖/台幣匯率與消費指南:</span>
+            <div className="grid grid-cols-2 gap-4 text-slate-600">
+              <div>
+                <p className="mb-1">當前匯率：<b>1 TWD ≈ {EXCHANGE_RATE_TWD_TO_THB} THB</b></p>
+                <p>預估每日生活費 (不含宿交)：<b>~ 1,500 ฿ (~ 1,364 NTD) / 人</b></p>
+              </div>
+              <div className="space-y-1 text-[11px]">
+                <div className="flex justify-between">
+                  <span>泰國路邊攤泰式炒麵 (Pad Thai):</span>
+                  <span className="font-semibold text-slate-800">~ 60 - 80 ฿ (~ 55 - 73 NTD)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>泰式奶茶 (Thai Tea):</span>
+                  <span className="font-semibold text-slate-800">~ 40 - 70 ฿ (~ 36 - 64 NTD)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>泰式古法按摩 (1小時):</span>
+                  <span className="font-semibold text-slate-800">~ 250 - 400 ฿ (~ 227 - 364 NTD)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* 緊急聯絡資訊 */}
+            <div className="bg-slate-55/65 rounded-xl p-4 border border-slate-200 text-xs">
+              <span className="font-bold text-red-700 block mb-2">📞 緊急聯絡資訊:</span>
+              <div className="space-y-1.5 text-slate-600">
+                {tripSchedule.emergencyInfo.map((info, idx) => (
+                  <div key={idx} className="flex justify-between text-[11px]">
+                    <span><b>{info.name}</b> ({info.desc})</span>
+                    <span className="font-mono font-bold text-red-700">{info.number}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 實用泰語通 */}
+            <div className="bg-slate-55/65 rounded-xl p-4 border border-slate-200 text-xs">
+              <span className="font-bold text-teal-700 block mb-2">☕ 實用泰語通:</span>
+              <div className="space-y-1 text-slate-600 text-[11px]">
+                <div className="flex justify-between"><span>你好 (男/女)</span><span className="font-semibold">Sawasdee</span></div>
+                <div className="flex justify-between"><span>謝謝 (男/女)</span><span className="font-semibold">Khop Khun</span></div>
+                <div className="flex justify-between"><span><b>結帳 (最常用！)</b></span><span className="font-bold text-amber-700">Chek Bin</span></div>
+              </div>
+            </div>
+          </div>
+
+          {/* 智能行程總體概觀圖表 */}
+          {printOptions.expandInfographic && (
+            <div className="mt-4 page-break-inside-avoid">
+              <span className="font-bold text-slate-700 text-xs block mb-2">🗺️ 智能行程概觀地圖 (全行程)</span>
+              <div className="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-slate-300 bg-slate-50 shadow-sm">
+                <img 
+                  src={infographicUrl} 
+                  alt="行程概觀圖表" 
+                  className="w-full h-full object-cover" 
+                />
+                
+                {/* 靜態標記熱區 */}
+                {HOTSPOT_CONFIGS.filter(cfg => isKeywordInItinerary(cfg.keywords)).map(cfg => {
+                  const cx = parseFloat(cfg.style.left) + parseFloat(cfg.style.width || 0) / 2;
+                  const cy = parseFloat(cfg.style.top) + parseFloat(cfg.style.height || 0) / 2;
+                  return (
+                    <div 
+                      key={cfg.key}
+                      className="absolute flex flex-col items-center justify-center transform -translate-x-1/2 -translate-y-1/2"
+                      style={{ left: `${cx}%`, top: `${cy}%` }}
+                    >
+                      <div className="w-1.5 h-1.5 rounded-full bg-teal-600 border border-white shadow-sm" />
+                      <div className="bg-teal-900/90 text-white text-[8px] font-bold px-1 rounded shadow-md mt-0.5 whitespace-nowrap">
+                        {cfg.name}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
@@ -3765,6 +3870,29 @@ export default function App() {
                     {customNotes[act.id] && (
                       <div className="bg-amber-50 border-l-2 border-amber-500 p-2 text-[11px] text-amber-800 rounded-r font-medium mb-3">
                         ✍️ 筆記備註：{customNotes[act.id]}
+                      </div>
+                    )}
+
+                    {/* 航站平面圖 (限第一天/最後一天的機場卡片) */}
+                    {((day.day === 1 && act.id === 'd1-1') || (day.day === 7 && act.id === 'd7-3')) && (
+                      <div className="mt-3 pt-3 border-t border-slate-100 page-break-inside-avoid">
+                        <span className="text-[10px] font-bold text-blue-700 block mb-1">
+                          ✈️ {day.day === 1 ? '曼谷蘇凡納布機場 (BKK) 入境大廳平面圖 (Level 2)' : '曼谷蘇凡納布機場 (BKK) 出境大廳平面圖 (Level 4)'}
+                        </span>
+                        <div className="rounded-md overflow-hidden border border-slate-200 bg-white max-w-md mt-1.5">
+                          <img 
+                            src={day.day === 1 ? '/bkk_arrival_map.png' : '/bkk_departure_map.png'} 
+                            alt="BKK Airport Terminal Map"
+                            className="w-full h-auto object-cover"
+                          />
+                        </div>
+                        <p className="mt-1.5 text-[9px] text-slate-450 leading-relaxed">
+                          {day.day === 1 ? (
+                            <span>💡 抵達指引：下飛機後順著「Immigration (入境)」指標前進，至 Level 2 辦理入境與行李提取。提取行李後，出口位於 Level 2 大廳。若欲搭乘機場快線 (ARL)，請搭手扶梯下至 B1 層。</span>
+                          ) : (
+                            <span>💡 離境指引：專車或 Grab 將在 Level 4 離境大廳入口停靠。進入航廈後請尋找對應航空公司的 Check-in 櫃檯辦理登機。安檢與證照查驗位於 Level 4 後方中央。</span>
+                          )}
+                        </p>
                       </div>
                     )}
 
