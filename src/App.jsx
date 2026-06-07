@@ -28,8 +28,58 @@ import {
   Plus,
   Trash2,
   DollarSign,
-  Plane
+  Plane,
+  Printer
 } from 'lucide-react';
+
+
+// 1. QR Code 輔助組件 (用於列印/PDF時讓旅客能用手機掃描開啟外部連結)
+const QRCode = ({ url, label }) => {
+  if (!url) return null;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(url)}`;
+  return (
+    <div className="flex items-center gap-3 border border-slate-200 rounded-lg p-2.5 bg-slate-50 max-w-sm mt-2 page-break-inside-avoid">
+      <img src={qrUrl} alt="QR Code" className="w-12 h-12 object-contain flex-shrink-0" />
+      <div className="min-w-0 flex-1">
+        <span className="text-[9px] font-bold text-slate-400 block uppercase tracking-wider">{label}</span>
+        <span className="text-[10px] font-semibold text-slate-700 truncate block">{url}</span>
+        <span className="text-[8px] text-slate-400 block">（掃描 QR Code 即可快速導航/開啟）</span>
+      </div>
+    </div>
+  );
+};
+
+// 2. Google 地圖嵌入輔助組件 (列印時以 iframe 渲染地圖畫面)
+const PrintMapEmbed = ({ query }) => {
+  if (!query) return null;
+  const embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+  return (
+    <div className="mt-2 w-full h-44 border border-slate-200 rounded-lg overflow-hidden page-break-inside-avoid">
+      <iframe 
+        title="Map" 
+        src={embedUrl} 
+        className="w-full h-full border-0" 
+        loading="lazy"
+      />
+    </div>
+  );
+};
+
+// 3. Google 交通路線嵌入輔助組件
+const PrintRouteEmbed = ({ url }) => {
+  if (!url) return null;
+  const embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(url)}&output=embed`;
+  return (
+    <div className="mt-2 w-full h-44 border border-slate-200 rounded-lg overflow-hidden page-break-inside-avoid">
+      <iframe 
+        title="Route Map" 
+        src={embedUrl} 
+        className="w-full h-full border-0" 
+        loading="lazy"
+      />
+    </div>
+  );
+};
 
 // ==========================================
 // 初始行程資料庫 (已更新：Kliff、Cross Pattaya、美功鐵道市場等)
@@ -1519,6 +1569,22 @@ export default function App() {
   const [sourceDayId, setSourceDayId] = useState(1);
   const [targetDayId, setTargetDayId] = useState(1);
   
+  // PDF 匯出與列印狀態
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [printOptions, setPrintOptions] = useState({
+    expandMap: true,
+    expandInfo: true,
+    expandRoute: true
+  });
+
+  const handlePrint = () => {
+    setIsPrintModalOpen(false);
+    setTimeout(() => {
+      window.print();
+    }, 300);
+  };
+
+  
   // 編輯表單欄位
   const [formTime, setFormTime] = useState('');
   const [formTitle, setFormTitle] = useState('');
@@ -1831,9 +1897,34 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative">
-      
-      {/* 頂部導航列 */}
-      <header className="bg-white shadow-sm sticky top-0 z-40">
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          .print-hidden {
+            display: none !important;
+          }
+          .print-only {
+            display: block !important;
+          }
+          .page-break-inside-avoid {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+          .print-day-section {
+            page-break-before: always;
+            break-before: page;
+          }
+          .print-day-section:first-child {
+            page-break-before: avoid;
+            break-before: avoid;
+          }
+        }
+      `}} />
+
+      {/* 正常網頁顯示區 */}
+      <div className="print-hidden">
+        
+        {/* 頂部導航列 */}
+        <header className="bg-white shadow-sm sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center gap-1.5 sm:gap-2.5">
@@ -1873,19 +1964,30 @@ export default function App() {
               </div>
             </div>
             
-            {/* 收合選單 (Dropdown 面板) */}
-            <div className="relative">
+            {/* 頂部動作按鈕區 */}
+            <div className="flex items-center gap-2">
+              {/* PDF 匯出按鈕 */}
               <button 
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 px-4 py-2 bg-teal-50 text-teal-700 border border-teal-200 hover:bg-teal-100 rounded-lg font-semibold transition text-sm shadow-sm"
+                onClick={() => setIsPrintModalOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 rounded-lg text-xs sm:text-sm font-semibold transition shadow-sm cursor-pointer"
               >
-                <span>📂 {
-                  activeTab === 'overview' ? '總覽 & 準備' : 
-                  activeTab === 'ai-assistant' ? '🤖 AI 行程規劃助手' :
-                  `Day ${activeTab.split('-')[1]} - ${tripSchedule.days.find(d => `day-${d.day}` === activeTab)?.title || ''}`
-                }</span>
-                <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen ? 'rotate-90' : ''}`} />
+                <Printer className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600" />
+                <span>PDF 匯出</span>
               </button>
+
+              {/* 收合選單 (Dropdown 面板) */}
+              <div className="relative">
+                <button 
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-teal-50 text-teal-700 border border-teal-200 hover:bg-teal-100 rounded-lg font-semibold transition text-xs sm:text-sm shadow-sm"
+                >
+                  <span>📂 {
+                    activeTab === 'overview' ? '總覽 & 準備' : 
+                    activeTab === 'ai-assistant' ? '🤖 AI 行程規劃助手' :
+                    `Day ${activeTab.split('-')[1]} - ${tripSchedule.days.find(d => `day-${d.day}` === activeTab)?.title || ''}`
+                  }</span>
+                  <ChevronRight className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200 ${dropdownOpen ? 'rotate-90' : ''}`} />
+                </button>
 
               {dropdownOpen && (
                 <>
@@ -1930,7 +2032,8 @@ export default function App() {
             </div>
           </div>
         </div>
-</header>
+      </div>
+    </header>
 
       {/* Hero 圖片區塊 */}
       {activeTab === 'overview' && (
@@ -3174,11 +3277,13 @@ export default function App() {
         <p>為您專屬生成的行程規劃網站 • 支援跨裝置瀏覽</p>
       </footer>
 
+      </div> {/* print-hidden */}
+
       {/* ==========================================
           統一編修行程對話框 Modal (新增/編輯/刪除/移動)
           ========================================== */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto print-hidden">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden my-8 animation-fade-in">
             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-lg flex items-center gap-2 text-slate-800">
@@ -3358,6 +3463,192 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* ==========================================
+          PDF 列印與匯出對話框 Modal
+          ========================================== */}
+      {isPrintModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 print-hidden">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animation-fade-in">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="font-bold text-lg flex items-center gap-2 text-slate-800">
+                <Printer className="text-teal-600 w-5 h-5" />
+                📄 PDF 匯出與列印配置
+              </h3>
+              <button 
+                onClick={() => setIsPrintModalOpen(false)} 
+                className="text-slate-400 hover:text-slate-600 bg-white rounded-full p-1 shadow-sm cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-slate-500 leading-relaxed">
+                系統預設將列印<b>所有分頁的所有行程內容</b>。請勾選您是否要在列印成品中展開以下詳細資訊：
+              </p>
+
+              <div className="space-y-3 pt-2">
+                <label className="flex items-start gap-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 cursor-pointer transition">
+                  <input 
+                    type="checkbox" 
+                    className="mt-1 accent-teal-600 w-4 h-4 rounded" 
+                    checked={printOptions.expandMap}
+                    onChange={(e) => setPrintOptions(prev => ({ ...prev, expandMap: e.target.checked }))}
+                  />
+                  <div>
+                    <span className="text-sm font-bold text-slate-700 block">1. 展開景點地圖</span>
+                    <span className="text-xs text-slate-400">在各行程下方嵌入 Google 地圖畫面並附帶導航二維碼</span>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 cursor-pointer transition">
+                  <input 
+                    type="checkbox" 
+                    className="mt-1 accent-teal-600 w-4 h-4 rounded" 
+                    checked={printOptions.expandInfo}
+                    onChange={(e) => setPrintOptions(prev => ({ ...prev, expandInfo: e.target.checked }))}
+                  />
+                  <div>
+                    <span className="text-sm font-bold text-slate-700 block">2. 展開景點介紹</span>
+                    <span className="text-xs text-slate-400">在行程下方附帶景點介紹或官網網址與二維碼</span>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 cursor-pointer transition">
+                  <input 
+                    type="checkbox" 
+                    className="mt-1 accent-teal-600 w-4 h-4 rounded" 
+                    checked={printOptions.expandRoute}
+                    onChange={(e) => setPrintOptions(prev => ({ ...prev, expandRoute: e.target.checked }))}
+                  />
+                  <div>
+                    <span className="text-sm font-bold text-slate-700 block">3. 展開 Google 路線導航地圖</span>
+                    <span className="text-xs text-slate-400">在有設定路線的項目下嵌入路線地圖與導航二維碼</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-slate-100 flex justify-end gap-2 bg-slate-50">
+              <button 
+                onClick={() => setIsPrintModalOpen(false)}
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition cursor-pointer"
+              >
+                取消
+              </button>
+              <button 
+                onClick={handlePrint}
+                className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg text-sm transition shadow-sm flex items-center gap-1.5 cursor-pointer"
+              >
+                <Printer className="w-4 h-4" /> 確認列印 / 匯出 PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==========================================
+          PDF 列印專用區 (預設隱藏，列印時顯示)
+          ========================================== */}
+      <div className="hidden print-only p-6 bg-white text-slate-900 w-full max-w-4xl mx-auto">
+        <div className="border-b-4 border-teal-600 pb-4 mb-6">
+          <h1 className="text-3xl font-black text-slate-800">{tripSchedule.title}</h1>
+          <div className="flex gap-4 text-sm text-slate-500 font-bold mt-2">
+            <span>📅 行程日期: {tripSchedule.dates}</span>
+            <span>👥 人數: {tripSchedule.pax}</span>
+          </div>
+          {tripSchedule.requirements && tripSchedule.requirements.length > 0 && (
+            <div className="mt-3 bg-slate-50 rounded-lg p-3 border border-slate-100 text-xs">
+              <span className="font-bold text-slate-700 block mb-1">📋 行程確認重點:</span>
+              <ul className="list-disc pl-4 space-y-1 text-slate-600">
+                {tripSchedule.requirements.map((req, idx) => (
+                  <li key={idx}>{req}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {/* 循環渲染所有天數的內容 */}
+        {tripSchedule.days.map((day) => (
+          <div key={day.day} className="print-day-section py-6">
+            <div className="border-b-2 border-slate-200 pb-2 mb-4 flex justify-between items-end">
+              <h2 className="text-xl font-extrabold text-teal-800">
+                Day {day.day} - {day.date} | {day.title}
+              </h2>
+              <span className="text-xs bg-slate-100 px-2 py-1 rounded font-bold text-slate-600">
+                主要區域：{day.region}
+              </span>
+            </div>
+            
+            {day.hotelName && (
+              <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 mb-4 text-xs font-semibold text-indigo-900 flex items-center gap-2">
+                🏨 今日住宿飯店：{day.hotelName}
+              </div>
+            )}
+
+            <p className="text-xs text-slate-500 mb-6 leading-relaxed bg-slate-50 p-2.5 rounded border border-slate-100">
+              {day.summary}
+            </p>
+
+            {/* 時間軸行程項目 */}
+            <div className="space-y-6">
+              {day.activities.map((act, idx) => {
+                const mapLink = act.links?.find(l => l.text.includes("地圖") || l.text.includes("位置"));
+                const infoLink = act.links?.find(l => l.text.includes("介紹") || l.text.includes("攻略") || l.text.includes("食記") || l.text.includes("遊玩") || l.text.includes("體驗") || l.text.includes("官網") || l.text.includes("訂房"));
+                const routeLink = act.links?.find(l => l.text.includes("路線") || l.text.includes("導航"));
+
+                return (
+                  <div key={act.id || idx} className="border border-slate-200 rounded-xl p-4 bg-white page-break-inside-avoid">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-bold text-xs">
+                        {act.time}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-semibold">區域：{act.region}</span>
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-800 mb-1">{act.title}</h3>
+                    {act.desc && <p className="text-xs text-slate-600 leading-relaxed mb-3">{act.desc}</p>}
+
+                    {/* 自訂備註 */}
+                    {customNotes[act.id] && (
+                      <div className="bg-amber-50 border-l-2 border-amber-500 p-2 text-[11px] text-amber-800 rounded-r font-medium mb-3">
+                        ✍️ 筆記備註：{customNotes[act.id]}
+                      </div>
+                    )}
+
+                    {/* 展開景點地圖 */}
+                    {printOptions.expandMap && mapLink && (
+                      <div className="mt-3 pt-3 border-t border-slate-100">
+                        <span className="text-[10px] font-bold text-emerald-700 block mb-1">📍 景點位置與地圖</span>
+                        <PrintMapEmbed query={act.title} />
+                        <QRCode url={mapLink.url} label="Google 地圖導航" />
+                      </div>
+                    )}
+
+                    {/* 展開景點介紹 */}
+                    {printOptions.expandInfo && infoLink && (
+                      <div className="mt-3 pt-3 border-t border-slate-100">
+                        <span className="text-[10px] font-bold text-indigo-700 block mb-1">ℹ️ 景點詳細介紹連結</span>
+                        <QRCode url={infoLink.url} label="網頁介紹連結" />
+                      </div>
+                    )}
+
+                    {/* 展開 Google 路線導航地圖 */}
+                    {printOptions.expandRoute && routeLink && (
+                      <div className="mt-3 pt-3 border-t border-slate-100">
+                        <span className="text-[10px] font-bold text-amber-700 block mb-1">🧭 交通路線與導航</span>
+                        <PrintRouteEmbed url={routeLink.url} />
+                        <QRCode url={routeLink.url} label="Google 路線導航" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
 
     </div>
   );
