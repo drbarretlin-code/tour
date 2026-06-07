@@ -1642,7 +1642,7 @@ export default function App() {
     const currentHighlights = tripSchedule.days.flatMap(d => d.activities.map(a => a.title)).slice(0, 10).join(", ");
     
     // 2. 構建給 AI 繪圖模型的精準 Prompt (因為影像模型對英文的理解最好，我們在此組成英文 Prompt)
-    const promptText = `A vibrant 3D isometric overview map of a Thailand travel itinerary, covering Bangkok, Pattaya, and Rayong. The map clearly features miniature 3D models representing landmarks like Kliff restaurant, Cross Pattaya hotel, Suphattra Land, Pa Dee cafe, Maeklong Railway Market, Damnoen Saduak Floating Market, ICONSIAM, and Terminal 21. Colorful dashed route lines connect the locations indicating a 7-day journey. Bright, cheerful travel infographic style, highly detailed digital art, tilt-shift perspective. Bilingual aesthetic (simulated).`;
+    const promptText = `A clean, high-quality 3D isometric map of Thailand (Bangkok, Pattaya, Rayong) for a travel itinerary. The map features miniature 3D models representing landmarks like Kliff restaurant, Cross Pattaya hotel, Suphattra Land, Pa Dee cafe, Maeklong Railway Market, Damnoen Saduak Floating Market, ICONSIAM, and Terminal 21. Clean 3D map background without any text labels, no day numbers, no route lines, no words. Bright, cheerful travel infographic style, highly detailed digital art, tilt-shift perspective.`;
 
     const apiKey = "AIzaSyD3o7irPMiP5BxV9dqzKzmg8Kwdd2opWhs"; // 自動帶入金鑰
     const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
