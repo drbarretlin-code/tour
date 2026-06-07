@@ -1065,9 +1065,21 @@ export default function App() {
 
   // 匯入景點到行程中
   const handleImportToItinerary = async (item, idx) => {
-    const decision = userDecisions[idx] || 'adopt';
-    const dayToImport = resultDaySelections[idx] || item.suggestedDay;
-    const timeToImport = resultTimeSelections[idx] || item.suggestedTime;
+    const dayToImport = resultDaySelections[idx] !== undefined ? resultDaySelections[idx] : item.suggestedDay;
+    const timeToImport = resultTimeSelections[idx] !== undefined ? resultTimeSelections[idx] : item.suggestedTime;
+    
+    // 計算當前選擇時段之實際驗證結果
+    const activeEval = validateItineraryLogic({
+      ...item,
+      suggestedDay: dayToImport,
+      suggestedTime: timeToImport
+    }, tripSchedule);
+
+    const decision = userDecisions[idx] !== undefined ? userDecisions[idx] : (
+      activeEval.aiDecision === 'not_recommended' ? 'skip' :
+      activeEval.aiDecision === 'optional' ? 'swap' : 'adopt'
+    );
+
     const mainTitleToImport = (resultTitleSelections[idx] !== undefined ? resultTitleSelections[idx] : item.title).trim();
 
     if (decision === 'skip') {
@@ -1114,7 +1126,7 @@ export default function App() {
       title: mainTitleToImport,
       type: item.category,
       region: item.region,
-      desc: `【AI推薦排程】${item.suggestion}。請注意：${item.experienceWarning !== '無' ? item.experienceWarning : '無體驗衝突'}。`,
+      desc: `【AI推薦排程】${item.suggestion}。請注意：${activeEval.experienceWarning !== '無' ? activeEval.experienceWarning : '無體驗衝突'}。`,
       links: [
         { text: "景點地圖", url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mainTitleToImport)}` },
         { text: "景點介紹", url: item.url || item.infoUrl || "https://www.klook.com/zh-TW/" },
@@ -1128,16 +1140,16 @@ export default function App() {
           let list = [...day.activities];
           
           // 如果使用者選擇取代，則在列表中移除對應相似景點的 ID
-          if (decision === 'swap' && item.similarActivityIdToDelete) {
-            list = list.filter(a => a.id !== item.similarActivityIdToDelete);
+          if (decision === 'swap' && activeEval.similarActivityIdToDelete) {
+            list = list.filter(a => a.id !== activeEval.similarActivityIdToDelete);
           }
           
           if (day.day === dayToImport) {
             list.push(newActivity);
             list.sort((a, b) => a.time.localeCompare(b.time));
-          } else if (decision === 'swap' && item.similarActivityIdToDelete) {
+          } else if (decision === 'swap' && activeEval.similarActivityIdToDelete) {
             // 在其他天也過濾一次，防範跨天移動/取代的漏網之魚
-            list = list.filter(a => a.id !== item.similarActivityIdToDelete);
+            list = list.filter(a => a.id !== activeEval.similarActivityIdToDelete);
           }
           
           return { ...day, activities: list };
@@ -1773,20 +1785,47 @@ export default function App() {
                     const status = importedItems[result.title + '-' + idx]; // 'imported' | 'swapped' | 'skipped' | undefined
                     const isCompleted = !!status;
                     
-                    const selectedDay = resultDaySelections[idx] || result.suggestedDay;
-                    const selectedTime = resultTimeSelections[idx] || result.suggestedTime;
-                    const currentDecision = userDecisions[idx] || 'adopt'; // 'adopt' | 'skip' | 'swap'
+                    const selectedDay = resultDaySelections[idx] !== undefined ? resultDaySelections[idx] : result.suggestedDay;
+                    const selectedTime = resultTimeSelections[idx] !== undefined ? resultTimeSelections[idx] : result.suggestedTime;
+
+                    // 動態計算當前選擇時段之實際驗證結果
+                    const activeEvaluation = validateItineraryLogic({
+                      ...result,
+                      suggestedDay: selectedDay,
+                      suggestedTime: selectedTime
+                    }, tripSchedule);
+
+                    const currentDecision = userDecisions[idx] !== undefined ? userDecisions[idx] : (
+                      activeEvaluation.aiDecision === 'not_recommended' ? 'skip' :
+                      activeEvaluation.aiDecision === 'optional' ? 'swap' : 'adopt'
+                    );
+
+                    // 計算全行程 7 天的安插可行性分析
+                    const dayFeasibilities = tripSchedule.days.map(d => {
+                      const evalResult = validateItineraryLogic({
+                        ...result,
+                        suggestedDay: d.day,
+                        suggestedTime: selectedTime
+                      }, tripSchedule);
+                      return {
+                        day: d.day,
+                        region: d.region,
+                        decision: evalResult.aiDecision,
+                        reason: evalResult.aiDecisionReason,
+                        similarTitle: evalResult.similarActivityTitleToDelete
+                      };
+                    });
 
                     // 依據 AI 決策狀態設定標記與色彩
                     let decisionBadge = "";
                     let decisionClass = "";
                     let decisionIcon = null;
 
-                    if (result.aiDecision === 'adoptable') {
+                    if (activeEvaluation.aiDecision === 'adoptable') {
                       decisionBadge = "可採用";
                       decisionClass = "bg-emerald-50 border-emerald-100 text-emerald-800";
                       decisionIcon = <Check className="w-4 h-4 text-emerald-600" />;
-                    } else if (result.aiDecision === 'not_recommended') {
+                    } else if (activeEvaluation.aiDecision === 'not_recommended') {
                       decisionBadge = "不建議";
                       decisionClass = "bg-rose-50 border-rose-105 text-rose-800 bg-rose-50/40";
                       decisionIcon = <X className="w-4 h-4 text-rose-600" />;
@@ -1833,7 +1872,7 @@ export default function App() {
                           </span>
                         </div>
 
-                        <h4 className="text-lg font-bold text-slate-800 mb-1 truncate pr-24">{result.title}</h4>
+                        <h4 className="text-lg font-bold text-slate-800 mb-1 pr-24 flex items-center gap-2">{result.title}</h4>
                         <p className="text-slate-500 text-[11px] mb-3 break-all truncate">連結網址：<a href={result.url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline hover:text-indigo-800">{result.url}</a></p>
 
                         {/* AI 掃描確認景點主要名稱 (可編輯欄位) */}
@@ -1869,25 +1908,27 @@ export default function App() {
                           
                           <p className="text-xs leading-relaxed font-medium">
                             <strong className="block mb-1 opacity-90 text-[11px] uppercase tracking-wider">實務邏輯分析與建議理由（包含交通車程/停留時間/同質重疊/區域性分析）：</strong>
-                            {result.aiDecisionReason}
+                            {activeEvaluation.aiDecisionReason}
                           </p>
 
                           {/* 地理位置/同質性/不好體驗警告 */}
-                          {(result.locationWarning !== "無" || result.similarityWarning !== "無" || result.experienceWarning !== "無") && (
+                          {((activeEvaluation.locationWarning && activeEvaluation.locationWarning !== "無") || 
+                            (activeEvaluation.similarityWarning && activeEvaluation.similarityWarning !== "無") || 
+                            (activeEvaluation.experienceWarning && activeEvaluation.experienceWarning !== "無")) && (
                             <div className="flex flex-col gap-1.5 mt-3 pt-3 border-t border-current/10">
-                              {result.locationWarning && result.locationWarning !== "無" && (
+                              {activeEvaluation.locationWarning && activeEvaluation.locationWarning !== "無" && (
                                 <span className="text-[11px] font-semibold flex items-center gap-1 opacity-90">
-                                  ⚠️ 地理衝突: {result.locationWarning}
+                                  ⚠️ 地理/交通衝突: {activeEvaluation.locationWarning}
                                 </span>
                               )}
-                              {result.similarityWarning && result.similarityWarning !== "無" && (
+                              {activeEvaluation.similarityWarning && activeEvaluation.similarityWarning !== "無" && (
                                 <span className="text-[11px] font-semibold flex items-center gap-1 opacity-90">
-                                  ⚠️ 同質警示: {result.similarityWarning}
+                                  ⚠️ 同質警示: {activeEvaluation.similarityWarning}
                                 </span>
                               )}
-                              {result.experienceWarning && result.experienceWarning !== "無" && (
+                              {activeEvaluation.experienceWarning && activeEvaluation.experienceWarning !== "無" && (
                                 <span className="text-[11px] font-semibold flex items-center gap-1 opacity-90">
-                                  ⚠️ 體驗風險: {result.experienceWarning}
+                                  ⚠️ 體驗風險: {activeEvaluation.experienceWarning}
                                 </span>
                               )}
                             </div>
@@ -1898,6 +1939,65 @@ export default function App() {
                         <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/50 text-xs text-slate-600 leading-relaxed mb-4">
                           <strong className="text-indigo-800 block mb-1">🤖 AI 排程建議：</strong>
                           {result.suggestion}
+                        </div>
+
+                        {/* 全行程 7 天安插可行性分析 (互動式切換按鈕) */}
+                        <div className="mt-4 pt-4 border-t border-slate-100">
+                          <span className="block text-[11px] font-bold text-slate-700 mb-2 flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5 text-indigo-500" />
+                            <span>全行程 7 天安插可行性比對 (於 {selectedTime})：</span>
+                          </span>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                            {dayFeasibilities.map((f) => {
+                              let bgClass = "";
+                              let borderClass = "";
+                              let textClass = "";
+                              let icon = "";
+                              let tooltip = "";
+
+                              if (f.decision === 'adoptable') {
+                                bgClass = "bg-emerald-50 hover:bg-emerald-100/80";
+                                borderClass = "border-emerald-200";
+                                textClass = "text-emerald-800";
+                                icon = "🟢 可安插";
+                                tooltip = "可採用：位置順路且時間充裕";
+                              } else if (f.decision === 'optional') {
+                                bgClass = "bg-purple-50 hover:bg-purple-100/80";
+                                borderClass = "border-purple-200";
+                                textClass = "text-purple-800";
+                                icon = "🟡 可取代";
+                                tooltip = `可取代：與「${f.similarTitle}」性質相近，建議替換`;
+                              } else {
+                                bgClass = "bg-slate-50 hover:bg-slate-100/80";
+                                borderClass = "border-slate-200";
+                                textClass = "text-slate-500";
+                                icon = "❌ 不建議";
+                                tooltip = f.reason;
+                              }
+
+                              const isCurrentSelected = f.day === selectedDay;
+
+                              return (
+                                <button
+                                  key={f.day}
+                                  type="button"
+                                  disabled={isCompleted}
+                                  onClick={() => handleResultDayChange(idx, f.day)}
+                                  title={`${tooltip} (點擊直接切換至 Day ${f.day})`}
+                                  className={`flex flex-col items-center justify-center p-2 rounded-lg border text-center transition ${bgClass} ${borderClass} ${textClass} ${
+                                    isCurrentSelected ? 'ring-2 ring-indigo-500 ring-offset-1 font-bold' : 'opacity-85 hover:opacity-100'
+                                  }`}
+                                >
+                                  <span className="text-[10px] block font-sans font-bold">Day {f.day}</span>
+                                  <span className="text-[9px] block truncate max-w-full font-medium">{f.region}</span>
+                                  <span className="text-[10px] mt-1 font-bold">{icon}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <p className="text-[10px] text-slate-500 mt-2 font-medium leading-normal">
+                            💡 提示：點擊上方 Day 欄位，系統將即時切換排定天數並動態重新計算警告與決策。
+                          </p>
                         </div>
 
                         {/* 匯入行程操作區 */}
@@ -1925,10 +2025,10 @@ export default function App() {
                                 {/* 取代按鈕 */}
                                 <button
                                   type="button"
-                                  disabled={!result.similarActivityTitleToDelete}
+                                  disabled={!activeEvaluation.similarActivityTitleToDelete}
                                   onClick={() => handleUserDecisionChange(idx, 'swap')}
                                   className={`flex flex-col items-center justify-center py-2 px-3 text-xs font-bold rounded-lg border transition min-h-[42px] ${
-                                    !result.similarActivityTitleToDelete
+                                    !activeEvaluation.similarActivityTitleToDelete
                                       ? 'opacity-40 cursor-not-allowed bg-slate-100 border-slate-200 text-slate-400'
                                       : currentDecision === 'swap'
                                       ? 'bg-purple-600 border-purple-600 text-white shadow-sm'
@@ -1938,9 +2038,9 @@ export default function App() {
                                   <div className="flex items-center gap-1.5">
                                     <ArrowRightLeft className="w-3.5 h-3.5" /> 取代衝突行程
                                   </div>
-                                  {result.similarActivityTitleToDelete && (
+                                  {activeEvaluation.similarActivityTitleToDelete && (
                                     <span className={`text-[9px] mt-0.5 font-medium truncate max-w-full block ${currentDecision === 'swap' ? 'text-purple-100' : 'text-slate-400'}`}>
-                                      將刪除: {result.similarActivityTitleToDelete}
+                                      將刪除: {activeEvaluation.similarActivityTitleToDelete}
                                     </span>
                                   )}
                                 </button>
