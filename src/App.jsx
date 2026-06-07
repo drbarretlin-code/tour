@@ -1899,12 +1899,19 @@ export default function App() {
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
           @page {
-            margin: 8mm !important;
+            margin: 12mm 8mm 16mm 8mm !important;
+            @bottom-right {
+              content: "第 " counter(page) " 頁";
+              font-family: system-ui, -apple-system, sans-serif;
+              font-size: 8pt;
+              color: #64748b;
+            }
           }
           body {
             margin: 0 !important;
             padding: 0 !important;
             background: #fff !important;
+            counter-reset: page 0;
           }
           * {
             -webkit-print-color-adjust: exact !important;
@@ -3566,7 +3573,7 @@ export default function App() {
         </div>
 
         {/* 首頁所有卡片資訊於 PDF 開頭處列出 */}
-        <div className="space-y-6 mb-8 page-break-inside-avoid border-b-2 border-slate-200 pb-6">
+        <div className="space-y-6 mb-8 border-b-2 border-slate-200 pb-6">
           <h2 className="text-lg font-bold text-slate-700 mb-2">📋 行程概觀與準備資訊</h2>
           
           {/* 行程確認重點 */}
@@ -3676,152 +3683,169 @@ export default function App() {
               </span>
             </div>
             
-            {day.hotelName && (
-              <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 mb-4 text-xs font-semibold text-indigo-900 flex items-center gap-2">
-                🏨 今日住宿飯店：{day.hotelName}
-              </div>
-            )}
-
-            <p className="text-xs text-slate-500 mb-6 leading-relaxed bg-slate-50 p-2.5 rounded border border-slate-100">
-              {day.summary}
-            </p>
-
-            {/* 展開每日路線與時程資訊圖表 */}
-            {printOptions.expandInfographic && (() => {
-              const stops = [];
-              
-              day.activities.forEach((act) => {
-                const matchedConfig = HOTSPOT_CONFIGS.find(cfg => 
-                  cfg.keywords.some(kw => 
-                    act.title.toLowerCase().includes(kw.toLowerCase()) || 
-                    act.desc?.toLowerCase().includes(kw.toLowerCase())
-                  )
-                );
+            {printOptions.expandInfographic ? (
+              <div className="print:grid print:grid-cols-12 print:gap-6 print:items-start print:mb-6">
+                <div className="print:col-span-5 space-y-3">
+                  {day.hotelName && (
+                    <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 text-xs font-semibold text-indigo-900 flex items-center gap-2">
+                      🏨 今日住宿飯店：{day.hotelName}
+                    </div>
+                  )}
+                  <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 p-2.5 rounded border border-slate-100">
+                    {day.summary}
+                  </p>
+                </div>
                 
-                let x, y, config;
-                if (matchedConfig) {
-                  x = parseFloat(matchedConfig.style.left);
-                  y = parseFloat(matchedConfig.style.top);
-                  config = matchedConfig;
-                } else {
-                  let hash = 0;
-                  for (let i = 0; i < act.title.length; i++) {
-                    hash = act.title.charCodeAt(i) + ((hash << 5) - hash);
-                  }
-                  x = 15 + Math.abs(hash % 70);
-                  y = 15 + Math.abs((hash >> 8) % 70);
-                  config = {
-                    key: `custom-act-${act.id}`,
-                    name: act.title,
-                    mapUrl: act.links?.find(l => l.text.includes("地圖"))?.url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(act.title)}`,
-                    infoUrl: act.links?.find(l => l.text.includes("介紹"))?.url || `https://www.google.com/search?q=${encodeURIComponent(act.title)}`
-                  };
-                }
-                
-                stops.push({
-                  title: act.title,
-                  time: act.time,
-                  type: act.type,
-                  config: config,
-                  x: x,
-                  y: y,
-                  w: matchedConfig ? parseFloat(matchedConfig.style.width || 0) : 0,
-                  h: matchedConfig ? parseFloat(matchedConfig.style.height || 0) : 0
-                });
-              });
-
-              if (day.day !== 7 && day.hotelName) {
-                const matchedHotel = HOTSPOT_CONFIGS.find(cfg =>
-                  cfg.keywords.some(kw => day.hotelName.toLowerCase().includes(kw.toLowerCase()))
-                );
-                
-                let hx, hy, hConfig;
-                if (matchedHotel) {
-                  hx = parseFloat(matchedHotel.style.left);
-                  hy = parseFloat(matchedHotel.style.top);
-                  hConfig = matchedHotel;
-                } else {
-                  let hash = 0;
-                  for (let i = 0; i < day.hotelName.length; i++) {
-                    hash = day.hotelName.charCodeAt(i) + ((hash << 5) - hash);
-                  }
-                  hx = 15 + Math.abs(hash % 70);
-                  hy = 15 + Math.abs((hash >> 8) % 70);
-                  hConfig = {
-                    key: `custom-hotel-${day.day}`,
-                    name: day.hotelName,
-                    mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(day.hotelName)}`,
-                    infoUrl: `https://www.google.com/search?q=${encodeURIComponent(day.hotelName)}`
-                  };
-                }
-                
-                stops.push({
-                  title: `返回住宿：${day.hotelName}`,
-                  time: "晚上",
-                  type: "hotel",
-                  config: hConfig,
-                  x: hx,
-                  y: hy,
-                  w: matchedHotel ? parseFloat(matchedHotel.style.width || 0) : 0,
-                  h: matchedHotel ? parseFloat(matchedHotel.style.height || 0) : 0
-                });
-              }
-
-              const positionedStops = stops.map((stop, idx) => ({
-                ...stop,
-                order: idx + 1
-              }));
-
-              if (positionedStops.length === 0) return null;
-
-              return (
-                <div className="mb-6 page-break-inside-avoid">
-                  <span className="text-[10px] font-extrabold text-teal-800 block mb-1.5">🗺️ Day {day.day} 行程路線與時程資訊圖表</span>
-                  <div className="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-slate-300 bg-slate-50 shadow-sm">
-                    <img 
-                      src={infographicUrl} 
-                      alt={`Day ${day.day} 行程路線圖`} 
-                      className="w-full h-full object-cover opacity-90" 
-                    />
+                <div className="print:col-span-7">
+                  {(() => {
+                    const stops = [];
                     
-                    {/* SVG 連接路徑線 */}
-                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full pointer-events-none z-10">
-                      {positionedStops.length > 1 && (
-                        <path
-                          d={positionedStops.map((stop, idx) => {
+                    day.activities.forEach((act) => {
+                      const matchedConfig = HOTSPOT_CONFIGS.find(cfg => 
+                        cfg.keywords.some(kw => 
+                          act.title.toLowerCase().includes(kw.toLowerCase()) || 
+                          act.desc?.toLowerCase().includes(kw.toLowerCase())
+                        )
+                      );
+                      
+                      let x, y, config;
+                      if (matchedConfig) {
+                        x = parseFloat(matchedConfig.style.left);
+                        y = parseFloat(matchedConfig.style.top);
+                        config = matchedConfig;
+                      } else {
+                        let hash = 0;
+                        for (let i = 0; i < act.title.length; i++) {
+                          hash = act.title.charCodeAt(i) + ((hash << 5) - hash);
+                        }
+                        x = 15 + Math.abs(hash % 70);
+                        y = 15 + Math.abs((hash >> 8) % 70);
+                        config = {
+                          key: `custom-act-${act.id}`,
+                          name: act.title,
+                          mapUrl: act.links?.find(l => l.text.includes("地圖"))?.url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(act.title)}`,
+                          infoUrl: act.links?.find(l => l.text.includes("介紹"))?.url || `https://www.google.com/search?q=${encodeURIComponent(act.title)}`
+                        };
+                      }
+                      
+                      stops.push({
+                        title: act.title,
+                        time: act.time,
+                        type: act.type,
+                        config: config,
+                        x: x,
+                        y: y,
+                        w: matchedConfig ? parseFloat(matchedConfig.style.width || 0) : 0,
+                        h: matchedConfig ? parseFloat(matchedConfig.style.height || 0) : 0
+                      });
+                    });
+
+                    if (day.day !== 7 && day.hotelName) {
+                      const matchedHotel = HOTSPOT_CONFIGS.find(cfg =>
+                        cfg.keywords.some(kw => day.hotelName.toLowerCase().includes(kw.toLowerCase()))
+                      );
+                      
+                      let hx, hy, hConfig;
+                      if (matchedHotel) {
+                        hx = parseFloat(matchedHotel.style.left);
+                        hy = parseFloat(matchedHotel.style.top);
+                        hConfig = matchedHotel;
+                      } else {
+                        let hash = 0;
+                        for (let i = 0; i < day.hotelName.length; i++) {
+                          hash = day.hotelName.charCodeAt(i) + ((hash << 5) - hash);
+                        }
+                        hx = 15 + Math.abs(hash % 70);
+                        hy = 15 + Math.abs((hash >> 8) % 70);
+                        hConfig = {
+                          key: `custom-hotel-${day.day}`,
+                          name: day.hotelName,
+                          mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(day.hotelName)}`,
+                          infoUrl: `https://www.google.com/search?q=${encodeURIComponent(day.hotelName)}`
+                        };
+                      }
+                      
+                      stops.push({
+                        title: `返回住宿：${day.hotelName}`,
+                        time: "晚上",
+                        type: "hotel",
+                        config: hConfig,
+                        x: hx,
+                        y: hy,
+                        w: matchedHotel ? parseFloat(matchedHotel.style.width || 0) : 0,
+                        h: matchedHotel ? parseFloat(matchedHotel.style.height || 0) : 0
+                      });
+                    }
+
+                    const positionedStops = stops.map((stop, idx) => ({
+                      ...stop,
+                      order: idx + 1
+                    }));
+
+                    if (positionedStops.length === 0) return null;
+
+                    return (
+                      <div className="page-break-inside-avoid">
+                        <span className="text-[10px] font-extrabold text-teal-800 block mb-1.5">🗺️ Day {day.day} 行程路線與時程資訊圖表</span>
+                        <div className="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-slate-300 bg-slate-50 shadow-sm">
+                          <img 
+                            src={infographicUrl} 
+                            alt={`Day ${day.day} 行程路線圖`} 
+                            className="w-full h-full object-cover opacity-90" 
+                          />
+                          
+                          {/* SVG 連接路徑線 */}
+                          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full pointer-events-none z-10">
+                            {positionedStops.length > 1 && (
+                              <path
+                                d={positionedStops.map((stop, idx) => {
+                                  const cx = stop.x + stop.w / 2;
+                                  const cy = stop.y + stop.h / 2;
+                                  return `${idx === 0 ? 'M' : 'L'} ${cx} ${cy}`;
+                                }).join(' ')}
+                                fill="none"
+                                stroke="#0d9488"
+                                strokeWidth="0.6"
+                                strokeDasharray="2 1.5"
+                              />
+                            )}
+                          </svg>
+
+                          {/* 針腳編號 */}
+                          {positionedStops.map((stop, index) => {
                             const cx = stop.x + stop.w / 2;
                             const cy = stop.y + stop.h / 2;
-                            return `${idx === 0 ? 'M' : 'L'} ${cx} ${cy}`;
-                          }).join(' ')}
-                          fill="none"
-                          stroke="#0d9488"
-                          strokeWidth="0.6"
-                          strokeDasharray="2 1.5"
-                        />
-                      )}
-                    </svg>
 
-                    {/* 針腳編號 */}
-                    {positionedStops.map((stop, index) => {
-                      const cx = stop.x + stop.w / 2;
-                      const cy = stop.y + stop.h / 2;
-
-                      return (
-                        <div 
-                          key={index}
-                          className="absolute flex items-center justify-center transform -translate-x-1/2 -translate-y-1/2 z-20"
-                          style={{ left: `${cx}%`, top: `${cy}%` }}
-                        >
-                          <div className="w-5 h-5 rounded-full bg-teal-600 border border-white flex items-center justify-center text-[9px] font-black text-white shadow-sm">
-                            {stop.order}
-                          </div>
+                            return (
+                              <div 
+                                key={index}
+                                className="absolute flex items-center justify-center transform -translate-x-1/2 -translate-y-1/2 z-20"
+                                style={{ left: `${cx}%`, top: `${cy}%` }}
+                              >
+                                <div className="w-5 h-5 rounded-full bg-teal-600 border border-white flex items-center justify-center text-[9px] font-black text-white shadow-sm">
+                                  {stop.order}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                      );
-                    })}
-                  </div>
+                      </div>
+                    );
+                  })()}
                 </div>
-              );
-            })()}
+              </div>
+            ) : (
+              <div className="space-y-3 mb-6">
+                {day.hotelName && (
+                  <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 text-xs font-semibold text-indigo-900 flex items-center gap-2">
+                    🏨 今日住宿飯店：{day.hotelName}
+                  </div>
+                )}
+                <p className="text-xs text-slate-500 leading-relaxed bg-slate-50 p-2.5 rounded border border-slate-100">
+                  {day.summary}
+                </p>
+              </div>
+            )}
 
             {/* 時間軸行程項目 */}
             <div className="space-y-6">
@@ -3851,23 +3875,27 @@ export default function App() {
                     {/* 航站平面圖 (限第一天/最後一天的機場卡片) */}
                     {((day.day === 1 && act.id === 'd1-1') || (day.day === 7 && act.id === 'd7-3')) && (
                       <div className="mt-3 pt-3 border-t border-slate-100 page-break-inside-avoid">
-                        <span className="text-[10px] font-bold text-blue-700 block mb-1">
+                        <span className="text-[10px] font-bold text-blue-700 block mb-1.5">
                           ✈️ {day.day === 1 ? '曼谷蘇凡納布機場 (BKK) 入境大廳平面圖 (Level 2)' : '曼谷蘇凡納布機場 (BKK) 出境大廳平面圖 (Level 4)'}
                         </span>
-                        <div className="rounded-md overflow-hidden border border-slate-200 bg-white max-w-md mt-1.5">
-                          <img 
-                            src={day.day === 1 ? '/bkk_arrival_map.png' : '/bkk_departure_map.png'} 
-                            alt="BKK Airport Terminal Map"
-                            className="w-full h-auto object-cover"
-                          />
+                        <div className="print:grid print:grid-cols-12 print:gap-4 print:items-start mt-1.5">
+                          <div className="print:col-span-7 rounded-md overflow-hidden border border-slate-200 bg-white max-w-md print:max-w-full print:w-full">
+                            <img 
+                              src={day.day === 1 ? '/bkk_arrival_map.png' : '/bkk_departure_map.png'} 
+                              alt="BKK Airport Terminal Map"
+                              className="w-full h-auto object-cover"
+                            />
+                          </div>
+                          <div className="print:col-span-5 min-w-0">
+                            <p className="text-[9px] text-slate-500 leading-relaxed font-medium">
+                              {day.day === 1 ? (
+                                <span>💡 抵達指引：下飛機後順著「Immigration (入境)」指標前進，至 Level 2 辦理入境與行李提取。提取行李後，出口位於 Level 2 大廳。若欲搭乘機場快線 (ARL)，請搭手扶梯下至 B1 層。</span>
+                              ) : (
+                                <span>💡 離境指引：專車或 Grab 將在 Level 4 離境大廳入口停靠。進入航廈後請尋找對應航空公司的 Check-in 櫃檯辦理登機。安檢與證照查驗位於 Level 4 後方中央。</span>
+                              )}
+                            </p>
+                          </div>
                         </div>
-                        <p className="mt-1.5 text-[9px] text-slate-450 leading-relaxed">
-                          {day.day === 1 ? (
-                            <span>💡 抵達指引：下飛機後順著「Immigration (入境)」指標前進，至 Level 2 辦理入境與行李提取。提取行李後，出口位於 Level 2 大廳。若欲搭乘機場快線 (ARL)，請搭手扶梯下至 B1 層。</span>
-                          ) : (
-                            <span>💡 離境指引：專車或 Grab 將在 Level 4 離境大廳入口停靠。進入航廈後請尋找對應航空公司的 Check-in 櫃檯辦理登機。安檢與證照查驗位於 Level 4 後方中央。</span>
-                          )}
-                        </p>
                       </div>
                     )}
 
