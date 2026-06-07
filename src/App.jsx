@@ -833,6 +833,12 @@ export default function App() {
   const [resultDaySelections, setResultDaySelections] = useState({});
   const [resultTimeSelections, setResultTimeSelections] = useState({});
   const [userDecisions, setUserDecisions] = useState({}); // { [idx]: 'adopt' | 'skip' | 'swap' }
+  const [resultTitleSelections, setResultTitleSelections] = useState({}); // { [idx]: 'edited title' }
+
+  // 處理 AI 結果中景點主名稱的本地修改
+  const handleResultTitleChange = (idx, titleStr) => {
+    setResultTitleSelections(prev => ({ ...prev, [idx]: titleStr }));
+  };
 
   // 處理使用者決策的本地修改
   const handleUserDecisionChange = (idx, decision) => {
@@ -871,6 +877,7 @@ export default function App() {
     setResultDaySelections({});
     setResultTimeSelections({});
     setUserDecisions({});
+    setResultTitleSelections({});
 
     try {
       // 呼叫真實的 Gemini 2.5 Flash API 進行分析評估
@@ -896,6 +903,7 @@ export default function App() {
     const decision = userDecisions[idx] || 'adopt';
     const dayToImport = resultDaySelections[idx] || item.suggestedDay;
     const timeToImport = resultTimeSelections[idx] || item.suggestedTime;
+    const mainTitleToImport = (resultTitleSelections[idx] !== undefined ? resultTitleSelections[idx] : item.title).trim();
 
     if (decision === 'skip') {
       setImportedItems(prev => ({ ...prev, [item.title + '-' + idx]: 'skipped' }));
@@ -920,30 +928,30 @@ export default function App() {
         }
         if (prevAct) {
           routeOrigin = prevAct.title;
-          routeText = `${prevAct.title} 至 ${item.title} 路線`;
+          routeText = `${prevAct.title} 至 ${mainTitleToImport} 路線`;
         } else {
           routeOrigin = targetDay.hotelName || "";
-          routeText = `${targetDay.hotelName ? '飯店' : '出發地'}至${item.title}路線`;
+          routeText = `${targetDay.hotelName ? '飯店' : '出發地'}至${mainTitleToImport}路線`;
         }
       } else {
         routeOrigin = targetDay.hotelName || "";
-        routeText = `${targetDay.hotelName ? '飯店' : '出發地'}至${item.title}路線`;
+        routeText = `${targetDay.hotelName ? '飯店' : '出發地'}至${mainTitleToImport}路線`;
       }
     }
 
     const directionUrl = routeOrigin 
-      ? `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(routeOrigin)}&destination=${encodeURIComponent(item.title)}`
-      : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(item.title)}`;
+      ? `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(routeOrigin)}&destination=${encodeURIComponent(mainTitleToImport)}`
+      : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mainTitleToImport)}`;
 
     const newActivity = {
       id: `ai-imported-${Date.now()}-${idx}`,
       time: timeToImport,
-      title: item.title,
+      title: mainTitleToImport,
       type: item.category,
       region: item.region,
       desc: `【AI推薦排程】${item.suggestion}。請注意：${item.experienceWarning !== '無' ? item.experienceWarning : '無體驗衝突'}。`,
       links: [
-        { text: "景點地圖", url: item.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}` },
+        { text: "景點地圖", url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mainTitleToImport)}` },
         { text: "景點介紹", url: item.url || item.infoUrl || "https://www.klook.com/zh-TW/" },
         { text: routeText, url: directionUrl }
       ]
@@ -1661,7 +1669,31 @@ export default function App() {
                         </div>
 
                         <h4 className="text-lg font-bold text-slate-800 mb-1 truncate pr-24">{result.title}</h4>
-                        <p className="text-slate-500 text-[11px] mb-4 break-all truncate">連結網址：<a href={result.url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline hover:text-indigo-800">{result.url}</a></p>
+                        <p className="text-slate-500 text-[11px] mb-3 break-all truncate">連結網址：<a href={result.url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline hover:text-indigo-800">{result.url}</a></p>
+
+                        {/* AI 掃描確認景點主要名稱 (可編輯欄位) */}
+                        <div className="mb-4 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                          <label className="block text-[11px] font-bold text-slate-700 mb-1.5 flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5 text-indigo-500" />
+                            <span>AI 掃描確認景點主要名稱 (可編輯)</span>
+                          </label>
+                          <div className="relative">
+                            <input 
+                              type="text" 
+                              value={resultTitleSelections[idx] !== undefined ? resultTitleSelections[idx] : result.title}
+                              onChange={(e) => handleResultTitleChange(idx, e.target.value)}
+                              disabled={isCompleted}
+                              className="w-full pl-3 pr-8 py-1.5 bg-white border border-slate-300 rounded-md text-xs font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-100 disabled:text-slate-500 transition"
+                              placeholder="請輸入此景點的主要名稱"
+                            />
+                            {!isCompleted && (
+                              <Edit3 className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-500 mt-1 font-medium leading-normal">
+                            💡 此名稱將作為匯入行程後的路線地圖、Google Maps 導航/搜尋之關鍵字依據。
+                          </p>
+                        </div>
 
                         {/* AI 評估結果分析卡片 */}
                         <div className={`border rounded-xl p-4 mb-4 ${decisionClass}`}>
